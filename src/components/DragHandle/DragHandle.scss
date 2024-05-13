@@ -1,0 +1,11 @@
+@use '../variables';
+
+$block: '.#{variables.$ns}drag-handle';
+
+#{$block} {
+    cursor: grab;
+
+    &[aria-pressed] {
+        cursor: grabbing;
+    }
+}

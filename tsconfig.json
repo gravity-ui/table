@@ -1,0 +1,18 @@
+{
+  "extends": "@gravity-ui/tsconfig",
+  "compilerOptions": {
+    "declaration": true,
+    "jsx": "react",
+    "module": "esnext",
+    "outDir": "build/esm",
+    "resolveJsonModule": true,
+    "verbatimModuleSyntax": true
+  },
+  "include": [
+    ".storybook/**/*.ts",
+    ".storybook/**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "test-utils/**/*.ts"
+  ]
+}

@@ -1,0 +1,47 @@
+@use '../variables';
+
+$rowBlock: '.#{variables.$ns}table__row';
+$dragHandleBlock: '.#{variables.$ns}drag-handle';
+
+#{$rowBlock} {
+    position: relative;
+
+    &[data-draggable='true'] {
+        &:not([data-drag-active='true']):hover {
+            #{$dragHandleBlock} {
+                z-index: 1;
+
+                opacity: 1;
+            }
+        }
+
+        &[data-dragging='true'] {
+            z-index: 1;
+
+            pointer-events: none;
+
+            opacity: 1;
+            background: var(--g-color-base-background);
+
+            &::after {
+                position: absolute;
+                inset: 0;
+
+                z-index: 2;
+
+                content: '';
+
+                border-block-start: 1px solid var(--g-color-line-generic);
+                border-block-end: 1px solid var(--g-color-line-generic);
+            }
+        }
+
+        &[data-drag-active='true']:hover {
+            background: none;
+
+            * {
+                pointer-events: none;
+            }
+        }
+    }
+}

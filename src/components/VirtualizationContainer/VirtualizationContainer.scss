@@ -1,0 +1,55 @@
+@use '../variables';
+
+$block: '.#{variables.$ns}virtualization-container';
+$tableBlock: '.#{variables.$ns}table';
+
+#{$block} {
+    position: relative;
+
+    &_with-scroll {
+        overflow: auto;
+    }
+
+    #{$tableBlock} {
+        // Even though we're still using semantic table tags, we must use CSS grid and flexbox for dynamic row heights
+        display: grid;
+
+        height: auto;
+
+        &__body {
+            display: grid;
+
+            position: relative;
+        }
+
+        &__header {
+            display: grid;
+
+            position: sticky;
+            inset-block-start: 0;
+
+            z-index: 1;
+        }
+
+        &__header-row {
+            display: flex;
+
+            width: 100%;
+            height: auto;
+        }
+
+        &__row {
+            display: flex;
+
+            position: absolute;
+
+            width: 100%;
+            height: auto;
+        }
+
+        &__cell,
+        &__header-cell {
+            display: flex;
+        }
+    }
+}

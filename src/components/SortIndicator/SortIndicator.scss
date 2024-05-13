@@ -1,0 +1,20 @@
+@use '../variables';
+
+$block: '.#{variables.$ns}sort-indicator';
+
+#{$block} {
+    display: inline-flex;
+    align-items: center;
+
+    transform: rotate(180deg);
+
+    color: var(--g-color-text-hint);
+
+    &_invisible {
+        opacity: 0;
+    }
+
+    &_order_asc {
+        transform: rotate(0);
+    }
+}
