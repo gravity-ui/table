@@ -10,6 +10,7 @@ import {GroupingDemo2} from './GroupingDemo2';
 import {GroupingWithSelectionDemo} from './GroupingWithSelectionDemo';
 import {ReorderingDemo} from './ReorderingDemo';
 import {ReorderingTreeDemo} from './ReorderingTreeDemo';
+import {ReorderingWithVirtualizationDemo} from './ReorderingWithVirtualizationDemo';
 import {SortingDemo} from './SortingDemo';
 import {TreeDemo} from './TreeDemo';
 import {TreeWithGroupsDemo} from './TreeWithGroupsDemo';
@@ -178,6 +179,21 @@ export const WindowVirtualization: StoryFn<typeof Table<Item>> = WindowVirtualiz
 );
 
 WindowVirtualization.args = {
+    data: generateData(300),
+    columns,
+    getRowId: (item: Item) => item.id,
+    onRowClick: undefined,
+    onSelectedChange: undefined,
+};
+
+const ReorderingWithVirtualizationTemplate: StoryFn<typeof Table<Item>> = (args) => (
+    <ReorderingWithVirtualizationDemo {...args} />
+);
+
+export const ReorderingWithVirtualization: StoryFn<typeof Table<Item>> =
+    ReorderingWithVirtualizationTemplate.bind({});
+
+ReorderingWithVirtualization.args = {
     data: generateData(300),
     columns,
     getRowId: (item: Item) => item.id,

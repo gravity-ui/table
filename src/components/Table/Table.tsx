@@ -130,7 +130,9 @@ export const Table = React.memo(
         onColumnSizingChange,
         onColumnSizingInfoChange,
     }: TableProps<TData>) => {
-        const draggable = Boolean(React.useContext(SortableListContext));
+        const draggableContext = React.useContext(SortableListContext);
+        const draggable = Boolean(draggableContext);
+        const draggableItemKey = draggableContext?.activeItemKey;
 
         const virtualizationContext = React.useContext(VirtualizationContext);
         const virtual = Boolean(virtualizationContext);
@@ -212,6 +214,13 @@ export const Table = React.memo(
             tableOptions.onColumnSizingInfoChange = onColumnSizingInfoChange;
         }
 
+        const draggableIndex = React.useMemo(() => {
+            if (!draggableItemKey) {
+                return undefined;
+            }
+            return data.findIndex((item) => getRowId(item) === draggableItemKey);
+        }, [data, draggableItemKey, getRowId]);
+
         const table = useReactTable(tableOptions);
 
         const getRowByIndex = React.useCallback<TableContextProviderProps<TData>['getRowByIndex']>(
@@ -266,7 +275,7 @@ export const Table = React.memo(
                 enableNesting={enableNesting}
                 getTableState={table.getState}
             >
-                <table className={b(null, className)}>
+                <table className={b(null, className)} data-draggable-index={draggableIndex}>
                     {withHeader && (
                         <thead className={b('header', headerClassName)}>
                             {headerGroups.map((headerGroup, index) => (
@@ -285,7 +294,7 @@ export const Table = React.memo(
                         </thead>
                     )}
                     <tbody
-                        className={bodyClassName}
+                        className={b('body', bodyClassName)}
                         style={{
                             height: totalSize,
                         }}
