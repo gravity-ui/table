@@ -258,6 +258,8 @@ export const Table = React.memo(
 
         const {rows} = table.getRowModel();
 
+        const headerGroups = table.getHeaderGroups();
+
         return (
             <TableContextProvider
                 getRowByIndex={getRowByIndex}
@@ -267,10 +269,11 @@ export const Table = React.memo(
                 <table className={b(null, className)}>
                     {withHeader && (
                         <thead className={b('header', headerClassName)}>
-                            {table.getHeaderGroups().map((headerGroup) => (
+                            {headerGroups.map((headerGroup, index) => (
                                 <HeaderRow
                                     key={headerGroup.id}
                                     headerGroup={headerGroup}
+                                    parentHeaderGroup={headerGroups[index - 1]}
                                     className={headerRowClassName}
                                     cellClassName={headerCellClassName}
                                     cellContentClassName={headerCellContentClassName}

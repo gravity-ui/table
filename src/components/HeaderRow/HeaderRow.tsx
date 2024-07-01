@@ -11,6 +11,7 @@ export interface HeaderRowProps<TData, TValue> {
     cellContentClassName: HeaderCellProps<TData, TValue>['contentClassName'];
     className?: string;
     headerGroup: HeaderGroup<TData>;
+    parentHeaderGroup?: HeaderGroup<TData>;
     renderSortIndicator: HeaderCellProps<TData, TValue>['renderSortIndicator'];
     selectionColumnId?: string;
     sortIndicatorClassName: HeaderCellProps<TData, TValue>['sortIndicatorClassName'];
@@ -21,6 +22,7 @@ export const HeaderRow = <TData, TValue>({
     cellContentClassName,
     className,
     headerGroup,
+    parentHeaderGroup,
     renderSortIndicator,
     selectionColumnId,
     sortIndicatorClassName,
@@ -33,6 +35,9 @@ export const HeaderRow = <TData, TValue>({
                     className={cellClassName}
                     contentClassName={cellContentClassName}
                     header={header as Header<TData, TValue>}
+                    parentHeader={parentHeaderGroup?.headers.find(
+                        (item) => header.column.id === item.column.id,
+                    )}
                     renderSortIndicator={renderSortIndicator}
                     selection={header.column.id === selectionColumnId}
                     sortIndicatorClassName={sortIndicatorClassName}
