@@ -4,6 +4,7 @@ import type {Meta, StoryFn} from '@storybook/react';
 
 import {Table} from '../Table';
 
+import {cnGridDemo} from './GridDemo.classname';
 import {GroupingDemo} from './GroupingDemo';
 import {GroupingDemo2} from './GroupingDemo2';
 import {GroupingWithSelectionDemo} from './GroupingWithSelectionDemo';
@@ -19,6 +20,8 @@ import {columns} from './constants/columns';
 import {data} from './constants/data';
 import type {Item} from './types';
 import {generateData} from './utils';
+
+import './GridDemo.scss';
 
 export default {
     title: 'Table',
@@ -46,6 +49,51 @@ WithoutHeader.args = {
     withHeader: false,
     onSelectedChange: undefined,
     onRowClick: undefined,
+};
+
+export const HeaderGroups: StoryFn<typeof Table<Item>> = Template.bind({});
+
+HeaderGroups.args = {
+    data,
+    columns: [
+        {
+            id: 'id',
+            header: 'ID',
+            accessorKey: 'id',
+        },
+        {
+            id: 'columns-parent',
+            header: 'Columns header',
+            columns: [
+                {
+                    id: 'columns',
+                    header: 'Columns',
+                    columns,
+                },
+            ],
+        },
+        {
+            id: 'actions',
+            header: 'Actions',
+            accessorKey: 'id',
+            columns: [
+                {
+                    id: 'edit',
+                    header: 'Edit',
+                    accessorKey: 'id',
+                },
+                {
+                    id: 'delete',
+                    header: 'Delete',
+                    accessorKey: 'id',
+                },
+            ],
+        },
+    ],
+    getRowId: (item: Item) => item.id,
+    onSelectedChange: undefined,
+    onRowClick: undefined,
+    className: cnGridDemo('header-groups-grid'),
 };
 
 const WithSelectionTemplate: StoryFn<typeof Table<Item>> = (args) => (

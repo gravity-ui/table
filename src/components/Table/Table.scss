@@ -69,6 +69,12 @@ $block: '.#{variables.$ns}table';
                 opacity: 1;
             }
         }
+
+        &_wide {
+            #{$block}__header-cell-content {
+                justify-content: center;
+            }
+        }
     }
 
     &__header-cell-content,
