@@ -4,6 +4,7 @@ import {useVirtualizer} from '@tanstack/react-virtual';
 
 import {VirtualizationContainer} from '../VirtualizationContainer';
 import {VirtualizationContext} from '../VirtualizationContext';
+import {getVirtualRangeExtractor} from '../utils/getVirtualRangeExtractor';
 
 export interface VirtualizationProviderProps {
     children?: React.ReactNode;
@@ -30,6 +31,7 @@ export const VirtualizationProvider = ({
         getScrollElement: () => containerRef.current,
         measureElement: (element) => element?.getBoundingClientRect().height,
         overscan: overscanRowCount,
+        rangeExtractor: getVirtualRangeExtractor(containerRef.current),
     });
 
     const virtualItems = rowVirtualizer.getVirtualItems();

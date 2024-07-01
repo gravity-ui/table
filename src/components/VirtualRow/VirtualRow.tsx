@@ -20,7 +20,7 @@ export const VirtualRow = React.forwardRef(
 
         const virtualRowStyle = React.useMemo(
             () => ({
-                transform: `translateY(${virtualRow.start}px)`,
+                top: virtualRow.start,
                 ...style,
             }),
             [style, virtualRow.start],
