@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/gravity-ui/table/compare/v0.1.0...v0.1.1) (2024-07-01)
+
+
+### Bug Fixes
+
+* **Table:** fix drag when virtualization enabled ([#7](https://github.com/gravity-ui/table/issues/7)) ([cf86ba2](https://github.com/gravity-ui/table/commit/cf86ba26557f44d5978eaf60bc355301f38449a7))
+
 ## [0.1.0](https://github.com/gravity-ui/table/compare/v0.0.1...v0.1.0) (2024-07-01)
 
 
