@@ -1,7 +1,6 @@
 import React from 'react';
 
 import {useDndMonitor} from '@dnd-kit/core';
-import type {DragEndEvent, DragMoveEvent, DragOverEvent, DragStartEvent} from '@dnd-kit/core';
 
 import type {SortableListDragResult} from '../components';
 
@@ -18,15 +17,33 @@ export const useSortableList = ({
     items,
     onDragStart,
     onDragEnd,
-    nestingEnabled = true,
+    nestingEnabled,
     childModeOffset = 20,
     nextChildModeOffset = 10,
 }: UseSortableListParams) => {
     const [activeItemKey, setActiveItemKey] = React.useState<string | null>(null);
-    const [targetItemIndex, setTargetItemIndex] = React.useState<number>(-1);
+    const [targetItemIndex, setTargetItemIndex] = React.useState(-1);
     const [isParentMode, setIsParentMode] = React.useState(false);
     const [isChildMode, setIsChildMode] = React.useState(false);
     const [isNextChildMode, setIsNextChildMode] = React.useState(false);
+
+    const itemIndexMap = React.useMemo(() => {
+        const map = new Map<string, number>();
+
+        items.forEach((item, index) => {
+            map.set(item, index);
+        });
+
+        return map;
+    }, [items]);
+
+    const getItemIndex = (item?: string | null) => {
+        if (typeof item !== 'undefined' && item !== null) {
+            return itemIndexMap.get(item) ?? -1;
+        }
+
+        return -1;
+    };
 
     const resetState = () => {
         setActiveItemKey(null);
@@ -36,55 +53,58 @@ export const useSortableList = ({
         setIsNextChildMode(false);
     };
 
-    const getTargetItemKey = (activeItemKey: string, overItemKey?: string) => {
-        if (overItemKey) {
-            const isForward = items.indexOf(overItemKey) > items.indexOf(activeItemKey);
+    const getTargetItemKey = (activeId: string, overId?: string) => {
+        if (overId) {
+            const overItemIndex = getItemIndex(overId);
+            const activeItemIndex = getItemIndex(activeId);
 
-            if (!isForward) {
-                const overItemIndex = items.indexOf(overItemKey);
+            if (overItemIndex <= activeItemIndex) {
                 return items[overItemIndex - 1];
             }
         }
 
-        return overItemKey;
+        return overId;
     };
 
     useDndMonitor({
-        onDragStart: ({active: {id: activeId}}: DragStartEvent) => {
-            setActiveItemKey(activeId as string);
-            onDragStart?.(activeId as string);
+        onDragStart: (event) => {
+            setActiveItemKey(event.active.id as string);
+            onDragStart?.(event.active.id as string);
 
             document.body.style.setProperty('cursor', 'grabbing');
         },
-        onDragMove: ({delta}: DragMoveEvent) => {
+        onDragMove: (event) => {
             if (nestingEnabled) {
-                setIsParentMode(delta.x < -childModeOffset);
-                setIsChildMode(delta.x > childModeOffset);
-                setIsNextChildMode(delta.x > nextChildModeOffset && delta.x <= childModeOffset);
+                setIsParentMode(event.delta.x < -childModeOffset);
+                setIsChildMode(event.delta.x > childModeOffset);
+
+                setIsNextChildMode(
+                    event.delta.x > nextChildModeOffset && event.delta.x <= childModeOffset,
+                );
             }
         },
-        onDragOver: ({active, over}: DragOverEvent) => {
-            const activeItemKey = active.id;
+        onDragOver: (event) => {
+            const targetItemKey = getTargetItemKey(
+                event.active.id as string,
+                event.over?.id as string,
+            );
 
-            const targetItemKey = getTargetItemKey(activeItemKey as string, over?.id as string);
-
-            const targetItemIndex =
-                targetItemKey && targetItemKey !== activeItemKey
-                    ? items.indexOf(targetItemKey)
-                    : -1;
-
-            setTargetItemIndex(targetItemIndex);
+            setTargetItemIndex(
+                targetItemKey && targetItemKey !== event.active.id
+                    ? getItemIndex(targetItemKey)
+                    : -1,
+            );
         },
-        onDragEnd: ({active, over}: DragEndEvent) => {
+        onDragEnd: (event) => {
             document.body.style.setProperty('cursor', 'default');
 
-            if (!over) {
+            if (!event.over) {
                 resetState();
                 return;
             }
 
-            const draggedItemKey = active.id as string;
-            const targetItemKey = getTargetItemKey(draggedItemKey, over.id as string);
+            const draggedItemKey = event.active.id as string;
+            const targetItemKey = getTargetItemKey(draggedItemKey, event.over.id as string);
 
             if (targetItemKey === draggedItemKey) {
                 resetState();
@@ -98,12 +118,10 @@ export const useSortableList = ({
                     nestingEnabled,
                 });
             } else {
-                const targetItemIndex = targetItemKey ? items.indexOf(targetItemKey) : -1;
-
                 onDragEnd?.({
                     draggedItemKey,
                     baseItemKey: targetItemKey,
-                    baseNextItemKey: items[targetItemIndex + 1],
+                    baseNextItemKey: items[targetItemKey ? getItemIndex(targetItemKey) + 1 : 0],
                     nestingEnabled,
                     nextChild: isNextChildMode,
                     pullFromParent: isParentMode,
@@ -117,6 +135,7 @@ export const useSortableList = ({
 
     return {
         activeItemKey,
+        activeItemIndex: getItemIndex(activeItemKey),
         targetItemIndex,
         isParentMode,
         isChildMode,

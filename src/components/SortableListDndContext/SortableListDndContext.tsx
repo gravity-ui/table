@@ -1,6 +1,6 @@
 import React from 'react';
 
-import type {Modifier} from '@dnd-kit/core';
+import type {MeasuringConfiguration, Modifier} from '@dnd-kit/core';
 import {
     DndContext,
     MeasuringStrategy,
@@ -15,7 +15,7 @@ export interface SortableListDndContextProps {
     children?: React.ReactNode;
 }
 
-const measuring = {
+const measuring: MeasuringConfiguration = {
     droppable: {
         strategy: MeasuringStrategy.WhileDragging,
     },

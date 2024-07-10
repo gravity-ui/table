@@ -1,4 +1,5 @@
-import type {TableProps} from '../../Table';
+import type {ColumnDef} from '@tanstack/react-table';
+
 import type {Item} from '../types';
 
 export interface Group {
@@ -9,7 +10,7 @@ export interface Group {
 
 export type GroupOrItem = Group | Item;
 
-export const columns: TableProps<GroupOrItem>['columns'] = [
+export const columns: ColumnDef<GroupOrItem>[] = [
     {accessorKey: 'name', header: 'Name', size: 200},
     {accessorKey: 'age', header: 'Age', size: 100},
 ];

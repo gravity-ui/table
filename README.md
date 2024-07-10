@@ -9,7 +9,9 @@ npm install --save @gravity-ui/table
 ## Usage
 
 ```tsx
-import {Table, TableProps} from '@gravity-ui/table';
+import React from 'react';
+import {Table, useTable} from '@gravity-ui/table';
+import type {ColumnDef} from '@tanstack/react-table';
 
 interface Person {
   id: string;
@@ -17,33 +19,57 @@ interface Person {
   age: number;
 }
 
-const data: Person[] = [
-  {
-    id: 'name',
-    name: 'John',
-    age: 23,
-  },
-  {
-    id: 'age',
-    name: 'Michael',
-    age: 27,
-  },
-];
-
-const columns: TableProps<Person>['columns'] = [
+const columns: ColumnDef<Person>[] = [
   {accessorKey: 'name', header: 'Name', size: 100},
   {accessorKey: 'age', header: 'Age', size: 100},
 ];
 
-<Table data={data} columns={columns} getRowId={(person) => person.id} />;
+const data: Person[] = [
+  {id: 'name', name: 'John', age: 23},
+  {id: 'age', name: 'Michael', age: 27},
+];
+
+const BasicExample = () => {
+  const table = useTable({
+    columns,
+    data,
+  });
+
+  return <Table table={table} />;
+};
 ```
 
-### With selection
+### Row selection
 
 ```tsx
-const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
+import {defaultSelectionColumn} from '@gravity-ui/table';
+import type {RowSelectionState} from '@tanstack/react-table';
 
-<Table selectedIds={selectedIds} onSelectedChange={setSelectedIds} {...props} />;
+const columns: ColumnDef<Person>[] = [
+  defaultSelectionColumn as ColumnDef<Person>,
+  // ...other columns
+];
+
+const data: Person[] = [
+  /* ... */
+];
+
+const RowSelectionExample = () => {
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+
+  const table = useTable({
+    columns,
+    data,
+    enableRowSelection: true,
+    enableMultiRowSelection: true,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      rowSelection,
+    },
+  });
+
+  return <Table table={table} />;
+};
 ```
 
 ### Sorting
@@ -51,17 +77,53 @@ const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
 Learn about the column properties in the react-table [docs](https://tanstack.com/table/v8/docs/guide/sorting)
 
 ```tsx
-const [sorting, setSorting] = React.useState<NonNullable<TableProps<ItemType>['sorting']>>([]);
+import type {SortingState} from '@tanstack/react-table';
 
-<Table enableSorting sorting={sorting} onSortingChange={setSorting} {...props} />;
+const columns: ColumnDef<Person>[] = [
+  /* ... */
+];
+
+const data: Person[] = [
+  /* ... */
+];
+
+const SortingExample = () => {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+
+  const table = useTable({
+    columns,
+    data,
+    enableSorting: true,
+    getRowId: (item) => item.id,
+    onSortingChange: setSorting,
+    state: {
+      sorting,
+    },
+  });
+
+  return <Table table={table} />;
+};
 ```
 
-If you want to sort the elements manually pass `manualSorting` property.
+If you want to sort the elements manually pass `manualSorting` property:
+
+```tsx
+const table = useTable({
+  // ...
+  manualSorting: true,
+});
+```
 
 ### Grouping
 
 ```tsx
-type ItemType = PersonGroup | Person;
+import type {ExpandedState, Row} from '@tanstack/react-table';
+
+interface Person {
+  id: string;
+  name: string;
+  age: number;
+}
 
 interface PersonGroup {
   id: string;
@@ -69,12 +131,14 @@ interface PersonGroup {
   items: Person[];
 }
 
-const columns: TableProps<ItemType>['columns'] = [
+type Item = PersonGroup | Person;
+
+const columns: ColumnDef<Item>[] = [
   {accessorKey: 'name', header: 'Name', size: 200},
   {accessorKey: 'age', header: 'Age', size: 100},
 ];
 
-const data: ItemType[] = [
+const data: Item[] = [
   {
     id: 'friends',
     name: 'Friends',
@@ -93,70 +157,78 @@ const data: ItemType[] = [
   },
 ];
 
-const getSubRows = (item: ItemType) => ('items' in item ? item.items : undefined);
-const getGroupTitle: TableProps<ItemType>['getGroupTitle'] = (row) => row.getValue('name');
-const getRowId = (item: ItemType) => item.id;
+const getGroupTitle = (row: Row<Item>) => row.getValue<string>('name');
 
-const [expandedIds, setExpandedIds] = React.useState<string[]>([]);
+const GroupingExample = () => {
+  const [expanded, setExpanded] = React.useState<ExpandedState>({});
 
-<Table<ItemType>
-  data={data}
-  columns={columns}
-  getSubRows={getSubRows}
-  getGroupTitle={getGroupTitle}
-  getRowId={getRowId}
-  expandedIds={expandedIds}
-  onExpandedChange={setExpandedIds}
-  {...props}
-/>;
+  const table = useTable({
+    columns,
+    data,
+    enableExpanding: true,
+    getSubRows: (item) => ('items' in item ? item.items : undefined),
+    onExpandedChange: setExpanded,
+    state: {
+      expanded,
+    },
+  });
+
+  return <Table table={table} getGroupTitle={getGroupTitle} />;
+};
 ```
 
 ### Reordering
 
 ```tsx
+import {defaultDragHandleColumn, withTableReorder, SortableListDragResult} from '@gravity-ui/table';
+
 const TableWithReordering = withTableReorder(Table);
 
-const [data, setData] = React.useState(props.data);
+const columns: ColumnDef<Person>[] = [
+  defaultDragHandleColumn,
+  // ...other columns
+];
 
-const handleReorder = React.useCallback(
-  ({draggedItemKey, baseItemKey}: SortableListDragResult) => {
-    setData((data) => {
-      const dataClone = data.slice();
-      const index = dataClone.findIndex((item) => getRowId(item) === draggedItemKey);
+const data: Person[] = [
+  /* ... */
+];
 
-      if (index >= 0) {
-        const dragged = dataClone.splice(index, 1)[0]!;
-        const insertIndex = dataClone.findIndex((value) => getRowId(value) === baseItemKey);
+const ReorderingExample = () => {
+  const table = useTable({
+    columns,
+    data,
+    getRowId: (item) => item.id,
+  });
 
-        if (insertIndex >= 0) {
-          dataClone.splice(insertIndex + 1, 0, dragged);
-        } else {
-          dataClone.unshift(dragged);
-        }
-      }
+  const handleReorder = React.useCallback(
+    ({
+      draggedItemKey,
+      targetItemKey,
+      baseItemKey,
+      baseNextItemKey,
+      nestingEnabled,
+      nextChild,
+      pullFromParent,
+    }: SortableListDragResult) => {
+      // ...
+    },
+    [],
+  );
 
-      return dataClone;
-    });
-  },
-  [getRowId],
-);
-
-<TableWithReordering<ItemType> data={data} onReorder={handleReorder} {...props} />;
+  return <TableWithReordering table={table} onReorder={handleReorder} />;
+};
 ```
 
-Or use reordering provider
+Or use `ReorderingProvider`:
 
 ```tsx
 <ReorderingProvider
-  data={data}
-  getRowId={getRowId}
-  onReorder={onReorder}
+  table={table}
   dndModifiers={dndModifiers}
-  nestingEnabled={nestingEnabled}
-  getSubRows={getSubRows}
-  expandedIds={expandedIds}
+  enableNesting={enableNesting}
+  onReorder={onReorder}
 >
-  <Table {...props} />
+  <Table table={table} enableNesting={enableNesting} />
 </ReorderingProvider>
 ```
 
@@ -165,34 +237,62 @@ Or use reordering provider
 Use if you want to use grid container as the scroll element (if you want to use window see window virtualization section).
 
 ```tsx
-const TableWithVirtualization = withTableVirtualization(Table);
+import {useRowVirtualizer} from '@gravity-ui/table';
 
-const rowHeight = 20;
-const estimateRowSize = () => rowHeight;
+const columns: ColumnDef<Person>[] = [
+  /* ... */
+];
 
-<TableWithVirtualization<ItemType>
-  estimateRowSize={estimateRowSize}
-  overscanRowCount={5}
-  containerHeight="90vh"
-  {...props}
-/>;
+const data: Person[] = [
+  /* ... */
+];
+
+const VirtualizationExample = () => {
+  const table = useTable({
+    columns,
+    data,
+    getRowId: (item) => item.id,
+  });
+
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  const rowVirtualizer = useRowVirtualizer({
+    count: table.getRowModel().rows.length,
+    estimateSize: () => 20,
+    overscan: 5,
+    getScrollElement: () => containerRef.current,
+  });
+
+  return (
+    <div ref={containerRef} style={{height: '500px', overflow: 'auto'}}>
+      <Table table={table} rowVirtualizer={rowVirtualizer} />
+    </div>
+  );
+};
 ```
 
-Or use virtualization provider
+If you use virtualization with reordering feature you also need to pass `rangeExtractor` option:
 
 ```tsx
-const rowHeight = 20;
-const estimateRowSize = () => rowHeight;
+import {getVirtualRowRangeExtractor} from '@gravity-ui/table';
 
-<VirtualizationProvider
-  rowsCount={props.data.length}
-  overscanRowCount={5}
-  containerClassName={containerClassName}
-  estimateRowSize={estimateRowSize}
-  containerHeight="90vh"
->
-  <Table {...props} />
-</VirtualizationProvider>;
+// ...
+
+const tableRef = React.useRef<HTMLTableElement>(null);
+
+const rowVirtualizer = useRowVirtualizer({
+  // ...
+  rangeExtractor: getVirtualRowRangeExtractor(tableRef.current),
+});
+
+return (
+  <TableWithReordering
+    ref={tableRef}
+    table={table}
+    rowVirtualizer={rowVirtualizer}
+    onReorder={handleReorder}
+  />
+);
 ```
 
 ### Window virtualization
@@ -200,45 +300,54 @@ const estimateRowSize = () => rowHeight;
 Use if you want to use window as the scroll element
 
 ```tsx
-const TableWithVirtualization = withTableWindowVirtualization(Table);
+import {useWindowRowVirtualizer} from '@gravity-ui/table';
 
-const rowHeight = 20;
-const estimateRowSize = () => rowHeight;
+const columns: ColumnDef<Person>[] = [
+  /* ... */
+];
 
-<TableWithVirtualization<ItemType>
-  estimateRowSize={estimateRowSize}
-  overscanRowCount={5}
-  {...props}
-/>;
-```
+const data: Person[] = [
+  /* ... */
+];
 
-Or use window virtualization provider
+const WindowVirtualizationExample = () => {
+  const table = useTable({
+    columns,
+    data,
+    getRowId: (item) => item.id,
+  });
 
-```tsx
-const rowHeight = 20;
-const estimateRowSize = () => rowHeight;
+  const rowVirtualizer = useWindowRowVirtualizer({
+    count: table.getRowModel().rows.length,
+    estimateSize: () => 20,
+    overscan: 5,
+  });
 
-<WindowVirtualizationProvider
-  rowsCount={props.data.length}
-  overscanRowCount={5}
-  containerClassName={containerClassName}
-  estimateRowSize={estimateRowSize}
->
-  <Table {...props} />
-</WindowVirtualizationProvider>;
+  return <Table table={table} rowVirtualizer={rowVirtualizer} />;
+};
 ```
 
 ### Resizing
 
 ```tsx
-<Table
-  enableColumnResizing
-  columnResizeMode="onChange"
-  columnResizeDirection="ltr"
-  onColumnSizingChange={handleColumnSizingChange}
-  onColumnSizingInfoChange={handleColumnSizingInfoChange}
-  {...props}
-/>
+const columns: ColumnDef<Person>[] = [
+  /* ... */
+];
+
+const data: Person[] = [
+  /* ... */
+];
+
+const ResizingDemo = () => {
+  const table = useTable({
+    columns,
+    data,
+    enableColumnResizing: true,
+    columnResizeMode: 'onChange',
+  });
+
+  return <Table table={table} />;
+};
 ```
 
 Learn more about the table and the column resizing properties in the react-table [docs](https://tanstack.com/table/v8/docs/api/features/column-sizing)

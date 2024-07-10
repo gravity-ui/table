@@ -5,7 +5,7 @@ import {DocsContainer} from '@storybook/blocks';
 import type {DocsContainerProps} from '@storybook/blocks';
 
 import {themes} from '../../../.storybook/theme';
-import {cn} from '../../components/utils/cn';
+import {cn} from '../../utils';
 
 import './DocsDecorator.scss';
 

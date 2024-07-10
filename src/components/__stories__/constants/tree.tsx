@@ -1,6 +1,7 @@
 import React from 'react';
 
-import type {TableProps} from '../../Table';
+import type {ColumnDef} from '@tanstack/react-table';
+
 import {DraggableTreeNameCell} from '../cells/DraggableTreeNameCell';
 import {TreeNameCell} from '../cells/TreeNameCell';
 import type {Item} from '../types';
@@ -9,7 +10,7 @@ export interface TreeItem extends Item {
     children?: TreeItem[];
 }
 
-export const columns: TableProps<TreeItem>['columns'] = [
+export const columns: ColumnDef<TreeItem>[] = [
     {
         accessorKey: 'name',
         header: 'Name',
@@ -21,7 +22,7 @@ export const columns: TableProps<TreeItem>['columns'] = [
     {accessorKey: 'age', header: 'Age', size: 100},
 ];
 
-export const draggableTreeColumns: TableProps<TreeItem>['columns'] = [
+export const draggableTreeColumns: ColumnDef<TreeItem>[] = [
     {
         accessorKey: 'name',
         header: 'Name',
@@ -122,4 +123,4 @@ export const groupsData = [
     },
 ];
 
-export const groupsColumns = columns as TableProps<TreeGroupItem>['columns'];
+export const groupsColumns = columns as ColumnDef<TreeGroupItem>[];

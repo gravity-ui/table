@@ -1,30 +1,30 @@
 import React from 'react';
 
+import type {ExpandedState, Row} from '@tanstack/react-table';
+
+import {useTable} from '../../hooks';
 import {Table} from '../Table';
-import type {TableProps} from '../Table';
 
 import type {GroupOrItem} from './constants/grouping';
 import {columns, data} from './constants/grouping';
 
-const getSubRows = (item: GroupOrItem) => ('items' in item ? item.items : undefined);
-const getGroupTitle: TableProps<GroupOrItem>['getGroupTitle'] = (row) => row.getValue('name');
-const getRowId = (item: GroupOrItem) => item.id;
-const checkIsGroupRow: TableProps<GroupOrItem>['checkIsGroupRow'] = (row) =>
-    'items' in row.original;
+const checkIsGroupRow = (row: Row<GroupOrItem>) => 'items' in row.original;
+const getGroupTitle = (row: Row<GroupOrItem>) => row.getValue<string>('name');
 
-export function GroupingDemo() {
-    const [expandedIds, setExpandedIds] = React.useState<string[]>([]);
+export const GroupingDemo = () => {
+    const [expanded, setExpanded] = React.useState<ExpandedState>({});
 
-    return (
-        <Table<GroupOrItem>
-            data={data}
-            columns={columns}
-            getSubRows={getSubRows}
-            getGroupTitle={getGroupTitle}
-            getRowId={getRowId}
-            expandedIds={expandedIds}
-            onExpandedChange={setExpandedIds}
-            checkIsGroupRow={checkIsGroupRow}
-        />
-    );
-}
+    const table = useTable({
+        columns,
+        data,
+        enableExpanding: true,
+        getSubRows: (item) => ('items' in item ? item.items : undefined),
+        onExpandedChange: setExpanded,
+        state: {
+            expanded,
+        },
+        checkIsGroupRow,
+    });
+
+    return <Table table={table} checkIsGroupRow={checkIsGroupRow} getGroupTitle={getGroupTitle} />;
+};

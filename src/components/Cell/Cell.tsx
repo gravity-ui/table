@@ -9,15 +9,9 @@ export interface CellProps<TData> {
     cell: CellProperties<TData, unknown>;
     className?: string;
     contentClassName?: string;
-    selectionColumnId?: string;
 }
 
-export const Cell = <TData,>({
-    cell,
-    className,
-    contentClassName,
-    selectionColumnId,
-}: CellProps<TData>) => {
+export const Cell = <TData,>({cell, className, contentClassName}: CellProps<TData>) => {
     return (
         <td
             className={b('cell', {id: cell.column.id}, className)}
@@ -27,13 +21,7 @@ export const Cell = <TData,>({
                 maxWidth: cell.column.columnDef.maxSize,
             }}
         >
-            <div
-                className={b(
-                    'cell-content',
-                    {selection: cell.column.id === selectionColumnId},
-                    contentClassName,
-                )}
-            >
+            <div className={b('cell-content', contentClassName)}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
             </div>
         </td>

@@ -1,12 +1,12 @@
-function toKebabCase(s: string) {
+const toKebabCase = (s: string) => {
     return s.replace(/(^|[a-z])([A-Z])/g, (_, ...matches) =>
         matches[0] ? `${matches[0]}-${matches[1].toLowerCase()}` : matches[1].toLowerCase(),
     );
-}
+};
 
-export function toDataAttributes(
+export const toDataAttributes = (
     dataset?: Record<string, unknown>,
-): Record<string, string> | undefined {
+): Record<string, string> | undefined => {
     if (!dataset) {
         return undefined;
     }
@@ -24,4 +24,4 @@ export function toDataAttributes(
     }
 
     return htmlAttrs;
-}
+};

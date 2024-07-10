@@ -1,9 +1,10 @@
 import React from 'react';
 
-import type {TableProps} from '../../Table';
+import type {ColumnDef} from '@tanstack/react-table';
+
 import type {Item} from '../types';
 
-export const columns: TableProps<Item>['columns'] = [
+export const columns: ColumnDef<Item>[] = [
     {accessorKey: 'name', header: 'Name', size: 100},
     {accessorKey: 'age', header: 'Age', size: 100},
     {

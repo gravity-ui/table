@@ -1,10 +1,26 @@
 import React from 'react';
 
-import type {TableProps} from '../Table';
+import type {SortingState} from '@tanstack/react-table';
+
+import {useTable} from '../../hooks';
 import {Table} from '../Table';
 
-export const SortingDemo = <ItemType,>(props: TableProps<ItemType>) => {
-    const [sorting, setSorting] = React.useState<NonNullable<TableProps<ItemType>['sorting']>>([]);
+import {columns} from './constants/columns';
+import {data} from './constants/data';
 
-    return <Table {...props} enableSorting sorting={sorting} onSortingChange={setSorting} />;
+export const SortingDemo = () => {
+    const [sorting, setSorting] = React.useState<SortingState>([]);
+
+    const table = useTable({
+        columns,
+        data,
+        enableSorting: true,
+        getRowId: (item) => item.id,
+        onSortingChange: setSorting,
+        state: {
+            sorting,
+        },
+    });
+
+    return <Table table={table} />;
 };

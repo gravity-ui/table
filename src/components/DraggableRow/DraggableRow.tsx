@@ -4,18 +4,19 @@ import {useSortable} from '@dnd-kit/sortable';
 import {useForkRef} from '@gravity-ui/uikit';
 
 import {useDraggableRowDepth, useDraggableRowStyle} from '../../hooks';
+import {toDataAttributes} from '../../utils';
 import type {BaseRowProps} from '../BaseRow';
 import {BaseRow} from '../BaseRow';
 import {SortableListContext} from '../SortableListContext';
 import {TableContext} from '../TableContext';
-import {toDataAttributes} from '../utils/toDataAttributes';
 
 export interface DraggableRowProps<TData> extends BaseRowProps<TData> {}
 
 export const DraggableRow = React.forwardRef(
-    <TData,>(props: DraggableRowProps<TData>, ref: React.Ref<HTMLTableRowElement>) => {
-        const {getRowDataAttributes, row, style} = props;
-
+    <TData,>(
+        {getRowAttributes, row, style, ...restProps}: DraggableRowProps<TData>,
+        ref: React.Ref<HTMLTableRowElement>,
+    ) => {
         const {setNodeRef, transform, transition, isDragging} = useSortable({
             id: row.id,
         });
@@ -48,10 +49,10 @@ export const DraggableRow = React.forwardRef(
         });
 
         const getDraggableRowDataAttributes = React.useCallback<
-            NonNullable<BaseRowProps<TData>['getRowDataAttributes']>
+            NonNullable<BaseRowProps<TData>['getRowAttributes']>
         >(
             (row) => ({
-                ...getRowDataAttributes?.(row),
+                ...getRowAttributes?.(row),
                 ...toDataAttributes({
                     key: row.id,
                     depth,
@@ -61,15 +62,16 @@ export const DraggableRow = React.forwardRef(
                     expanded: isDragActive && isParent,
                 }),
             }),
-            [getRowDataAttributes, depth, isDragging, isDragActive, isParent],
+            [getRowAttributes, depth, isDragging, isDragActive, isParent],
         );
 
         return (
             <BaseRow
-                {...props}
                 ref={handleRowRef}
+                getRowAttributes={getDraggableRowDataAttributes}
+                row={row}
                 style={draggableStyle}
-                getRowDataAttributes={getDraggableRowDataAttributes}
+                {...restProps}
             />
         );
     },

@@ -1,30 +1,30 @@
 import React from 'react';
 
-import type {TableProps} from '../Table';
+import type {ExpandedState, Row} from '@tanstack/react-table';
+
+import {useTable} from '../../hooks';
 import {Table} from '../Table';
 
 import type {TreeGroupItem} from './constants/tree';
 import {groupsColumns, groupsData} from './constants/tree';
 
-const getSubRows = (item: TreeGroupItem) => ('items' in item ? item.items : item.children);
-const getGroupTitle: TableProps<TreeGroupItem>['getGroupTitle'] = (row) => row.getValue('name');
-const getRowId = (item: TreeGroupItem) => item.id;
-const checkIsGroupRow: TableProps<TreeGroupItem>['checkIsGroupRow'] = (row) =>
-    'items' in row.original;
+const checkIsGroupRow = (row: Row<TreeGroupItem>) => 'items' in row.original;
+const getGroupTitle = (row: Row<TreeGroupItem>) => row.getValue<string>('name');
 
-export function TreeWithGroupsDemo() {
-    const [expandedIds, setExpandedIds] = React.useState<string[]>([]);
+export const TreeWithGroupsDemo = () => {
+    const [expanded, setExpanded] = React.useState<ExpandedState>({});
 
-    return (
-        <Table<TreeGroupItem>
-            data={groupsData}
-            columns={groupsColumns}
-            getSubRows={getSubRows}
-            getGroupTitle={getGroupTitle}
-            getRowId={getRowId}
-            expandedIds={expandedIds}
-            onExpandedChange={setExpandedIds}
-            checkIsGroupRow={checkIsGroupRow}
-        />
-    );
-}
+    const table = useTable({
+        columns: groupsColumns,
+        data: groupsData,
+        enableExpanding: true,
+        getSubRows: (item) => ('items' in item ? item.items : item.children),
+        onExpandedChange: setExpanded,
+        state: {
+            expanded,
+        },
+        checkIsGroupRow,
+    });
+
+    return <Table table={table} checkIsGroupRow={checkIsGroupRow} getGroupTitle={getGroupTitle} />;
+};

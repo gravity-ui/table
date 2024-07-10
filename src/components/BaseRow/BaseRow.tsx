@@ -1,18 +1,20 @@
 import React from 'react';
 
+import {useForkRef} from '@gravity-ui/uikit';
 import type {Cell, Row} from '@tanstack/react-table';
+import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 
+import {renderDefaultGroupHeader} from '../../utils';
 import {b} from '../Table/Table.classname';
-import {renderDefaultGroupHeader} from '../utils/renderDefaultGroupHeader';
 
-export interface BaseRowProps<TData> {
+export interface BaseRowProps<TData, TScrollElement extends Element | Window = HTMLDivElement> {
     cellClassName?: string;
     checkIsGroupRow?: (row: Row<TData>) => boolean;
     children?: React.ReactNode;
     className?: string;
     columnsCount: number;
     getGroupTitle?: (row: Row<TData>) => React.ReactNode;
-    getRowDataAttributes?: (
+    getRowAttributes?: (
         row: Row<TData>,
     ) => React.DataHTMLAttributes<HTMLTableRowElement> | undefined;
     onClick?: (row: Row<TData>, event: React.MouseEvent<HTMLTableRowElement>) => void;
@@ -22,11 +24,13 @@ export interface BaseRowProps<TData> {
         getGroupTitle?: (row: Row<TData>) => React.ReactNode,
     ) => React.ReactNode;
     row: Row<TData>;
+    rowVirtualizer?: Virtualizer<TScrollElement, HTMLTableRowElement>;
     style?: React.CSSProperties;
+    virtualItem?: VirtualItem;
 }
 
 export const BaseRow = React.forwardRef(
-    <TData,>(
+    <TData, TScrollElement extends Element | Window = HTMLDivElement>(
         {
             cellClassName,
             checkIsGroupRow,
@@ -34,25 +38,41 @@ export const BaseRow = React.forwardRef(
             className,
             columnsCount,
             getGroupTitle,
-            getRowDataAttributes,
+            getRowAttributes,
             onClick,
             renderCell,
             renderGroupHeader = renderDefaultGroupHeader,
             row,
+            rowVirtualizer,
             style,
-        }: BaseRowProps<TData>,
+            virtualItem,
+        }: BaseRowProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableRowElement>,
     ) => {
-        const isGroup = checkIsGroupRow?.(row);
+        const rowRef = useForkRef(rowVirtualizer?.measureElement, ref);
 
-        const handleClick = (event: React.MouseEvent<HTMLTableRowElement>) => {
-            onClick?.(row, event);
-        };
+        const rowStyle = React.useMemo(() => {
+            if (!virtualItem) {
+                return style;
+            }
+
+            return {
+                top: virtualItem.start,
+                ...style,
+            };
+        }, [style, virtualItem]);
+
+        const handleClick = React.useCallback(
+            (event: React.MouseEvent<HTMLTableRowElement>) => {
+                onClick?.(row, event);
+            },
+            [onClick, row],
+        );
 
         return (
             <tr
-                ref={ref}
-                style={style}
+                ref={rowRef}
+                style={rowStyle}
                 className={b(
                     'row',
                     {
@@ -62,25 +82,26 @@ export const BaseRow = React.forwardRef(
                     className,
                 )}
                 onClick={handleClick}
-                {...getRowDataAttributes?.(row)}
+                data-index={virtualItem?.index}
+                {...getRowAttributes?.(row)}
             >
-                {isGroup && (
+                {checkIsGroupRow?.(row) ? (
                     <React.Fragment>
                         {row.getCanSelect() && renderCell(row.getVisibleCells()[0]!)}
                         <td
-                            colSpan={columnsCount}
+                            colSpan={row.getCanSelect() ? columnsCount - 1 : columnsCount}
                             className={b('cell', b('group-header-cell', cellClassName))}
                         >
                             {renderGroupHeader(row, getGroupTitle)}
                         </td>
                     </React.Fragment>
-                )}
-                {!isGroup &&
+                ) : (
                     row
                         .getVisibleCells()
                         .map((cell) => (
                             <React.Fragment key={cell.id}>{renderCell(cell)}</React.Fragment>
-                        ))}
+                        ))
+                )}
                 {children}
             </tr>
         );

@@ -83,10 +83,6 @@ $block: '.#{variables.$ns}table';
         align-items: center;
 
         height: 100%;
-
-        &_selection {
-            justify-content: center;
-        }
     }
 
     &__group-title-wrapper {
@@ -152,6 +148,50 @@ $block: '.#{variables.$ns}table';
 
         &_resizing {
             opacity: 1;
+        }
+    }
+
+    &_with-row-virtualization {
+        display: grid;
+
+        height: auto;
+    }
+
+    &_with-row-virtualization & {
+        &__body {
+            display: grid;
+
+            position: relative;
+        }
+
+        &__header {
+            display: grid;
+
+            position: sticky;
+            inset-block-start: 0;
+
+            z-index: 1;
+        }
+
+        &__header-row {
+            display: flex;
+
+            width: 100%;
+            height: auto;
+        }
+
+        &__row {
+            display: flex;
+
+            position: absolute;
+
+            width: 100%;
+            height: auto;
+        }
+
+        &__cell,
+        &__header-cell {
+            display: flex;
         }
     }
 }

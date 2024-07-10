@@ -1,35 +1,50 @@
 import React from 'react';
 
-import type {TableProps} from '../../components/Table';
-import {Table} from '../../components/Table';
+import type {ColumnDef} from '@tanstack/react-table';
+
+import {defaultDragHandleColumn} from '../../constants';
 import {withTableReorder} from '../../hocs';
+import {useTable, useWindowRowVirtualizer} from '../../hooks';
+import {getVirtualRowRangeExtractor} from '../../utils';
 import type {SortableListDragResult} from '../SortableList';
-import {WindowVirtualizationProvider} from '../WindowVirtualizationProvider';
+import {Table} from '../Table';
 
-const GridWithReordering = withTableReorder(Table);
+import {columns as originalColumns} from './constants/columns';
+import type {Item} from './types';
+import {generateData} from './utils';
 
-const rowHeight = 20;
-const estimateRowSize = () => rowHeight;
+const TableWithReordering = withTableReorder(Table);
 
-export const ReorderingWithVirtualizationDemo = <ItemType extends unknown>(
-    props: TableProps<ItemType>,
-) => {
-    const {getRowId} = props;
+const columns: ColumnDef<Item>[] = [defaultDragHandleColumn as ColumnDef<Item>, ...originalColumns];
 
-    const [data, setData] = React.useState(props.data);
+export const ReorderingWithVirtualizationDemo = () => {
+    const tableRef = React.useRef<HTMLTableElement>(null);
+    const [data, setData] = React.useState(() => generateData(300));
 
-    const handleDragEnd = React.useCallback(
+    const table = useTable({
+        columns,
+        data,
+        getRowId: (item) => item.id,
+    });
+
+    const rowVirtualizer = useWindowRowVirtualizer({
+        count: table.getRowModel().rows.length,
+        estimateSize: () => 20,
+        overscan: 5,
+        rangeExtractor: getVirtualRowRangeExtractor(tableRef.current),
+    });
+
+    const handleReorder = React.useCallback(
         ({draggedItemKey, baseItemKey}: SortableListDragResult) => {
-            setData((data) => {
-                const dataClone = data.slice();
+            setData((prevData) => {
+                const dataClone = prevData.slice();
 
-                const index = dataClone.findIndex((item) => getRowId(item) === draggedItemKey);
+                const index = dataClone.findIndex((item) => item.id === draggedItemKey);
+
                 if (index >= 0) {
-                    const dragged = dataClone.splice(index, 1)[0]!;
+                    const dragged = dataClone.splice(index, 1)[0] as Item;
+                    const insertIndex = dataClone.findIndex((item) => item.id === baseItemKey);
 
-                    const insertIndex = dataClone.findIndex(
-                        (value) => getRowId(value) === baseItemKey,
-                    );
                     if (insertIndex >= 0) {
                         dataClone.splice(insertIndex + 1, 0, dragged);
                     } else {
@@ -40,16 +55,15 @@ export const ReorderingWithVirtualizationDemo = <ItemType extends unknown>(
                 return dataClone;
             });
         },
-        [getRowId],
+        [],
     );
 
     return (
-        <WindowVirtualizationProvider
-            estimateRowSize={estimateRowSize}
-            overscanRowCount={5}
-            rowsCount={data.length}
-        >
-            <GridWithReordering<ItemType> {...props} data={data} onReorder={handleDragEnd} />
-        </WindowVirtualizationProvider>
+        <TableWithReordering
+            ref={tableRef}
+            table={table}
+            rowVirtualizer={rowVirtualizer}
+            onReorder={handleReorder}
+        />
     );
 };

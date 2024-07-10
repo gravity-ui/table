@@ -1,29 +1,41 @@
 import React from 'react';
 
+import type {ColumnDef} from '@tanstack/react-table';
+
+import {defaultDragHandleColumn} from '../../constants';
 import {withTableReorder} from '../../hocs';
+import {useTable} from '../../hooks';
 import type {SortableListDragResult} from '../SortableList';
 import {Table} from '../Table';
-import type {TableProps} from '../Table';
+
+import {columns as originalColumns} from './constants/columns';
+import {data as originalData} from './constants/data';
+import type {Item} from './types';
 
 const TableWithReordering = withTableReorder(Table);
 
-export const ReorderingDemo = <ItemType,>(props: TableProps<ItemType>) => {
-    const {getRowId} = props;
+const columns: ColumnDef<Item>[] = [defaultDragHandleColumn as ColumnDef<Item>, ...originalColumns];
 
-    const [data, setData] = React.useState(props.data);
+export const ReorderingDemo = () => {
+    const [data, setData] = React.useState(originalData);
 
-    const handleDragEnd = React.useCallback(
+    const table = useTable({
+        columns,
+        data,
+        getRowId: (item) => item.id,
+    });
+
+    const handleReorder = React.useCallback(
         ({draggedItemKey, baseItemKey}: SortableListDragResult) => {
-            setData((data) => {
-                const dataClone = data.slice();
+            setData((prevData) => {
+                const dataClone = prevData.slice();
 
-                const index = dataClone.findIndex((item) => getRowId(item) === draggedItemKey);
+                const index = dataClone.findIndex((item) => item.id === draggedItemKey);
+
                 if (index >= 0) {
-                    const dragged = dataClone.splice(index, 1)[0]!;
+                    const dragged = dataClone.splice(index, 1)[0] as Item;
+                    const insertIndex = dataClone.findIndex((item) => item.id === baseItemKey);
 
-                    const insertIndex = dataClone.findIndex(
-                        (value) => getRowId(value) === baseItemKey,
-                    );
                     if (insertIndex >= 0) {
                         dataClone.splice(insertIndex + 1, 0, dragged);
                     } else {
@@ -34,8 +46,8 @@ export const ReorderingDemo = <ItemType,>(props: TableProps<ItemType>) => {
                 return dataClone;
             });
         },
-        [getRowId],
+        [],
     );
 
-    return <TableWithReordering<ItemType> {...props} data={data} onReorder={handleDragEnd} />;
+    return <TableWithReordering table={table} onReorder={handleReorder} />;
 };

@@ -1,21 +1,18 @@
-export {
-    ReorderingProvider,
-    Table,
-    VirtualizationProvider,
-    WindowVirtualizationProvider,
-} from './components';
+export {ReorderingProvider, Table} from './components';
+export type {ReorderingProviderProps, SortableListDragResult, TableProps} from './components';
+
+export {defaultDragHandleColumn, defaultSelectionColumn} from './constants';
+
+export {withTableReorder} from './hocs';
+export type {WithTableReorderProps} from './hocs';
+
+export {useDraggableRowDepth, useRowVirtualizer, useTable, useWindowRowVirtualizer} from './hooks';
 
 export type {
-    ReorderingProviderProps,
-    TableProps,
-    VirtualizationProviderProps,
-    WindowVirtualizationProviderProps,
-} from './components';
+    UseDraggableRowDepthParams,
+    UseRowVirtualizerOptions,
+    UseTableOptions,
+    UseWindowRowVirtualizerOptions,
+} from './hooks';
 
-export {withTableReorder, withTableVirtualization, withTableWindowVirtualization} from './hocs';
-
-export type {
-    WithTableReorderProps,
-    WithTableVirtualizationProps,
-    WithTableWindowVirtualizationProps,
-} from './hocs';
+export {getVirtualRowRangeExtractor} from './utils';
