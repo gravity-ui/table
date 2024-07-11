@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/gravity-ui/table/compare/v0.1.1...v0.2.0) (2024-07-11)
+
+
+### Features
+
+* **Table:** pass table and rowVirtualizer instances instead of options and hoc ([#9](https://github.com/gravity-ui/table/issues/9)) ([8b52702](https://github.com/gravity-ui/table/commit/8b527024430d7619ed83eb2a4a0ff1f4bfbba469))
+
 ## [0.1.1](https://github.com/gravity-ui/table/compare/v0.1.0...v0.1.1) (2024-07-01)
 
 
