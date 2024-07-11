@@ -1,33 +1,40 @@
 import React from 'react';
 
+import type {ColumnDef, ExpandedState} from '@tanstack/react-table';
+
+import {defaultDragHandleColumn} from '../../constants';
 import {withTableReorder} from '../../hocs';
+import {useTable} from '../../hooks';
 import {Table} from '../Table';
 
 import type {TreeItem} from './constants/tree';
-import {draggableTreeColumns, data as initialData} from './constants/tree';
+import {draggableTreeColumns, data as originalData} from './constants/tree';
 import {useTreeDataReordering} from './hooks/useTreeDataReordering';
 
 const TableWithReordering = withTableReorder(Table);
 
-const getSubRows = (item: TreeItem) => item.children;
-const getRowId = (item: TreeItem) => item.id;
+const columns: ColumnDef<TreeItem>[] = [
+    defaultDragHandleColumn as ColumnDef<TreeItem>,
+    ...draggableTreeColumns,
+];
 
-export function ReorderingTreeDemo() {
-    const [expandedIds, setExpandedIds] = React.useState<string[]>([]);
-    const [data, setData] = React.useState(initialData);
+export const ReorderingTreeDemo = () => {
+    const [expanded, setExpanded] = React.useState<ExpandedState>({});
+    const [data, setData] = React.useState(originalData);
 
-    const handleDragEnd = useTreeDataReordering({data, setData});
+    const handleReorder = useTreeDataReordering({data, setData});
 
-    return (
-        <TableWithReordering<TreeItem>
-            data={data}
-            columns={draggableTreeColumns}
-            getSubRows={getSubRows}
-            getRowId={getRowId}
-            expandedIds={expandedIds}
-            onExpandedChange={setExpandedIds}
-            onReorder={handleDragEnd}
-            enableNesting
-        />
-    );
-}
+    const table = useTable({
+        columns,
+        data,
+        enableExpanding: true,
+        getRowId: (item) => item.id,
+        getSubRows: (item) => item.children,
+        onExpandedChange: setExpanded,
+        state: {
+            expanded,
+        },
+    });
+
+    return <TableWithReordering table={table} enableNesting onReorder={handleReorder} />;
+};

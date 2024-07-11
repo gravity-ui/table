@@ -2,226 +2,76 @@ import React from 'react';
 
 import type {
     Cell as CellProperties,
-    ColumnDef,
-    ColumnResizeDirection,
-    ColumnResizeMode,
-    ColumnSizingInfoState,
-    ColumnSizingState,
-    GroupingOptions,
-    GroupingState,
-    OnChangeFn,
     Row as RowProperties,
-    SortingState,
-    TableOptions,
+    Table as TableType,
 } from '@tanstack/react-table';
-import {
-    getCoreRowModel,
-    getGroupedRowModel,
-    getSortedRowModel,
-    useReactTable,
-} from '@tanstack/react-table';
+import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 
-import {defaultDragHandleColumn, defaultSelectionColumn} from '../../constants';
-import type {UseColumnsParams, UseExpandedParams, UseSelectionParams} from '../../hooks';
-import {useColumns, useExpanded, useSelection} from '../../hooks';
+import type {BaseRowProps} from '../BaseRow';
+import {BaseRow} from '../BaseRow';
 import {Cell} from '../Cell';
+import {DraggableRow} from '../DraggableRow';
 import type {HeaderRowProps} from '../HeaderRow';
 import {HeaderRow} from '../HeaderRow';
-import type {RowProps} from '../Row';
-import {Row} from '../Row';
 import {SortableListContext} from '../SortableListContext';
 import {TableContextProvider} from '../TableContextProvider';
 import type {TableContextProviderProps} from '../TableContextProvider';
-import {VirtualizationContext} from '../VirtualizationContext';
 
 import {b} from './Table.classname';
 
 import './Table.scss';
 
-export interface TableProps<TData>
-    extends UseSelectionParams,
-        UseExpandedParams,
-        Pick<
-            Partial<RowProps<TData>>,
-            'checkIsGroupRow' | 'renderGroupHeader' | 'getGroupTitle' | 'getRowDataAttributes'
-        >,
-        Pick<
-            Partial<HeaderRowProps<TData, unknown>>,
-            'sortIndicatorClassName' | 'renderSortIndicator'
-        > {
-    className?: string;
-    rowClassName?: string;
-    headerClassName?: string;
+export interface TableProps<TData, TScrollElement extends Element | Window = HTMLDivElement> {
     bodyClassName?: string;
-    headerRowClassName?: string;
-    headerCellClassName?: string;
-    headerCellContentClassName?: string;
     cellClassName?: string;
     cellContentClassName?: string;
-    withHeader?: boolean;
-    data: TData[];
-    getRowId: (item: TData) => string;
-    columns: ColumnDef<TData>[];
-    selectionColumn?: UseColumnsParams<TData>['selectionColumn'];
-    dragHandleColumn?: UseColumnsParams<TData>['dragHandleColumn'];
-    getSubRows?: (item: TData) => undefined | TData[];
-    onRowClick?: RowProps<TData>['onClick'];
+    checkIsGroupRow?: BaseRowProps<TData>['checkIsGroupRow'];
+    className?: string;
     enableNesting?: boolean;
-    enableSorting?: boolean;
-    manualSorting?: boolean;
-    sorting?: SortingState;
-    onSortingChange?: React.Dispatch<React.SetStateAction<SortingState>>;
-    grouping?: GroupingState;
-    enableGrouping?: boolean;
-    groupedColumnMode?: GroupingOptions['groupedColumnMode'];
-    manualGrouping?: boolean;
-    onGroupingChange?: GroupingOptions['onGroupingChange'];
-    aggregationFns?: GroupingOptions['aggregationFns'];
-    enableColumnResizing?: boolean;
-    columnResizeMode?: ColumnResizeMode;
-    columnResizeDirection?: ColumnResizeDirection;
-    onColumnSizingChange?: OnChangeFn<ColumnSizingState>;
-    onColumnSizingInfoChange?: OnChangeFn<ColumnSizingInfoState>;
+    getGroupTitle?: BaseRowProps<TData>['getGroupTitle'];
+    getRowAttributes?: BaseRowProps<TData>['getRowAttributes'];
+    headerCellClassName?: string;
+    headerCellContentClassName?: string;
+    headerClassName?: string;
+    headerRowClassName?: string;
+    onRowClick?: BaseRowProps<TData>['onClick'];
+    renderGroupHeader?: BaseRowProps<TData>['renderGroupHeader'];
+    renderSortIndicator?: HeaderRowProps<TData, unknown>['renderSortIndicator'];
+    rowClassName?: string;
+    rowVirtualizer?: Virtualizer<TScrollElement, HTMLTableRowElement>;
+    sortIndicatorClassName?: HeaderRowProps<TData, unknown>['sortIndicatorClassName'];
+    table: TableType<TData>;
+    withHeader?: boolean;
 }
 
-export const Table = React.memo(
-    <TData,>({
-        className,
-        rowClassName,
-        headerRowClassName,
-        headerClassName,
-        bodyClassName,
-        headerCellClassName,
-        headerCellContentClassName,
-        cellClassName,
-        cellContentClassName,
-        getRowId,
-        columns: providedColumns,
-        withHeader = true,
-        data,
-        selectedIds,
-        onSelectedChange,
-        selectionColumn = defaultSelectionColumn as ColumnDef<TData>,
-        dragHandleColumn = defaultDragHandleColumn as ColumnDef<TData>,
-        expandedIds,
-        onExpandedChange,
-        getSubRows,
-        getGroupTitle,
-        checkIsGroupRow,
-        renderGroupHeader,
-        onRowClick,
-        getRowDataAttributes,
-        enableNesting,
-        enableSorting = false,
-        manualSorting,
-        sorting,
-        onSortingChange,
-        sortIndicatorClassName,
-        renderSortIndicator,
-        grouping,
-        enableGrouping,
-        groupedColumnMode,
-        manualGrouping,
-        onGroupingChange,
-        aggregationFns,
-        enableColumnResizing = false,
-        columnResizeMode = 'onChange',
-        columnResizeDirection = 'ltr',
-        onColumnSizingChange,
-        onColumnSizingInfoChange,
-    }: TableProps<TData>) => {
+export const Table = React.forwardRef(
+    <TData, TScrollElement extends Element | Window = HTMLDivElement>(
+        {
+            bodyClassName,
+            cellClassName,
+            cellContentClassName,
+            checkIsGroupRow,
+            className,
+            enableNesting,
+            getGroupTitle,
+            getRowAttributes,
+            headerCellClassName,
+            headerCellContentClassName,
+            headerClassName,
+            headerRowClassName,
+            onRowClick,
+            renderGroupHeader,
+            renderSortIndicator,
+            rowClassName,
+            rowVirtualizer,
+            sortIndicatorClassName,
+            table,
+            withHeader = true,
+        }: TableProps<TData, TScrollElement>,
+        ref: React.Ref<HTMLTableElement>,
+    ) => {
         const draggableContext = React.useContext(SortableListContext);
-        const draggable = Boolean(draggableContext);
-        const draggableItemKey = draggableContext?.activeItemKey;
-
-        const virtualizationContext = React.useContext(VirtualizationContext);
-        const virtual = Boolean(virtualizationContext);
-        const {totalSize, virtualItems} = virtualizationContext ?? {};
-
-        const {
-            enableRowSelection,
-            enableMultiRowSelection,
-            rowSelection,
-            handleRowSelectionChange,
-        } = useSelection<TData>({
-            selectedIds,
-            onSelectedChange,
-        });
-
-        const {expanded, getExpandedRowModel, handleExpandedChange, enableExpanding} =
-            useExpanded<TData>({
-                expandedIds,
-                onExpandedChange,
-            });
-
-        const columns: ColumnDef<TData>[] = useColumns({
-            columns: providedColumns,
-            enableRowSelection,
-            selectionColumn,
-            dragHandleColumn,
-            draggable,
-        });
-
-        const tableOptions: TableOptions<TData> = {
-            getRowId,
-            data,
-            columns,
-            getCoreRowModel: getCoreRowModel(),
-            state: {
-                rowSelection,
-                expanded,
-                sorting,
-                grouping,
-            },
-
-            // selection
-            enableRowSelection,
-            enableMultiRowSelection,
-            onRowSelectionChange: handleRowSelectionChange,
-
-            // expanding
-            enableExpanding,
-            getSubRows,
-            getRowCanExpand: (row) => Boolean(checkIsGroupRow?.(row) || row.subRows?.length),
-            getExpandedRowModel,
-            onExpandedChange: handleExpandedChange,
-
-            // sorting
-            enableSorting,
-            manualSorting,
-            getSortedRowModel: enableSorting ? getSortedRowModel() : undefined,
-            onSortingChange,
-
-            // grouping
-            enableGrouping,
-            getGroupedRowModel: enableGrouping ? getGroupedRowModel() : undefined,
-            groupedColumnMode,
-            manualGrouping,
-            onGroupingChange,
-            aggregationFns,
-
-            // resizing
-            enableColumnResizing,
-            columnResizeMode,
-            columnResizeDirection,
-        };
-
-        if (onColumnSizingChange) {
-            tableOptions.onColumnSizingChange = onColumnSizingChange;
-        }
-
-        if (onColumnSizingInfoChange) {
-            tableOptions.onColumnSizingInfoChange = onColumnSizingInfoChange;
-        }
-
-        const draggableIndex = React.useMemo(() => {
-            if (!draggableItemKey) {
-                return undefined;
-            }
-            return data.findIndex((item) => getRowId(item) === draggableItemKey);
-        }, [data, draggableItemKey, getRowId]);
-
-        const table = useReactTable(tableOptions);
+        const draggingRowIndex = draggableContext?.activeItemIndex ?? -1;
 
         const getRowByIndex = React.useCallback<TableContextProviderProps<TData>['getRowByIndex']>(
             (rowIndex: number) => {
@@ -235,34 +85,12 @@ export const Table = React.memo(
                 return (
                     <Cell
                         cell={cell}
-                        selectionColumnId={selectionColumn?.id}
                         className={cellClassName}
                         contentClassName={cellContentClassName}
                     />
                 );
             },
-            [cellClassName, cellContentClassName, selectionColumn?.id],
-        );
-
-        const renderRow = (
-            row: RowProperties<TData>,
-            additionalProps?: Partial<RowProps<TData>>,
-        ) => (
-            <Row
-                key={row.id}
-                row={row}
-                checkIsGroupRow={checkIsGroupRow}
-                onClick={onRowClick}
-                className={rowClassName}
-                renderCell={renderCell}
-                cellClassName={cellClassName}
-                renderGroupHeader={renderGroupHeader}
-                getGroupTitle={getGroupTitle}
-                columnsCount={providedColumns.length}
-                getRowDataAttributes={getRowDataAttributes}
-                draggable={draggable}
-                {...additionalProps}
-            />
+            [cellClassName, cellContentClassName],
         );
 
         const {rows} = table.getRowModel();
@@ -270,12 +98,12 @@ export const Table = React.memo(
         const headerGroups = table.getHeaderGroups();
 
         return (
-            <TableContextProvider
-                getRowByIndex={getRowByIndex}
-                enableNesting={enableNesting}
-                getTableState={table.getState}
-            >
-                <table className={b(null, className)} data-draggable-index={draggableIndex}>
+            <TableContextProvider getRowByIndex={getRowByIndex} enableNesting={enableNesting}>
+                <table
+                    ref={ref}
+                    className={b({'with-row-virtualization': Boolean(rowVirtualizer)}, className)}
+                    data-dragging-row-index={draggingRowIndex > -1 ? draggingRowIndex : undefined}
+                >
                     {withHeader && (
                         <thead className={b('header', headerClassName)}>
                             {headerGroups.map((headerGroup, index) => (
@@ -286,7 +114,6 @@ export const Table = React.memo(
                                     className={headerRowClassName}
                                     cellClassName={headerCellClassName}
                                     cellContentClassName={headerCellContentClassName}
-                                    selectionColumnId={selectionColumn?.id}
                                     sortIndicatorClassName={sortIndicatorClassName}
                                     renderSortIndicator={renderSortIndicator}
                                 />
@@ -296,25 +123,43 @@ export const Table = React.memo(
                     <tbody
                         className={b('body', bodyClassName)}
                         style={{
-                            height: totalSize,
+                            height: rowVirtualizer?.getTotalSize(),
                         }}
                     >
-                        {!virtual && rows.map((row) => renderRow(row))}
-                        {virtual &&
-                            virtualItems?.map((virtualRow) => {
-                                const tableRow = rows[virtualRow.index] as RowProperties<TData>;
+                        {(rowVirtualizer?.getVirtualItems() || rows).map((virtualItemOrRow) => {
+                            const row = rowVirtualizer
+                                ? rows[virtualItemOrRow.index]
+                                : (virtualItemOrRow as RowProperties<TData>);
 
-                                return renderRow(tableRow, {
-                                    virtualRow,
-                                });
-                            })}
+                            const baseRowProps: BaseRowProps<TData> = {
+                                row,
+                                checkIsGroupRow,
+                                onClick: onRowClick,
+                                className: rowClassName,
+                                renderCell,
+                                cellClassName,
+                                renderGroupHeader,
+                                getGroupTitle,
+                                columnsCount: table.options.columns.length,
+                                getRowAttributes,
+                                virtualItem: rowVirtualizer
+                                    ? (virtualItemOrRow as VirtualItem)
+                                    : undefined,
+                            };
+
+                            if (draggableContext) {
+                                return <DraggableRow key={row.id} {...baseRowProps} />;
+                            }
+
+                            return <BaseRow key={row.id} {...baseRowProps} />;
+                        })}
                     </tbody>
                 </table>
             </TableContextProvider>
         );
     },
-) as (<TData>(
-    props: TableProps<TData> & {ref?: React.Ref<HTMLTableRowElement>},
+) as (<TData, TScrollElement extends Element | Window = HTMLDivElement>(
+    props: TableProps<TData, TScrollElement> & {ref?: React.Ref<HTMLTableElement>},
 ) => React.ReactElement) & {displayName: string};
 
 Table.displayName = 'Table';

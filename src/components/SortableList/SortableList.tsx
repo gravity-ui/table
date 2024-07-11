@@ -17,20 +17,27 @@ export const SortableList = ({
     onDragEnd,
     nestingEnabled,
 }: SortableListProps) => {
-    const {activeItemKey, isChildMode, isParentMode, isNextChildMode, targetItemIndex} =
-        useSortableList({
-            items,
-            onDragStart,
-            onDragEnd,
-            nestingEnabled,
-        });
+    const {
+        activeItemKey,
+        activeItemIndex,
+        isChildMode,
+        isParentMode,
+        isNextChildMode,
+        targetItemIndex,
+    } = useSortableList({
+        items,
+        onDragStart,
+        onDragEnd,
+        nestingEnabled,
+    });
 
     const contextValue = React.useMemo(
         () => ({
-            isParentMode,
+            activeItemKey,
+            activeItemIndex,
             isChildMode,
             isNextChildMode,
-            activeItemKey,
+            isParentMode,
             targetItemIndex,
         }),
         [isParentMode, isChildMode, isNextChildMode, activeItemKey, targetItemIndex],

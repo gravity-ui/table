@@ -9,6 +9,7 @@ export const defaultSelectionColumn: ColumnDef<unknown> = {
         <Checkbox
             size="l"
             checked={table.getIsAllRowsSelected()}
+            disabled={!table.options.enableRowSelection}
             indeterminate={table.getIsSomeRowsSelected()}
             onChange={table.getToggleAllRowsSelectedHandler()}
         />

@@ -17,7 +17,7 @@ type UpdateRankPayload = {
     before?: string;
 };
 
-export function useTreeDataReordering({data, setData}: UseTreeDataReorderingProps) {
+export const useTreeDataReordering = ({data, setData}: UseTreeDataReorderingProps) => {
     return React.useCallback(
         // eslint-disable-next-line complexity
         ({
@@ -197,4 +197,4 @@ export function useTreeDataReordering({data, setData}: UseTreeDataReorderingProp
         },
         [data, setData],
     );
-}
+};

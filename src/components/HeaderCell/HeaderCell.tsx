@@ -3,8 +3,8 @@ import React from 'react';
 import type {Header} from '@tanstack/react-table';
 import {flexRender} from '@tanstack/react-table';
 
+import {renderDefaultSortIndicator} from '../../utils';
 import {b} from '../Table/Table.classname';
-import {renderDefaultSortIndicator} from '../utils/renderDefaultSortIndicator';
 
 export interface HeaderCellProps<TData, TValue> {
     className?: string;
@@ -12,7 +12,6 @@ export interface HeaderCellProps<TData, TValue> {
     header: Header<TData, TValue>;
     parentHeader?: Header<TData, unknown>;
     renderSortIndicator?: (header: Header<TData, TValue>, className?: string) => React.ReactNode;
-    selection?: boolean;
     sortIndicatorClassName?: string;
 }
 
@@ -22,7 +21,6 @@ export const HeaderCell = <TData, TValue>({
     header,
     parentHeader,
     renderSortIndicator = renderDefaultSortIndicator,
-    selection,
     sortIndicatorClassName,
 }: HeaderCellProps<TData, TValue>) => {
     const {table} = header.getContext();
@@ -67,7 +65,7 @@ export const HeaderCell = <TData, TValue>({
             rowSpan={rowSpan}
             onClick={header.column.getToggleSortingHandler()}
         >
-            <div className={b('header-cell-content', {selection}, contentClassName)}>
+            <div className={b('header-cell-content', contentClassName)}>
                 {flexRender(header.column.columnDef.header, header.getContext())}{' '}
                 {header.column.getCanSort() && renderSortIndicator(header, sortIndicatorClassName)}
                 {enableColumnResizing && (

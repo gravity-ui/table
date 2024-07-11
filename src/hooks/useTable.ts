@@ -1,0 +1,45 @@
+import type {TableOptions} from '@tanstack/react-table';
+import {
+    getCoreRowModel,
+    getExpandedRowModel,
+    getGroupedRowModel,
+    getSortedRowModel,
+    useReactTable,
+} from '@tanstack/react-table';
+
+import type {BaseRowProps} from '../components';
+
+interface PassedTableOptions<TData> extends Omit<TableOptions<TData>, 'getCoreRowModel'> {
+    getCoreRowModel?: TableOptions<TData>['getCoreRowModel'];
+}
+
+export interface UseTableOptions<TData> extends PassedTableOptions<TData> {
+    checkIsGroupRow?: BaseRowProps<TData>['checkIsGroupRow'];
+}
+
+export const useTable = <TData>(options: UseTableOptions<TData>) => {
+    const tableOptions: TableOptions<TData> = {
+        ...options,
+        enableColumnResizing: options.enableColumnResizing ?? false,
+        enableExpanding: options.enableExpanding ?? false,
+        enableGrouping: options.enableGrouping ?? false,
+        enableMultiRowSelection: options.enableMultiRowSelection ?? false,
+        enableRowSelection: options.enableRowSelection ?? false,
+        enableSorting: options.enableSorting ?? false,
+        getCoreRowModel: options.getCoreRowModel ?? getCoreRowModel(),
+        getExpandedRowModel: options.enableExpanding
+            ? options.getExpandedRowModel ?? getExpandedRowModel()
+            : undefined,
+        getGroupedRowModel: options.enableGrouping
+            ? options.getGroupedRowModel ?? getGroupedRowModel()
+            : undefined,
+        getRowCanExpand: (row) => Boolean(options.checkIsGroupRow?.(row) || row.subRows?.length),
+        getSortedRowModel: options.enableSorting
+            ? options.getSortedRowModel ?? getSortedRowModel()
+            : undefined,
+        manualGrouping: options.manualGrouping ?? false,
+        manualSorting: options.manualSorting ?? false,
+    };
+
+    return useReactTable(tableOptions);
+};

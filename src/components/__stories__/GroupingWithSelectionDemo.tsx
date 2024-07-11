@@ -1,34 +1,41 @@
 import React from 'react';
 
-import type {TableProps} from '../Table';
+import type {ColumnDef, ExpandedState, Row, RowSelectionState} from '@tanstack/react-table';
+
+import {defaultSelectionColumn} from '../../constants';
+import {useTable} from '../../hooks';
 import {Table} from '../Table';
 
 import type {GroupOrItem} from './constants/grouping';
-import {columns, data} from './constants/grouping';
+import {data, columns as originalColumns} from './constants/grouping';
 
-const getSubRows = (item: GroupOrItem) => ('items' in item ? item.items : undefined);
-const getGroupTitle: TableProps<GroupOrItem>['getGroupTitle'] = (row) => row.getValue('name');
-const getRowId = (item: GroupOrItem) => item.id;
+const columns: ColumnDef<GroupOrItem>[] = [
+    defaultSelectionColumn as ColumnDef<GroupOrItem>,
+    ...originalColumns,
+];
 
-const checkIsGroupRow: TableProps<GroupOrItem>['checkIsGroupRow'] = (row) =>
-    'items' in row.original;
+const checkIsGroupRow = (row: Row<GroupOrItem>) => 'items' in row.original;
+const getGroupTitle = (row: Row<GroupOrItem>) => row.getValue<string>('name');
 
-export function GroupingWithSelectionDemo() {
-    const [expandedIds, setExpandedIds] = React.useState<string[]>([]);
-    const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
+export const GroupingWithSelectionDemo = () => {
+    const [expanded, setExpanded] = React.useState<ExpandedState>({});
+    const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
-    return (
-        <Table<GroupOrItem>
-            data={data}
-            columns={columns}
-            getSubRows={getSubRows}
-            getGroupTitle={getGroupTitle}
-            getRowId={getRowId}
-            expandedIds={expandedIds}
-            onExpandedChange={setExpandedIds}
-            selectedIds={selectedIds}
-            onSelectedChange={setSelectedIds}
-            checkIsGroupRow={checkIsGroupRow}
-        />
-    );
-}
+    const table = useTable({
+        columns,
+        data,
+        enableExpanding: true,
+        enableRowSelection: true,
+        enableMultiRowSelection: true,
+        getSubRows: (item) => ('items' in item ? item.items : undefined),
+        onExpandedChange: setExpanded,
+        onRowSelectionChange: setRowSelection,
+        state: {
+            expanded,
+            rowSelection,
+        },
+        checkIsGroupRow,
+    });
+
+    return <Table table={table} checkIsGroupRow={checkIsGroupRow} getGroupTitle={getGroupTitle} />;
+};

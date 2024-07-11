@@ -1,20 +1,25 @@
 import React from 'react';
 
-import {withTableWindowVirtualization} from '../../hocs';
-import type {TableProps} from '../Table';
+import {useTable, useWindowRowVirtualizer} from '../../hooks';
 import {Table} from '../Table';
 
-const TableWithWindowVirtualization = withTableWindowVirtualization(Table);
+import {columns} from './constants/columns';
+import {generateData} from './utils';
 
-const rowHeight = 20;
-const estimateRowSize = () => rowHeight;
+const data = generateData(300);
 
-export const WindowVirtualizationDemo = <ItemType,>(props: TableProps<ItemType>) => {
-    return (
-        <TableWithWindowVirtualization<ItemType>
-            {...props}
-            estimateRowSize={estimateRowSize}
-            overscanRowCount={5}
-        />
-    );
+export const WindowVirtualizationDemo = () => {
+    const table = useTable({
+        columns,
+        data,
+        getRowId: (item) => item.id,
+    });
+
+    const rowVirtualizer = useWindowRowVirtualizer({
+        count: table.getRowModel().rows.length,
+        estimateSize: () => 20,
+        overscan: 5,
+    });
+
+    return <Table table={table} rowVirtualizer={rowVirtualizer} />;
 };

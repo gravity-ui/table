@@ -1,16 +1,16 @@
 import React from 'react';
 
+import type {Table} from '@tanstack/react-table';
+
 import type {SortableListProps} from '../SortableList';
 import {SortableList} from '../SortableList';
 import {SortableListDndContext} from '../SortableListDndContext';
 import type {SortableListDndContextProps} from '../SortableListDndContext';
-import type {TableProps} from '../Table';
-import {flattenTableData} from '../utils/flattenTableData';
 
 import './ReorderingProvider.scss';
 
-export interface ReorderingProviderProps<TData>
-    extends Pick<TableProps<TData>, 'data' | 'getRowId' | 'getSubRows' | 'expandedIds'> {
+export interface ReorderingProviderProps<TData> {
+    table: Table<TData>;
     children?: React.ReactNode;
     dndModifiers?: SortableListDndContextProps['modifiers'];
     enableNesting?: SortableListProps['nestingEnabled'];
@@ -18,19 +18,14 @@ export interface ReorderingProviderProps<TData>
 }
 
 export const ReorderingProvider = <TData,>({
+    table,
     children,
-    data,
     dndModifiers,
     enableNesting,
-    expandedIds,
-    getRowId,
-    getSubRows,
     onReorder,
 }: ReorderingProviderProps<TData>) => {
-    const rowIds = React.useMemo(
-        () => flattenTableData({data, getRowId, getSubRows, expandedIds, transformItem: getRowId}),
-        [data, getRowId, getSubRows, expandedIds],
-    );
+    const {rows} = table.getRowModel();
+    const rowIds = React.useMemo(() => rows.map((row) => row.id), [rows]);
 
     return (
         <SortableListDndContext modifiers={dndModifiers}>

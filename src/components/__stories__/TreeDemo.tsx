@@ -1,24 +1,25 @@
 import React from 'react';
 
+import type {ExpandedState} from '@tanstack/react-table';
+
+import {useTable} from '../../hooks';
 import {Table} from '../Table';
 
-import type {TreeItem} from './constants/tree';
 import {columns, data} from './constants/tree';
 
-const getSubRows = (item: TreeItem) => item.children;
-const getRowId = (item: TreeItem) => item.id;
+export const TreeDemo = () => {
+    const [expanded, setExpanded] = React.useState<ExpandedState>({});
 
-export function TreeDemo() {
-    const [expandedIds, setExpandedIds] = React.useState<string[]>([]);
+    const table = useTable({
+        columns,
+        data,
+        getSubRows: (item) => item.children,
+        enableExpanding: true,
+        onExpandedChange: setExpanded,
+        state: {
+            expanded,
+        },
+    });
 
-    return (
-        <Table<TreeItem>
-            data={data}
-            columns={columns}
-            getSubRows={getSubRows}
-            getRowId={getRowId}
-            expandedIds={expandedIds}
-            onExpandedChange={setExpandedIds}
-        />
-    );
-}
+    return <Table table={table} />;
+};

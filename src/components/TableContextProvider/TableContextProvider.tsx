@@ -5,9 +5,9 @@ import type {Row} from '@tanstack/react-table';
 import type {TableContextProps} from '../TableContext';
 import {TableContext} from '../TableContext';
 
-export interface TableContextProviderProps<TData>
-    extends Pick<TableContextProps, 'enableNesting' | 'getTableState'> {
+export interface TableContextProviderProps<TData> {
     children?: React.ReactNode;
+    enableNesting?: TableContextProps['enableNesting'];
     getRowByIndex: (index: number) => Row<TData> | undefined;
 }
 
@@ -15,11 +15,10 @@ export const TableContextProvider = <TData,>({
     children,
     enableNesting,
     getRowByIndex,
-    getTableState,
 }: TableContextProviderProps<TData>) => {
     const contextValue = React.useMemo(
-        () => ({getRowByIndex, enableNesting, getTableState}) as TableContextProps,
-        [getRowByIndex, enableNesting, getTableState],
+        () => ({getRowByIndex, enableNesting}) as TableContextProps,
+        [getRowByIndex, enableNesting],
     );
 
     return <TableContext.Provider value={contextValue}>{children}</TableContext.Provider>;

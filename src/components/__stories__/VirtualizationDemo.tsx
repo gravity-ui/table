@@ -1,21 +1,32 @@
 import React from 'react';
 
-import {withTableVirtualization} from '../../hocs';
+import {useRowVirtualizer, useTable} from '../../hooks';
 import {Table} from '../Table';
-import type {TableProps} from '../Table';
 
-const TableWithVirtualization = withTableVirtualization(Table);
+import {columns} from './constants/columns';
+import {generateData} from './utils';
 
-const rowHeight = 20;
-const estimateRowSize = () => rowHeight;
+const data = generateData(300);
 
-export const VirtualizationDemo = <ItemType,>(props: TableProps<ItemType>) => {
+export const VirtualizationDemo = () => {
+    const table = useTable({
+        columns,
+        data,
+        getRowId: (item) => item.id,
+    });
+
+    const containerRef = React.useRef<HTMLDivElement>(null);
+
+    const rowVirtualizer = useRowVirtualizer({
+        count: table.getRowModel().rows.length,
+        estimateSize: () => 20,
+        overscan: 5,
+        getScrollElement: () => containerRef.current,
+    });
+
     return (
-        <TableWithVirtualization<ItemType>
-            {...props}
-            estimateRowSize={estimateRowSize}
-            overscanRowCount={5}
-            containerHeight="90vh"
-        />
+        <div ref={containerRef} style={{height: '90vh', overflow: 'auto'}}>
+            <Table table={table} rowVirtualizer={rowVirtualizer} />
+        </div>
     );
 };
