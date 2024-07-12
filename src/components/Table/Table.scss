@@ -38,6 +38,8 @@ $block: '.#{variables.$ns}table';
         height: inherit;
 
         text-align: start;
+
+        background: var(--g-color-base-background);
     }
 
     &__cell {

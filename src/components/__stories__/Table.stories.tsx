@@ -4,6 +4,7 @@ import type {Meta, StoryFn} from '@storybook/react';
 
 import {Table} from '../Table';
 
+import {ColumnPinningDemo} from './ColumnPinningDemo';
 import {DefaultDemo} from './DefaultDemo';
 import {GroupingDemo} from './GroupingDemo';
 import {GroupingDemo2} from './GroupingDemo2';
@@ -73,3 +74,6 @@ export const ReorderingWithVirtualization: StoryFn = ReorderingWithVirtualizatio
 
 const ResizingTemplate: StoryFn = () => <ResizingDemo />;
 export const Resizing: StoryFn = ResizingTemplate.bind({});
+
+const ColumnPinningTemplate: StoryFn = () => <ColumnPinningDemo />;
+export const ColumnPinning: StoryFn = ColumnPinningTemplate.bind({});

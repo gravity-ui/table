@@ -3,7 +3,8 @@ import React from 'react';
 import type {Header} from '@tanstack/react-table';
 import {flexRender} from '@tanstack/react-table';
 
-import {renderDefaultSortIndicator} from '../../utils';
+import {getCommonPinningClassModes, getCommonPinningStyles} from '../../utils/columnPinning';
+import {renderDefaultSortIndicator} from '../../utils/renderDefaultSortIndicator';
 import {b} from '../Table/Table.classname';
 
 export interface HeaderCellProps<TData, TValue> {
@@ -53,6 +54,7 @@ export const HeaderCell = <TData, TValue>({
                     placeholder: header.isPlaceholder,
                     sortable: header.column.getCanSort(),
                     wide: header.colSpan > 1,
+                    ...getCommonPinningClassModes(header.column),
                 },
                 className,
             )}
@@ -60,6 +62,7 @@ export const HeaderCell = <TData, TValue>({
                 width: header.getSize(),
                 minWidth: header.column.columnDef.minSize,
                 maxWidth: header.column.columnDef.maxSize,
+                ...getCommonPinningStyles(header.column),
             }}
             colSpan={header.colSpan}
             rowSpan={rowSpan}

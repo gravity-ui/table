@@ -20,6 +20,7 @@ export interface UseTableOptions<TData> extends PassedTableOptions<TData> {
 export const useTable = <TData>(options: UseTableOptions<TData>) => {
     const tableOptions: TableOptions<TData> = {
         ...options,
+        enableColumnPinning: options.enableColumnPinning ?? false,
         enableColumnResizing: options.enableColumnResizing ?? false,
         enableExpanding: options.enableExpanding ?? false,
         enableGrouping: options.enableGrouping ?? false,
