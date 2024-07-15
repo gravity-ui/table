@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/gravity-ui/table/compare/v0.2.1...v0.3.0) (2024-07-15)
+
+
+### Features
+
+* **Table:** column pinning support enabled ([#11](https://github.com/gravity-ui/table/issues/11)) ([9146096](https://github.com/gravity-ui/table/commit/9146096db5f81e812af183c76db78c51c4a87f18))
+
 ## [0.2.1](https://github.com/gravity-ui/table/compare/v0.2.0...v0.2.1) (2024-07-15)
 
 
