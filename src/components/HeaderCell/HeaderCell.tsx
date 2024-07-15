@@ -3,7 +3,9 @@ import React from 'react';
 import type {Header} from '@tanstack/react-table';
 import {flexRender} from '@tanstack/react-table';
 
-import {renderDefaultSortIndicator} from '../../utils';
+import {getCellStyles} from '../../utils/getCellStyles';
+import {getHeaderCellClassModes} from '../../utils/getHeaderCellClassModes';
+import {renderDefaultSortIndicator} from '../../utils/renderDefaultSortIndicator';
 import {b} from '../Table/Table.classname';
 
 export interface HeaderCellProps<TData, TValue> {
@@ -46,21 +48,8 @@ export const HeaderCell = <TData, TValue>({
 
     return (
         <th
-            className={b(
-                'header-cell',
-                {
-                    id: header.column.id,
-                    placeholder: header.isPlaceholder,
-                    sortable: header.column.getCanSort(),
-                    wide: header.colSpan > 1,
-                },
-                className,
-            )}
-            style={{
-                width: header.getSize(),
-                minWidth: header.column.columnDef.minSize,
-                maxWidth: header.column.columnDef.maxSize,
-            }}
+            className={b('header-cell', getHeaderCellClassModes(header), className)}
+            style={getCellStyles(header)}
             colSpan={header.colSpan}
             rowSpan={rowSpan}
             onClick={header.column.getToggleSortingHandler()}
