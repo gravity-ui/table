@@ -131,17 +131,18 @@ export const Table = React.forwardRef(
                                 ? rows[virtualItemOrRow.index]
                                 : (virtualItemOrRow as RowProperties<TData>);
 
-                            const baseRowProps: BaseRowProps<TData> = {
-                                row,
-                                checkIsGroupRow,
-                                onClick: onRowClick,
-                                className: rowClassName,
-                                renderCell,
+                            const baseRowProps: BaseRowProps<TData, TScrollElement> = {
                                 cellClassName,
-                                renderGroupHeader,
-                                getGroupTitle,
+                                checkIsGroupRow,
+                                className: rowClassName,
                                 columnsCount: table.options.columns.length,
+                                getGroupTitle,
                                 getRowAttributes,
+                                onClick: onRowClick,
+                                renderCell,
+                                renderGroupHeader,
+                                row,
+                                rowVirtualizer,
                                 virtualItem: rowVirtualizer
                                     ? (virtualItemOrRow as VirtualItem)
                                     : undefined,
