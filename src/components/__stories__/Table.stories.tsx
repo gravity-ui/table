@@ -4,11 +4,9 @@ import type {Meta, StoryFn} from '@storybook/react';
 
 import {Table} from '../Table';
 
-import {
-    ColumnPinningDemo,
-    ColumnPinningWithReorderingDemo,
-    ColumnPinningWithTreeDemo,
-} from './ColumnPinningDemo';
+import {ColumnPinningDemo} from './ColumnPinningDemo';
+import {ColumnPinningWithReorderingDemo} from './ColumnPinningWithReorderingDemo';
+import {ColumnPinningWithSelectionDemo} from './ColumnPinningWithSelectionDemo';
 import {DefaultDemo} from './DefaultDemo';
 import {GroupingDemo} from './GroupingDemo';
 import {GroupingDemo2} from './GroupingDemo2';
@@ -85,5 +83,5 @@ export const ColumnPinning: StoryFn = ColumnPinningTemplate.bind({});
 const ColumnPinningWithReorderingTemplate: StoryFn = () => <ColumnPinningWithReorderingDemo />;
 export const ColumnPinningWithReordering: StoryFn = ColumnPinningWithReorderingTemplate.bind({});
 
-const ColumnPinningWithTreeTemplate: StoryFn = () => <ColumnPinningWithTreeDemo />;
-export const ColumnPinningWithTree: StoryFn = ColumnPinningWithTreeTemplate.bind({});
+const ColumnPinningWithSelectionTemplate: StoryFn = () => <ColumnPinningWithSelectionDemo />;
+export const ColumnPinningWithSelection: StoryFn = ColumnPinningWithSelectionTemplate.bind({});

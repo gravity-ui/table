@@ -1,29 +1,45 @@
 import React from 'react';
 
-import type {ColumnPinningState} from '@tanstack/react-table';
+import type {ColumnDef, ColumnPinningState, RowSelectionState} from '@tanstack/react-table';
 
+import {defaultSelectionColumn} from '../../constants';
 import {useTable} from '../../hooks';
 import {Table} from '../Table';
 
 import {cnColumnPinningDemo} from './ColumnPinningDemo.classname';
 import {columns} from './constants/columnPinning';
 import {data} from './constants/data';
+import type {Item} from './types';
 
 import './ColumnPinningDemo.scss';
 
-export const ColumnPinningDemo = () => {
+const columnsWithSelection: ColumnDef<Item>[] = [
+    {
+        ...(defaultSelectionColumn as ColumnDef<Item>),
+    },
+    ...columns,
+];
+
+export const ColumnPinningWithSelectionDemo = () => {
     const [columnPinning, setColumnPinning] = React.useState<ColumnPinningState>({
-        left: [],
+        left: [defaultSelectionColumn.id ?? ''],
         right: [],
     });
 
+    const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+
     const table = useTable({
-        columns,
         data,
+        columns: columnsWithSelection,
+        getRowId: (item) => item.id,
         enableColumnPinning: true,
+        enableRowSelection: true,
+        enableMultiRowSelection: true,
         onColumnPinningChange: setColumnPinning,
+        onRowSelectionChange: setRowSelection,
         state: {
             columnPinning,
+            rowSelection,
         },
     });
 

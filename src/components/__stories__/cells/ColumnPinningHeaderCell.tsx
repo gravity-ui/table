@@ -17,6 +17,10 @@ export const ColumnPinningHeaderCell = <TData,>({
 }: ColumnPinningHeaderCellProps<TData>) => {
     const canPin = info.column.getCanPin();
 
+    const canPinLeft = canPin && info.column.getIsPinned() !== 'left';
+    const canPinRight = canPin && info.column.getIsPinned() !== 'right';
+    const canUnpin = canPin && info.column.getIsPinned();
+
     const handlePinLeft = () => {
         info.column.pin('left');
     };
@@ -34,9 +38,9 @@ export const ColumnPinningHeaderCell = <TData,>({
             <div>{value}</div>
             {canPin && (
                 <div>
-                    <button onClick={handlePinLeft}>{`<`}</button>
-                    <button onClick={handleUnpin}>{`x`}</button>
-                    <button onClick={handlePinRight}>{`>`}</button>
+                    {canPinLeft && <button onClick={handlePinLeft}>{`<`}</button>}
+                    {canUnpin && <button onClick={handleUnpin}>{`x`}</button>}
+                    {canPinRight && <button onClick={handlePinRight}>{`>`}</button>}
                 </div>
             )}
         </div>

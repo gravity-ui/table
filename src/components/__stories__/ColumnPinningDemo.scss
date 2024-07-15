@@ -34,21 +34,21 @@ $block: '.#{variables.$ns}column-pinning-demo';
         }
 
         .gt-table__header-row {
-            .gt-table__header-cell:first-of-type {
+            .gt-table__header-cell:first-child {
                 border-inline-start: 0;
             }
 
-            .gt-table__header-cell:last-of-type {
+            .gt-table__header-cell:last-child {
                 border-inline-end: 0;
             }
         }
 
         .gt-table__row {
-            .gt-table__cell:first-of-type {
+            .gt-table__cell:first-child {
                 border-inline-start: 0;
             }
 
-            .gt-table__cell:last-of-type {
+            .gt-table__cell:last-child {
                 border-inline-end: 0;
             }
         }
