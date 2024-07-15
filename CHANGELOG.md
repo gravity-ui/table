@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/gravity-ui/table/compare/v0.2.0...v0.2.1) (2024-07-15)
+
+
+### Bug Fixes
+
+* **Table:** missing prop rowVirtualizer for row measuring ([#12](https://github.com/gravity-ui/table/issues/12)) ([56290d5](https://github.com/gravity-ui/table/commit/56290d553bf52d01f6259d71c1e9063542b6ca2c))
+
 ## [0.2.0](https://github.com/gravity-ui/table/compare/v0.1.1...v0.2.0) (2024-07-11)
 
 
