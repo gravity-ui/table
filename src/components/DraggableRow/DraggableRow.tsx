@@ -10,11 +10,12 @@ import {BaseRow} from '../BaseRow';
 import {SortableListContext} from '../SortableListContext';
 import {TableContext} from '../TableContext';
 
-export interface DraggableRowProps<TData> extends BaseRowProps<TData> {}
+export interface DraggableRowProps<TData, TScrollElement extends Element | Window = HTMLDivElement>
+    extends BaseRowProps<TData, TScrollElement> {}
 
 export const DraggableRow = React.forwardRef(
-    <TData,>(
-        {getRowAttributes, row, style, ...restProps}: DraggableRowProps<TData>,
+    <TData, TScrollElement extends Element | Window = HTMLDivElement>(
+        {getRowAttributes, row, style, ...restProps}: DraggableRowProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableRowElement>,
     ) => {
         const {setNodeRef, transform, transition, isDragging} = useSortable({
@@ -75,8 +76,8 @@ export const DraggableRow = React.forwardRef(
             />
         );
     },
-) as (<TData>(
-    props: DraggableRowProps<TData> & {ref?: React.Ref<HTMLTableRowElement>},
+) as (<TData, TScrollElement extends Element | Window = HTMLDivElement>(
+    props: DraggableRowProps<TData, TScrollElement> & {ref?: React.Ref<HTMLTableRowElement>},
 ) => React.ReactElement) & {
     displayName: string;
 };

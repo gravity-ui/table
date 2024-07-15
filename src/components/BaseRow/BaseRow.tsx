@@ -106,8 +106,8 @@ export const BaseRow = React.forwardRef(
             </tr>
         );
     },
-) as (<TData>(
-    props: BaseRowProps<TData> & {ref?: React.Ref<HTMLTableRowElement>},
+) as (<TData, TScrollElement extends Element | Window = HTMLDivElement>(
+    props: BaseRowProps<TData, TScrollElement> & {ref?: React.Ref<HTMLTableRowElement>},
 ) => React.ReactElement) & {displayName: string};
 
 BaseRow.displayName = 'BaseRow';
