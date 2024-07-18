@@ -1,8 +1,4 @@
-@use '../variables';
-
-$block: '.#{variables.$ns}sticky-header-demo';
-
-#{$block} {
+.sticky-header-demo {
     width: fit-content;
     max-height: 400px;
 

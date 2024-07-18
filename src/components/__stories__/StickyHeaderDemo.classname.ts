@@ -1,3 +1,3 @@
-import {block} from '../../utils';
+import {cn} from '../../utils';
 
-export const cnStickyHeaderDemo = block('sticky-header-demo');
+export const cnStickyHeaderDemo = cn('sticky-header-demo');

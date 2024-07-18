@@ -64,7 +64,7 @@ export const ReorderingWithVirtualizationDemo = () => {
             table={table}
             rowVirtualizer={rowVirtualizer}
             onReorder={handleReorder}
-            stickyHeader={true}
+            stickyHeader
         />
     );
 };
