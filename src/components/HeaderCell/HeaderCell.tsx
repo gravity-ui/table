@@ -10,7 +10,6 @@ import {b} from '../Table/Table.classname';
 
 export interface HeaderCellProps<TData, TValue> {
     className?: string;
-    contentClassName?: string;
     header: Header<TData, TValue>;
     parentHeader?: Header<TData, unknown>;
     renderSortIndicator?: (header: Header<TData, TValue>, className?: string) => React.ReactNode;
@@ -19,7 +18,6 @@ export interface HeaderCellProps<TData, TValue> {
 
 export const HeaderCell = <TData, TValue>({
     className,
-    contentClassName,
     header,
     parentHeader,
     renderSortIndicator = renderDefaultSortIndicator,
@@ -54,31 +52,29 @@ export const HeaderCell = <TData, TValue>({
             rowSpan={rowSpan}
             onClick={header.column.getToggleSortingHandler()}
         >
-            <div className={b('header-cell-content', contentClassName)}>
-                {flexRender(header.column.columnDef.header, header.getContext())}{' '}
-                {header.column.getCanSort() && renderSortIndicator(header, sortIndicatorClassName)}
-                {enableColumnResizing && (
-                    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
-                    <div
-                        className={b('resizer', {
-                            direction: columnResizeDirection,
-                            resizing: header.column.getIsResizing(),
-                        })}
-                        onDoubleClick={() => header.column.resetSize()}
-                        onMouseDown={header.getResizeHandler()}
-                        onTouchStart={header.getResizeHandler()}
-                        style={{
-                            transform:
-                                columnResizeMode === 'onEnd' && header.column.getIsResizing()
-                                    ? `translateX(${
-                                          (columnResizeDirection === 'rtl' ? -1 : 1) *
-                                          (columnSizingInfo.deltaOffset ?? 0)
-                                      }px)`
-                                    : '',
-                        }}
-                    />
-                )}
-            </div>
+            {flexRender(header.column.columnDef.header, header.getContext())}{' '}
+            {header.column.getCanSort() && renderSortIndicator(header, sortIndicatorClassName)}
+            {enableColumnResizing && (
+                // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+                <div
+                    className={b('resizer', {
+                        direction: columnResizeDirection,
+                        resizing: header.column.getIsResizing(),
+                    })}
+                    onDoubleClick={() => header.column.resetSize()}
+                    onMouseDown={header.getResizeHandler()}
+                    onTouchStart={header.getResizeHandler()}
+                    style={{
+                        transform:
+                            columnResizeMode === 'onEnd' && header.column.getIsResizing()
+                                ? `translateX(${
+                                      (columnResizeDirection === 'rtl' ? -1 : 1) *
+                                      (columnSizingInfo.deltaOffset ?? 0)
+                                  }px)`
+                                : '',
+                    }}
+                />
+            )}
         </th>
     );
 };

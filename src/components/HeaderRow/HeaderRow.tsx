@@ -8,7 +8,6 @@ import {b} from '../Table/Table.classname';
 
 export interface HeaderRowProps<TData, TValue> {
     cellClassName: HeaderCellProps<TData, TValue>['className'];
-    cellContentClassName: HeaderCellProps<TData, TValue>['contentClassName'];
     className?: string;
     headerGroup: HeaderGroup<TData>;
     parentHeaderGroup?: HeaderGroup<TData>;
@@ -18,7 +17,6 @@ export interface HeaderRowProps<TData, TValue> {
 
 export const HeaderRow = <TData, TValue>({
     cellClassName,
-    cellContentClassName,
     className,
     headerGroup,
     parentHeaderGroup,
@@ -31,7 +29,6 @@ export const HeaderRow = <TData, TValue>({
                 <HeaderCell
                     key={header.column.id}
                     className={cellClassName}
-                    contentClassName={cellContentClassName}
                     header={header as Header<TData, TValue>}
                     parentHeader={parentHeaderGroup?.headers.find(
                         (item) => header.column.id === item.column.id,

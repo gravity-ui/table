@@ -24,14 +24,12 @@ import './Table.scss';
 export interface TableProps<TData, TScrollElement extends Element | Window = HTMLDivElement> {
     bodyClassName?: string;
     cellClassName?: string;
-    cellContentClassName?: string;
     checkIsGroupRow?: BaseRowProps<TData>['checkIsGroupRow'];
     className?: string;
     enableNesting?: boolean;
     getGroupTitle?: BaseRowProps<TData>['getGroupTitle'];
     getRowAttributes?: BaseRowProps<TData>['getRowAttributes'];
     headerCellClassName?: string;
-    headerCellContentClassName?: string;
     headerClassName?: string;
     headerRowClassName?: string;
     onRowClick?: BaseRowProps<TData>['onClick'];
@@ -49,14 +47,12 @@ export const Table = React.forwardRef(
         {
             bodyClassName,
             cellClassName,
-            cellContentClassName,
             checkIsGroupRow,
             className,
             enableNesting,
             getGroupTitle,
             getRowAttributes,
             headerCellClassName,
-            headerCellContentClassName,
             headerClassName,
             headerRowClassName,
             onRowClick,
@@ -82,15 +78,9 @@ export const Table = React.forwardRef(
 
         const renderCell = React.useCallback(
             (cell: CellProperties<TData, unknown>) => {
-                return (
-                    <Cell
-                        cell={cell}
-                        className={cellClassName}
-                        contentClassName={cellContentClassName}
-                    />
-                );
+                return <Cell cell={cell} className={cellClassName} />;
             },
-            [cellClassName, cellContentClassName],
+            [cellClassName],
         );
 
         const {rows} = table.getRowModel();
@@ -113,7 +103,6 @@ export const Table = React.forwardRef(
                                     parentHeaderGroup={headerGroups[index - 1]}
                                     className={headerRowClassName}
                                     cellClassName={headerCellClassName}
-                                    cellContentClassName={headerCellContentClassName}
                                     sortIndicatorClassName={sortIndicatorClassName}
                                     renderSortIndicator={renderSortIndicator}
                                 />
