@@ -5,9 +5,12 @@ import type {ExpandedState, Row} from '@tanstack/react-table';
 import {useTable} from '../../hooks';
 import {Table} from '../Table';
 
+import {cnGroupingDemo} from './GroupingDemo.classname';
 import {columns} from './constants/columns';
 import type {Item} from './types';
 import {generateData} from './utils';
+
+import './GroupingDemo.scss';
 
 const data = generateData(300);
 const grouping: Array<keyof Item> = ['status', 'age'];
@@ -31,5 +34,12 @@ export const GroupingDemo2 = () => {
         checkIsGroupRow,
     });
 
-    return <Table table={table} checkIsGroupRow={checkIsGroupRow} getGroupTitle={getGroupTitle} />;
+    return (
+        <Table
+            className={cnGroupingDemo()}
+            table={table}
+            checkIsGroupRow={checkIsGroupRow}
+            getGroupTitle={getGroupTitle}
+        />
+    );
 };

@@ -1,3 +1,3 @@
-import {block} from '../../utils';
+import {cn} from '../../utils';
 
-export const cnColumnPinningDemo = block('column-pinning-demo');
+export const cnColumnPinningDemo = cn('column-pinning-demo');

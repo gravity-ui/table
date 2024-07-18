@@ -6,9 +6,11 @@ import {defaultSelectionColumn} from '../../constants';
 import {useTable} from '../../hooks';
 import {Table} from '../Table';
 
+import {cnGroupingDemo} from './GroupingDemo.classname';
 import type {GroupOrItem} from './constants/grouping';
 import {data, columns as originalColumns} from './constants/grouping';
 
+import './GroupingDemo.scss';
 const columns: ColumnDef<GroupOrItem>[] = [
     defaultSelectionColumn as ColumnDef<GroupOrItem>,
     ...originalColumns,
@@ -37,5 +39,12 @@ export const GroupingWithSelectionDemo = () => {
         checkIsGroupRow,
     });
 
-    return <Table table={table} checkIsGroupRow={checkIsGroupRow} getGroupTitle={getGroupTitle} />;
+    return (
+        <Table
+            className={cnGroupingDemo()}
+            table={table}
+            checkIsGroupRow={checkIsGroupRow}
+            getGroupTitle={getGroupTitle}
+        />
+    );
 };
