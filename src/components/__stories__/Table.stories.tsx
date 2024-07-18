@@ -17,6 +17,7 @@ import {ReorderingTreeDemo} from './ReorderingTreeDemo';
 import {ReorderingWithVirtualizationDemo} from './ReorderingWithVirtualizationDemo';
 import {ResizingDemo} from './ResizingDemo';
 import {SortingDemo} from './SortingDemo';
+import {StickyHeaderDemo} from './StickyHeaderDemo';
 import {TreeDemo} from './TreeDemo';
 import {TreeWithGroupsDemo} from './TreeWithGroupsDemo';
 import {VirtualizationDemo} from './VirtualizationDemo';
@@ -85,3 +86,6 @@ export const ColumnPinningWithReordering: StoryFn = ColumnPinningWithReorderingT
 
 const ColumnPinningWithSelectionTemplate: StoryFn = () => <ColumnPinningWithSelectionDemo />;
 export const ColumnPinningWithSelection: StoryFn = ColumnPinningWithSelectionTemplate.bind({});
+
+const StickyHeaderTamplate: StoryFn = () => <StickyHeaderDemo />;
+export const StickyHeader: StoryFn = StickyHeaderTamplate.bind({});

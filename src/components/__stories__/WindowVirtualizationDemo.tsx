@@ -30,6 +30,7 @@ export const WindowVirtualizationDemo = () => {
             rowVirtualizer={rowVirtualizer}
             className={cnVirtualizationDemo()}
             headerClassName={cnVirtualizationDemo('header')}
+            stickyHeader
         />
     );
 };

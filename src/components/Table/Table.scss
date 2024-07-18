@@ -17,6 +17,14 @@ $block: '.#{variables.$ns}table';
         }
     }
 
+    &__header {
+        &_sticky {
+            position: sticky;
+            inset-block-start: 0;
+            z-index: 1;
+        }
+    }
+
     &__cell,
     &__header-cell {
         height: inherit;
@@ -124,7 +132,6 @@ $block: '.#{variables.$ns}table';
         &__header {
             display: grid;
 
-            position: sticky;
             inset-block-start: 0;
 
             z-index: 1;
