@@ -45,12 +45,14 @@ export const useTreeDataReordering = ({data, setData}: UseTreeDataReorderingProp
                     order.push(item.id);
 
                     if (item.children?.length) {
-                        children[item.id] = [];
+                        const childIds: string[] = [];
 
                         for (const child of item.children) {
                             parents[child.id] = item.id;
-                            children[item.id]!.push(child.id);
+                            childIds.push(child.id);
                         }
+
+                        children[item.id] = childIds;
 
                         collectTreeItems(item.children);
                     }
@@ -59,18 +61,19 @@ export const useTreeDataReordering = ({data, setData}: UseTreeDataReorderingProp
 
             collectTreeItems(dataClone);
 
-            const draggedItem = itemsMap[draggedItemKey]!;
+            const draggedItem = itemsMap[draggedItemKey] as TreeItem;
             const baseItemParent = baseItemKey && parents[baseItemKey];
             const baseNextItemParent = baseNextItemKey && parents[baseNextItemKey];
             const isMovedAfterRoot = baseItemParent !== baseNextItemParent;
 
             const updateRank = ({parentId, movedItemId, after, before}: UpdateRankPayload) => {
-                const movedItem = itemsMap[movedItemId]!;
+                const movedItem = itemsMap[movedItemId] as TreeItem;
 
                 const previousParentId = parents[movedItemId];
                 if (previousParentId) {
-                    const previousParent = itemsMap[previousParentId]!;
-                    previousParent.children = previousParent.children!.filter(
+                    const previousParent = itemsMap[previousParentId] as TreeItem;
+
+                    previousParent.children = (previousParent.children as TreeItem[]).filter(
                         (child) => child.id !== movedItemId,
                     );
                 } else {
@@ -87,10 +90,10 @@ export const useTreeDataReordering = ({data, setData}: UseTreeDataReorderingProp
 
                     if (after) {
                         const index = newParentChildren.indexOf(after);
-                        newParent.children!.splice(index, 0, movedItem);
+                        (newParent.children as TreeItem[]).splice(index, 0, movedItem);
                     } else if (before) {
                         const index = newParentChildren.indexOf(before);
-                        newParent.children!.splice(index - 1, 0, movedItem);
+                        (newParent.children as TreeItem[]).splice(index - 1, 0, movedItem);
                     }
                 } else if (after) {
                     const index = dataClone.findIndex((item) => item.id === after);
@@ -118,25 +121,28 @@ export const useTreeDataReordering = ({data, setData}: UseTreeDataReorderingProp
 
                 const childrenIndexById: Record<string, number> = {};
 
-                for (const id of childrenIds) {
-                    childrenIndexById[id] = order.indexOf(id);
+                for (const childrenId of childrenIds) {
+                    childrenIndexById[childrenId] = order.indexOf(childrenId);
                 }
 
                 const childrenIdsOrdered = [...childrenIds];
 
                 childrenIdsOrdered.sort(
-                    (first, second) => childrenIndexById[first]! - childrenIndexById[second]!,
+                    (first, second) => childrenIndexById[first] - childrenIndexById[second],
                 );
 
                 return childrenIdsOrdered[0] === id;
             };
 
-            pullFromParent = pullFromParent && (isMovedAfterRoot || Boolean(parents[baseItemKey!]));
+            // eslint-disable-next-line no-param-reassign
+            pullFromParent =
+                pullFromParent && (isMovedAfterRoot || Boolean(parents[baseItemKey as string]));
 
             // Put the moved item if it fells on another one or the entity in front of the pointer is an expanded entity
             const shouldInsertToTarget =
                 !pullFromParent &&
-                (targetItemKey || children[baseItemKey!]?.includes(baseNextItemKey!));
+                (targetItemKey ||
+                    children[baseItemKey as string]?.includes(baseNextItemKey as string));
 
             if (shouldInsertToTarget) {
                 const parentId = targetItemKey || baseItemKey;
@@ -145,14 +151,17 @@ export const useTreeDataReordering = ({data, setData}: UseTreeDataReorderingProp
 
                 // First child in the parent node
                 if (!targetItemKey && baseItemKey) {
-                    if (parents[draggedItemKey] === baseItemKey || isFirstChild(baseNextItemKey!)) {
+                    if (
+                        parents[draggedItemKey] === baseItemKey ||
+                        isFirstChild(baseNextItemKey as string)
+                    ) {
                         updateRank({
                             parentId,
                             movedItemId,
-                            before: itemsMap[baseNextItemKey!]!.id,
+                            before: itemsMap[baseNextItemKey as string].id,
                         });
                     } else {
-                        movedItemId = baseNextItemKey!;
+                        movedItemId = baseNextItemKey as string;
 
                         updateRank({
                             parentId: parents[movedItemId],
@@ -191,7 +200,7 @@ export const useTreeDataReordering = ({data, setData}: UseTreeDataReorderingProp
                     parentId,
                     movedItemId: draggedItemKey,
                     after: base ? itemsMap[base]?.id : undefined,
-                    before: base ? undefined : itemsMap[baseNextItemKey!]?.id,
+                    before: base ? undefined : itemsMap[baseNextItemKey as string]?.id,
                 });
             }
         },

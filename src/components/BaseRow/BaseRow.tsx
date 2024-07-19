@@ -87,7 +87,7 @@ export const BaseRow = React.forwardRef(
             >
                 {checkIsGroupRow?.(row) ? (
                     <React.Fragment>
-                        {row.getCanSelect() && renderCell(row.getVisibleCells()[0]!)}
+                        {row.getCanSelect() && renderCell(row.getVisibleCells()[0])}
                         <td
                             colSpan={row.getCanSelect() ? columnsCount - 1 : columnsCount}
                             className={b('cell', b('group-header-cell', cellClassName))}
