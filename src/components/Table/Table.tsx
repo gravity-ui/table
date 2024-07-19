@@ -133,7 +133,7 @@ export const Table = React.forwardRef(
                                 row,
                                 rowVirtualizer,
                                 virtualItem: rowVirtualizer
-                                    ? (virtualItemOrRow as VirtualItem)
+                                    ? (virtualItemOrRow as VirtualItem<HTMLTableRowElement>)
                                     : undefined,
                             };
 
