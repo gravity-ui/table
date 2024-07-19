@@ -3,8 +3,11 @@ import React from 'react';
 import {useRowVirtualizer, useTable} from '../../hooks';
 import {Table} from '../Table';
 
+import {cnVirtualizationDemo} from './VirtualizationDemo.classname';
 import {columns} from './constants/columns';
 import {generateData} from './utils';
+
+import './VirtualizationDemo.scss';
 
 const data = generateData(300);
 
@@ -26,7 +29,12 @@ export const VirtualizationDemo = () => {
 
     return (
         <div ref={containerRef} style={{height: '90vh', overflow: 'auto'}}>
-            <Table table={table} rowVirtualizer={rowVirtualizer} />
+            <Table
+                table={table}
+                rowVirtualizer={rowVirtualizer}
+                className={cnVirtualizationDemo()}
+                headerClassName={cnVirtualizationDemo('header')}
+            />
         </div>
     );
 };

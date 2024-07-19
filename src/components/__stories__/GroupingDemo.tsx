@@ -5,8 +5,11 @@ import type {ExpandedState, Row} from '@tanstack/react-table';
 import {useTable} from '../../hooks';
 import {Table} from '../Table';
 
+import {cnGroupingDemo} from './GroupingDemo.classname';
 import type {GroupOrItem} from './constants/grouping';
 import {columns, data} from './constants/grouping';
+
+import './GroupingDemo.scss';
 
 const checkIsGroupRow = (row: Row<GroupOrItem>) => 'items' in row.original;
 const getGroupTitle = (row: Row<GroupOrItem>) => row.getValue<string>('name');
@@ -26,5 +29,12 @@ export const GroupingDemo = () => {
         checkIsGroupRow,
     });
 
-    return <Table table={table} checkIsGroupRow={checkIsGroupRow} getGroupTitle={getGroupTitle} />;
+    return (
+        <Table
+            className={cnGroupingDemo()}
+            table={table}
+            checkIsGroupRow={checkIsGroupRow}
+            getGroupTitle={getGroupTitle}
+        />
+    );
 };

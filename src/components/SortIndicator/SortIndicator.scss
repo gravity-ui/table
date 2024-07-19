@@ -1,20 +1,25 @@
 @use '../variables';
 
 $block: '.#{variables.$ns}sort-indicator';
+$blockTable: '.#{variables.$ns}table';
 
 #{$block} {
     display: inline-flex;
-    align-items: center;
-
-    transform: rotate(180deg);
+    margin-inline-start: 4px;
+    vertical-align: middle;
+    transform: rotate(0);
 
     color: var(--g-color-text-hint);
 
     &_invisible {
         opacity: 0;
+
+        #{$blockTable}__header-cell:hover & {
+            opacity: 1;
+        }
     }
 
     &_order_asc {
-        transform: rotate(0);
+        transform: rotate(180deg);
     }
 }

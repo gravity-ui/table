@@ -2,18 +2,16 @@ import React from 'react';
 
 import type {HeaderContext} from '@tanstack/react-table';
 
-import type {HeaderCellProps} from '../../HeaderCell';
+import {cnColumnPinningDemo} from '../ColumnPinningDemo.classname';
 
 interface ColumnPinningHeaderCellProps<TData> {
     info: HeaderContext<TData, unknown>;
     value: string;
-    className?: HeaderCellProps<TData, unknown>['className'];
 }
 
 export const ColumnPinningHeaderCell = <TData,>({
     value,
     info,
-    className,
 }: ColumnPinningHeaderCellProps<TData>) => {
     const canPin = info.column.getCanPin();
 
@@ -34,7 +32,7 @@ export const ColumnPinningHeaderCell = <TData,>({
     };
 
     return (
-        <div className={className}>
+        <div className={cnColumnPinningDemo('header-cell')}>
             <div>{value}</div>
             {canPin && (
                 <div>
