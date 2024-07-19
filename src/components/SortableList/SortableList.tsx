@@ -40,7 +40,8 @@ export const SortableList = ({
             isParentMode,
             targetItemIndex,
         }),
-        [isParentMode, isChildMode, isNextChildMode, activeItemKey, targetItemIndex],
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [activeItemKey, isChildMode, isNextChildMode, isParentMode, targetItemIndex],
     );
 
     return (

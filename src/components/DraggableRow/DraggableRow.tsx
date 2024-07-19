@@ -52,10 +52,10 @@ export const DraggableRow = React.forwardRef(
         const getDraggableRowDataAttributes = React.useCallback<
             NonNullable<BaseRowProps<TData>['getRowAttributes']>
         >(
-            (row) => ({
-                ...getRowAttributes?.(row),
+            (draggableRow) => ({
+                ...getRowAttributes?.(draggableRow),
                 ...toDataAttributes({
-                    key: row.id,
+                    key: draggableRow.id,
                     depth,
                     draggable: true,
                     dragging: isDragging,
