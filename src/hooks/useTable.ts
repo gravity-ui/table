@@ -29,14 +29,14 @@ export const useTable = <TData>(options: UseTableOptions<TData>) => {
         enableSorting: options.enableSorting ?? false,
         getCoreRowModel: options.getCoreRowModel ?? getCoreRowModel(),
         getExpandedRowModel: options.enableExpanding
-            ? options.getExpandedRowModel ?? getExpandedRowModel()
+            ? (options.getExpandedRowModel ?? getExpandedRowModel())
             : undefined,
         getGroupedRowModel: options.enableGrouping
-            ? options.getGroupedRowModel ?? getGroupedRowModel()
+            ? (options.getGroupedRowModel ?? getGroupedRowModel())
             : undefined,
         getRowCanExpand: (row) => Boolean(options.checkIsGroupRow?.(row) || row.subRows?.length),
         getSortedRowModel: options.enableSorting
-            ? options.getSortedRowModel ?? getSortedRowModel()
+            ? (options.getSortedRowModel ?? getSortedRowModel())
             : undefined,
         manualGrouping: options.manualGrouping ?? false,
         manualSorting: options.manualSorting ?? false,

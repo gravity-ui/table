@@ -26,7 +26,7 @@ export interface BaseRowProps<TData, TScrollElement extends Element | Window = H
     row: Row<TData>;
     rowVirtualizer?: Virtualizer<TScrollElement, HTMLTableRowElement>;
     style?: React.CSSProperties;
-    virtualItem?: VirtualItem;
+    virtualItem?: VirtualItem<HTMLTableRowElement>;
 }
 
 export const BaseRow = React.forwardRef(
