@@ -35,7 +35,7 @@
     "prepare": "husky",
     "prepublishOnly": "npm run build",
     "start": "storybook dev",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "test-storybook": "test-storybook",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watchAll",

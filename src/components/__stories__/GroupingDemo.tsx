@@ -11,8 +11,8 @@ import {columns, data} from './constants/grouping';
 
 import './GroupingDemo.scss';
 
-const checkIsGroupRow = (row: Row<GroupOrItem>) => 'items' in row.original;
 const getGroupTitle = (row: Row<GroupOrItem>) => row.getValue<string>('name');
+const getIsGroupHeaderRow = (row: Row<GroupOrItem>) => 'items' in row.original;
 
 export const GroupingDemo = () => {
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
@@ -26,15 +26,14 @@ export const GroupingDemo = () => {
         state: {
             expanded,
         },
-        checkIsGroupRow,
     });
 
     return (
         <Table
             className={cnGroupingDemo()}
             table={table}
-            checkIsGroupRow={checkIsGroupRow}
             getGroupTitle={getGroupTitle}
+            getIsGroupHeaderRow={getIsGroupHeaderRow}
         />
     );
 };

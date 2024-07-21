@@ -13,7 +13,7 @@ export interface DocsDecoratorProps extends React.PropsWithChildren<DocsContaine
 
 const b = cn('docs-decorator');
 
-export function DocsDecorator({children, context}: DocsDecoratorProps) {
+export const DocsDecorator = ({children, context}: DocsDecoratorProps) => {
     // @ts-expect-error
     const theme = context.store.globals.globals.theme;
 
@@ -26,4 +26,4 @@ export function DocsDecorator({children, context}: DocsDecoratorProps) {
             </DocsContainer>
         </div>
     );
-}
+};

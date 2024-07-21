@@ -16,8 +16,8 @@ const columns: ColumnDef<GroupOrItem>[] = [
     ...originalColumns,
 ];
 
-const checkIsGroupRow = (row: Row<GroupOrItem>) => 'items' in row.original;
 const getGroupTitle = (row: Row<GroupOrItem>) => row.getValue<string>('name');
+const getIsGroupHeaderRow = (row: Row<GroupOrItem>) => 'items' in row.original;
 
 export const GroupingWithSelectionDemo = () => {
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
@@ -36,15 +36,14 @@ export const GroupingWithSelectionDemo = () => {
             expanded,
             rowSelection,
         },
-        checkIsGroupRow,
     });
 
     return (
         <Table
             className={cnGroupingDemo()}
             table={table}
-            checkIsGroupRow={checkIsGroupRow}
             getGroupTitle={getGroupTitle}
+            getIsGroupHeaderRow={getIsGroupHeaderRow}
         />
     );
 };

@@ -9,9 +9,12 @@ import {getVirtualRowRangeExtractor} from '../../utils';
 import type {SortableListDragResult} from '../SortableList';
 import {Table} from '../Table';
 
+import {cnVirtualizationDemo} from './VirtualizationDemo.classname';
 import {columns as originalColumns} from './constants/columns';
 import type {Item} from './types';
 import {generateData} from './utils';
+
+import './VirtualizationDemo.scss';
 
 const TableWithReordering = withTableReorder(Table);
 
@@ -65,6 +68,8 @@ export const ReorderingWithVirtualizationDemo = () => {
             rowVirtualizer={rowVirtualizer}
             onReorder={handleReorder}
             stickyHeader
+            className={cnVirtualizationDemo()}
+            headerClassName={cnVirtualizationDemo('header')}
         />
     );
 };

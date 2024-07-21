@@ -2,18 +2,24 @@ import type React from 'react';
 
 import type {Cell, Header} from '@tanstack/react-table';
 
-export function getCellStyles<TData>({
-    column,
-}: Cell<TData, unknown> | Header<TData, unknown>): React.CSSProperties {
-    const isPinned = column.getIsPinned();
+export const getCellStyles = <TData>(
+    cell?: Cell<TData, unknown> | Header<TData, unknown>,
+    style?: React.CSSProperties,
+): React.CSSProperties | undefined => {
+    if (!cell) {
+        return style;
+    }
+
+    const isPinned = cell.column.getIsPinned();
 
     return {
-        width: column.getSize(),
-        minWidth: column.columnDef.minSize,
-        maxWidth: column.columnDef.maxSize,
-        left: isPinned === 'left' ? `${column.getStart('left')}px` : undefined,
-        right: isPinned === 'right' ? `${column.getAfter('right')}px` : undefined,
+        width: cell.column.getSize(),
+        minWidth: cell.column.columnDef.minSize,
+        maxWidth: cell.column.columnDef.maxSize,
+        left: isPinned === 'left' ? `${cell.column.getStart('left')}px` : undefined,
+        right: isPinned === 'right' ? `${cell.column.getAfter('right')}px` : undefined,
         position: isPinned ? 'sticky' : undefined,
         zIndex: isPinned ? 1 : undefined,
+        ...style,
     };
-}
+};

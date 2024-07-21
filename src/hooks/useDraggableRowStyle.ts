@@ -15,7 +15,7 @@ export interface UseDraggableRowStyleParams
 
 const defaultStyle = {};
 
-export function useDraggableRowStyle({
+export const useDraggableRowStyle = ({
     style = defaultStyle,
     transform,
     transition,
@@ -24,7 +24,7 @@ export function useDraggableRowStyle({
     isFirstChild,
     draggableChildRowOffset = 32,
     nestingEnabled,
-}: UseDraggableRowStyleParams) {
+}: UseDraggableRowStyleParams) => {
     const {isChildMode, isParentMode} = React.useContext(SortableListContext) ?? {};
 
     return React.useMemo(() => {
@@ -59,4 +59,4 @@ export function useDraggableRowStyle({
         transition,
         nestingEnabled,
     ]);
-}
+};

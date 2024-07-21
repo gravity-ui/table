@@ -9,11 +9,11 @@ export interface WithTableReorderProps<
 > extends TableProps<TData, TScrollElement>,
         Pick<ReorderingProviderProps<TData>, 'onReorder' | 'dndModifiers' | 'enableNesting'> {}
 
-export function withTableReorder(
+export const withTableReorder = (
     Component: <TData, TScrollElement extends Element | Window = HTMLDivElement>(
         props: TableProps<TData, TScrollElement> & {ref?: React.Ref<HTMLTableElement>},
     ) => React.ReactElement,
-) {
+) => {
     const TableWithReorder = React.forwardRef(
         <TData, TScrollElement extends Element | Window = HTMLDivElement>(
             {
@@ -48,4 +48,4 @@ export function withTableReorder(
     TableWithReorder.displayName = `withTableReorder(${Component.name})`;
 
     return TableWithReorder;
-}
+};

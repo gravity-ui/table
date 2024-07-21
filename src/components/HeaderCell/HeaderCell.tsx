@@ -3,16 +3,20 @@ import React from 'react';
 import type {Header} from '@tanstack/react-table';
 import {flexRender} from '@tanstack/react-table';
 
-import {getCellStyles} from '../../utils/getCellStyles';
-import {getHeaderCellClassModes} from '../../utils/getHeaderCellClassModes';
-import {renderDefaultSortIndicator} from '../../utils/renderDefaultSortIndicator';
+import {getCellStyles, getHeaderCellClassModes} from '../../utils';
+import type {ResizeHandleProps} from '../ResizeHandle';
+import {ResizeHandle} from '../ResizeHandle';
+import type {SortIndicatorProps} from '../SortIndicator';
+import {SortIndicator} from '../SortIndicator';
 import {b} from '../Table/Table.classname';
 
 export interface HeaderCellProps<TData, TValue> {
     className?: string;
     header: Header<TData, TValue>;
     parentHeader?: Header<TData, unknown>;
-    renderSortIndicator?: (header: Header<TData, TValue>, className?: string) => React.ReactNode;
+    renderResizeHandle?: (props: ResizeHandleProps<TData, TValue>) => React.ReactNode;
+    renderSortIndicator?: (props: SortIndicatorProps<TData, TValue>) => React.ReactNode;
+    resizeHandleClassName?: string;
     sortIndicatorClassName?: string;
 }
 
@@ -20,61 +24,60 @@ export const HeaderCell = <TData, TValue>({
     className,
     header,
     parentHeader,
-    renderSortIndicator = renderDefaultSortIndicator,
+    renderResizeHandle,
+    renderSortIndicator,
+    resizeHandleClassName,
     sortIndicatorClassName,
 }: HeaderCellProps<TData, TValue>) => {
-    const {table} = header.getContext();
-    const {columnSizingInfo} = table.getState();
-    const {columnResizeDirection, columnResizeMode, enableColumnResizing} = table.options;
+    const isPlaceholderRowSpannedCell =
+        header.isPlaceholder &&
+        parentHeader?.isPlaceholder &&
+        parentHeader.placeholderId === header.placeholderId;
 
-    const columnRelativeDepth = header.depth - header.column.depth;
+    const isLeafRowSpannedCell =
+        !header.isPlaceholder &&
+        header.id === header.column.id &&
+        header.depth - header.column.depth > 1;
 
-    if (!header.isPlaceholder && header.id === header.column.id && columnRelativeDepth > 1) {
+    if (isPlaceholderRowSpannedCell || isLeafRowSpannedCell) {
         return null;
     }
 
-    let rowSpan = 1;
-
-    if (header.isPlaceholder) {
-        if (parentHeader?.isPlaceholder && parentHeader.placeholderId === header.placeholderId) {
-            return null;
-        }
-
-        const leafs = header.getLeafHeaders();
-        rowSpan = leafs.length ?? 1;
-    }
+    const rowSpan = header.isPlaceholder ? header.getLeafHeaders().length : 1;
 
     return (
         <th
             className={b('header-cell', getHeaderCellClassModes(header), className)}
-            style={getCellStyles(header)}
-            colSpan={header.colSpan}
-            rowSpan={rowSpan}
+            colSpan={header.colSpan > 1 ? header.colSpan : undefined}
+            rowSpan={rowSpan > 1 ? rowSpan : undefined}
             onClick={header.column.getToggleSortingHandler()}
+            style={getCellStyles(header)}
         >
             {flexRender(header.column.columnDef.header, header.getContext())}{' '}
-            {header.column.getCanSort() && renderSortIndicator(header, sortIndicatorClassName)}
-            {enableColumnResizing && (
-                // eslint-disable-next-line jsx-a11y/no-static-element-interactions
-                <div
-                    className={b('resizer', {
-                        direction: columnResizeDirection,
-                        resizing: header.column.getIsResizing(),
-                    })}
-                    onDoubleClick={() => header.column.resetSize()}
-                    onMouseDown={header.getResizeHandler()}
-                    onTouchStart={header.getResizeHandler()}
-                    style={{
-                        transform:
-                            columnResizeMode === 'onEnd' && header.column.getIsResizing()
-                                ? `translateX(${
-                                      (columnResizeDirection === 'rtl' ? -1 : 1) *
-                                      (columnSizingInfo.deltaOffset ?? 0)
-                                  }px)`
-                                : '',
-                    }}
-                />
-            )}
+            {header.column.getCanSort() &&
+                (renderSortIndicator ? (
+                    renderSortIndicator({
+                        className: b('sort-indicator', sortIndicatorClassName),
+                        header,
+                    })
+                ) : (
+                    <SortIndicator
+                        className={b('sort-indicator', sortIndicatorClassName)}
+                        header={header}
+                    />
+                ))}
+            {header.column.getCanResize() &&
+                (renderResizeHandle ? (
+                    renderResizeHandle({
+                        className: b('resize-handle', resizeHandleClassName),
+                        header,
+                    })
+                ) : (
+                    <ResizeHandle
+                        className={b('resize-handle', resizeHandleClassName)}
+                        header={header}
+                    />
+                ))}
         </th>
     );
 };

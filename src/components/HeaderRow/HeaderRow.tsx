@@ -4,6 +4,7 @@ import type {Header, HeaderGroup} from '@tanstack/react-table';
 
 import type {HeaderCellProps} from '../HeaderCell';
 import {HeaderCell} from '../HeaderCell';
+import type {ResizeHandleProps} from '../ResizeHandle';
 import {b} from '../Table/Table.classname';
 
 export interface HeaderRowProps<TData, TValue> {
@@ -11,7 +12,9 @@ export interface HeaderRowProps<TData, TValue> {
     className?: string;
     headerGroup: HeaderGroup<TData>;
     parentHeaderGroup?: HeaderGroup<TData>;
+    renderResizeHandle?: (props: ResizeHandleProps<TData, TValue>) => React.ReactNode;
     renderSortIndicator: HeaderCellProps<TData, TValue>['renderSortIndicator'];
+    resizeHandleClassName?: HeaderCellProps<TData, TValue>['resizeHandleClassName'];
     sortIndicatorClassName: HeaderCellProps<TData, TValue>['sortIndicatorClassName'];
 }
 
@@ -20,7 +23,9 @@ export const HeaderRow = <TData, TValue>({
     className,
     headerGroup,
     parentHeaderGroup,
+    renderResizeHandle,
     renderSortIndicator,
+    resizeHandleClassName,
     sortIndicatorClassName,
 }: HeaderRowProps<TData, TValue>) => {
     return (
@@ -33,7 +38,9 @@ export const HeaderRow = <TData, TValue>({
                     parentHeader={parentHeaderGroup?.headers.find(
                         (item) => header.column.id === item.column.id,
                     )}
+                    renderResizeHandle={renderResizeHandle}
                     renderSortIndicator={renderSortIndicator}
+                    resizeHandleClassName={resizeHandleClassName}
                     sortIndicatorClassName={sortIndicatorClassName}
                 />
             ))}
