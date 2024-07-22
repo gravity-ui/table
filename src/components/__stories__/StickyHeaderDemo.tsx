@@ -5,14 +5,11 @@ import {Table} from '../Table';
 
 import {cnStickyHeaderDemo} from './StickyHeaderDemo.classname';
 import {columns} from './constants/columns';
-import {data as originData} from './constants/data';
+import {generateData} from './utils';
 
 import './StickyHeaderDemo.scss';
 
-const data = Array(5)
-    .fill(originData)
-    .flat()
-    .map((val, index) => ({...val, id: `${val.id}-${index}`}));
+const data = generateData(30);
 
 export const StickyHeaderDemo = () => {
     const table = useTable({
