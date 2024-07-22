@@ -4,6 +4,7 @@ import type {Row as RowType, Table as TableType} from '@tanstack/react-table';
 import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 
 import {DraggableRow} from '../DraggableRow';
+import {FooterRow} from '../FooterRow';
 import type {HeaderRowProps} from '../HeaderRow';
 import {HeaderRow} from '../HeaderRow';
 import {Row} from '../Row';
@@ -21,6 +22,9 @@ export interface TableProps<TData, TScrollElement extends Element | Window = HTM
     cellClassName?: string;
     className?: string;
     enableNesting?: boolean;
+    footerCellClassName?: string;
+    footerClassName?: string;
+    footerRowClassName?: string;
     getGroupTitle?: RowProps<TData>['getGroupTitle'];
     getIsCustomRow?: RowProps<TData>['getIsCustomRow'];
     getIsGroupHeaderRow?: RowProps<TData>['getIsGroupHeaderRow'];
@@ -39,8 +43,10 @@ export interface TableProps<TData, TScrollElement extends Element | Window = HTM
     rowClassName?: string;
     rowVirtualizer?: Virtualizer<TScrollElement, HTMLTableRowElement>;
     sortIndicatorClassName?: HeaderRowProps<TData, unknown>['sortIndicatorClassName'];
+    stickyFooter?: boolean;
     stickyHeader?: boolean;
     table: TableType<TData>;
+    withFooter?: boolean;
     withHeader?: boolean;
 }
 
@@ -51,6 +57,9 @@ export const Table = React.forwardRef(
             cellClassName,
             className,
             enableNesting,
+            footerCellClassName,
+            footerClassName,
+            footerRowClassName,
             getGroupTitle,
             getIsGroupHeaderRow,
             getRowAttributes,
@@ -66,8 +75,10 @@ export const Table = React.forwardRef(
             rowClassName,
             rowVirtualizer,
             sortIndicatorClassName,
-            stickyHeader = false,
+            stickyFooter,
+            stickyHeader,
             table,
+            withFooter,
             withHeader = true,
         }: TableProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableElement>,
@@ -84,7 +95,8 @@ export const Table = React.forwardRef(
 
         const {rows} = table.getRowModel();
 
-        const headerGroups = table.getHeaderGroups();
+        const headerGroups = withHeader && table.getHeaderGroups();
+        const footerGroups = withFooter && table.getFooterGroups();
 
         return (
             <TableContextProvider getRowByIndex={getRowByIndex} enableNesting={enableNesting}>
@@ -93,7 +105,7 @@ export const Table = React.forwardRef(
                     className={b({'with-row-virtualization': Boolean(rowVirtualizer)}, className)}
                     data-dragging-row-index={draggingRowIndex > -1 ? draggingRowIndex : undefined}
                 >
-                    {withHeader && (
+                    {headerGroups && (
                         <thead className={b('header', {sticky: stickyHeader}, headerClassName)}>
                             {headerGroups.map((headerGroup, index) => (
                                 <HeaderRow
@@ -144,6 +156,18 @@ export const Table = React.forwardRef(
                             return <Row key={row.id} {...rowProps} />;
                         })}
                     </tbody>
+                    {footerGroups && (
+                        <tfoot className={b('footer', {sticky: stickyFooter}, footerClassName)}>
+                            {footerGroups.map((footerGroup) => (
+                                <FooterRow
+                                    key={footerGroup.id}
+                                    cellClassName={footerCellClassName}
+                                    className={footerRowClassName}
+                                    footerGroup={footerGroup}
+                                />
+                            ))}
+                        </tfoot>
+                    )}
                 </table>
             </TableContextProvider>
         );
