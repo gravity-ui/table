@@ -34,6 +34,7 @@ export const VirtualizationDemo = () => {
                 rowVirtualizer={rowVirtualizer}
                 className={cnVirtualizationDemo()}
                 headerClassName={cnVirtualizationDemo('header')}
+                stickyHeader
             />
         </div>
     );

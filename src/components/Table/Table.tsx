@@ -38,6 +38,7 @@ export interface TableProps<TData, TScrollElement extends Element | Window = HTM
     rowClassName?: string;
     rowVirtualizer?: Virtualizer<TScrollElement, HTMLTableRowElement>;
     sortIndicatorClassName?: HeaderRowProps<TData, unknown>['sortIndicatorClassName'];
+    stickyHeader?: boolean;
     table: TableType<TData>;
     withHeader?: boolean;
 }
@@ -61,6 +62,7 @@ export const Table = React.forwardRef(
             rowClassName,
             rowVirtualizer,
             sortIndicatorClassName,
+            stickyHeader = false,
             table,
             withHeader = true,
         }: TableProps<TData, TScrollElement>,
@@ -95,7 +97,7 @@ export const Table = React.forwardRef(
                     data-dragging-row-index={draggingRowIndex > -1 ? draggingRowIndex : undefined}
                 >
                     {withHeader && (
-                        <thead className={b('header', headerClassName)}>
+                        <thead className={b('header', {sticky: stickyHeader}, headerClassName)}>
                             {headerGroups.map((headerGroup, index) => (
                                 <HeaderRow
                                     key={headerGroup.id}

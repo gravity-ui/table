@@ -1,0 +1,30 @@
+.sticky-header-demo {
+    width: fit-content;
+    max-height: 400px;
+
+    overflow: auto;
+
+    &__table {
+        th,
+        td {
+            box-sizing: border-box;
+
+            padding: var(--g-spacing-1);
+
+            border-collapse: collapse;
+            border: 1px solid var(--g-color-line-generic);
+        }
+
+        th {
+            background: var(--g-color-line-generic-solid);
+
+            border-block-end: 0;
+
+            box-shadow: var(--g-color-line-generic) 0 -1px 0 inset;
+        }
+
+        .gt-table__row:first-child td {
+            border-block-start: 0;
+        }
+    }
+}
