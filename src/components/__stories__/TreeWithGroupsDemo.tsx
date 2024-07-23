@@ -11,8 +11,8 @@ import {groupsColumns, groupsData} from './constants/tree';
 
 import './GroupingDemo.scss';
 
-const checkIsGroupRow = (row: Row<TreeGroupItem>) => 'items' in row.original;
 const getGroupTitle = (row: Row<TreeGroupItem>) => row.getValue<string>('name');
+const getIsGroupHeaderRow = (row: Row<TreeGroupItem>) => 'items' in row.original;
 
 export const TreeWithGroupsDemo = () => {
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
@@ -26,15 +26,14 @@ export const TreeWithGroupsDemo = () => {
         state: {
             expanded,
         },
-        checkIsGroupRow,
     });
 
     return (
         <Table
             className={cnGroupingDemo()}
             table={table}
-            checkIsGroupRow={checkIsGroupRow}
             getGroupTitle={getGroupTitle}
+            getIsGroupHeaderRow={getIsGroupHeaderRow}
         />
     );
 };

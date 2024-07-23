@@ -7,15 +7,11 @@ import {
     useReactTable,
 } from '@tanstack/react-table';
 
-import type {BaseRowProps} from '../components';
-
 interface PassedTableOptions<TData> extends Omit<TableOptions<TData>, 'getCoreRowModel'> {
     getCoreRowModel?: TableOptions<TData>['getCoreRowModel'];
 }
 
-export interface UseTableOptions<TData> extends PassedTableOptions<TData> {
-    checkIsGroupRow?: BaseRowProps<TData>['checkIsGroupRow'];
-}
+export interface UseTableOptions<TData> extends PassedTableOptions<TData> {}
 
 export const useTable = <TData>(options: UseTableOptions<TData>) => {
     const tableOptions: TableOptions<TData> = {
@@ -34,7 +30,6 @@ export const useTable = <TData>(options: UseTableOptions<TData>) => {
         getGroupedRowModel: options.enableGrouping
             ? (options.getGroupedRowModel ?? getGroupedRowModel())
             : undefined,
-        getRowCanExpand: (row) => Boolean(options.checkIsGroupRow?.(row) || row.subRows?.length),
         getSortedRowModel: options.enableSorting
             ? (options.getSortedRowModel ?? getSortedRowModel())
             : undefined,

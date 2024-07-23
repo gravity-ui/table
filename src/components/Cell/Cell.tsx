@@ -1,21 +1,29 @@
 import React from 'react';
 
-import type {Cell as CellProperties} from '@tanstack/react-table';
+import type {Cell as CellType} from '@tanstack/react-table';
 import {flexRender} from '@tanstack/react-table';
 
-import {getCellClassModes} from '../../utils/getCellClassModes';
-import {getCellStyles} from '../../utils/getCellStyles';
+import {getCellClassModes, getCellStyles} from '../../utils';
 import {b} from '../Table/Table.classname';
 
-export interface CellProps<TData> {
-    cell: CellProperties<TData, unknown>;
-    className?: string;
+export interface CellProps<TData> extends React.TdHTMLAttributes<HTMLTableCellElement> {
+    cell?: CellType<TData, unknown>;
 }
 
-export const Cell = <TData,>({cell, className}: CellProps<TData>) => {
+export const Cell = <TData,>({
+    cell,
+    children,
+    className,
+    style,
+    ...restProps
+}: CellProps<TData>) => {
     return (
-        <td className={b('cell', getCellClassModes(cell), className)} style={getCellStyles(cell)}>
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        <td
+            className={b('cell', getCellClassModes(cell), className)}
+            style={getCellStyles(cell, style)}
+            {...restProps}
+        >
+            {cell ? flexRender(cell.column.columnDef.cell, cell.getContext()) : children}
         </td>
     );
 };

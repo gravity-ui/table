@@ -1,17 +1,22 @@
 import React from 'react';
 
-import type {SortDirection} from '@tanstack/react-table';
+import type {Header} from '@tanstack/react-table';
 
 import {b} from './SortIndicator.classname';
 
 import './SortIndicator.scss';
 
-export interface SortIndicatorProps {
-    order?: SortDirection | false;
+export interface SortIndicatorProps<TData, TValue> {
     className?: string;
+    header: Header<TData, TValue>;
 }
 
-export const SortIndicator = ({order, className}: SortIndicatorProps) => {
+export const SortIndicator = <TData, TValue>({
+    className,
+    header,
+}: SortIndicatorProps<TData, TValue>) => {
+    const order = header.column.getIsSorted();
+
     return (
         <span className={b({order, invisible: !order}, className)}>
             <svg width="6" height="3" viewBox="0 0 6 3" fill="currentColor">

@@ -4,14 +4,13 @@ import {useSortable} from '@dnd-kit/sortable';
 import {useForkRef} from '@gravity-ui/uikit';
 
 import {useDraggableRowDepth, useDraggableRowStyle} from '../../hooks';
-import {toDataAttributes} from '../../utils';
-import type {BaseRowProps} from '../BaseRow';
-import {BaseRow} from '../BaseRow';
+import type {RowProps} from '../Row';
+import {Row} from '../Row';
 import {SortableListContext} from '../SortableListContext';
 import {TableContext} from '../TableContext';
 
 export interface DraggableRowProps<TData, TScrollElement extends Element | Window = HTMLDivElement>
-    extends BaseRowProps<TData, TScrollElement> {}
+    extends RowProps<TData, TScrollElement> {}
 
 export const DraggableRow = React.forwardRef(
     <TData, TScrollElement extends Element | Window = HTMLDivElement>(
@@ -50,24 +49,22 @@ export const DraggableRow = React.forwardRef(
         });
 
         const getDraggableRowDataAttributes = React.useCallback<
-            NonNullable<BaseRowProps<TData>['getRowAttributes']>
+            NonNullable<RowProps<TData>['getRowAttributes']>
         >(
             (draggableRow) => ({
                 ...getRowAttributes?.(draggableRow),
-                ...toDataAttributes({
-                    key: draggableRow.id,
-                    depth,
-                    draggable: true,
-                    dragging: isDragging,
-                    dragActive: isDragActive,
-                    expanded: isDragActive && isParent,
-                }),
+                'data-key': draggableRow.id,
+                'data-depth': depth,
+                'data-draggable': true,
+                'data-dragging': isDragging,
+                'data-drag-active': isDragActive,
+                'data-expanded': isDragActive && isParent,
             }),
             [getRowAttributes, depth, isDragging, isDragActive, isParent],
         );
 
         return (
-            <BaseRow
+            <Row
                 ref={handleRowRef}
                 getRowAttributes={getDraggableRowDataAttributes}
                 row={row}

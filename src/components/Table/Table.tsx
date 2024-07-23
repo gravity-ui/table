@@ -1,18 +1,13 @@
 import React from 'react';
 
-import type {
-    Cell as CellProperties,
-    Row as RowProperties,
-    Table as TableType,
-} from '@tanstack/react-table';
+import type {Row as RowType, Table as TableType} from '@tanstack/react-table';
 import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 
-import type {BaseRowProps} from '../BaseRow';
-import {BaseRow} from '../BaseRow';
-import {Cell} from '../Cell';
 import {DraggableRow} from '../DraggableRow';
 import type {HeaderRowProps} from '../HeaderRow';
 import {HeaderRow} from '../HeaderRow';
+import {Row} from '../Row';
+import type {RowProps} from '../Row';
 import {SortableListContext} from '../SortableListContext';
 import {TableContextProvider} from '../TableContextProvider';
 import type {TableContextProviderProps} from '../TableContextProvider';
@@ -24,17 +19,23 @@ import './Table.scss';
 export interface TableProps<TData, TScrollElement extends Element | Window = HTMLDivElement> {
     bodyClassName?: string;
     cellClassName?: string;
-    checkIsGroupRow?: BaseRowProps<TData>['checkIsGroupRow'];
     className?: string;
     enableNesting?: boolean;
-    getGroupTitle?: BaseRowProps<TData>['getGroupTitle'];
-    getRowAttributes?: BaseRowProps<TData>['getRowAttributes'];
+    getGroupTitle?: RowProps<TData>['getGroupTitle'];
+    getIsCustomRow?: RowProps<TData>['getIsCustomRow'];
+    getIsGroupHeaderRow?: RowProps<TData>['getIsGroupHeaderRow'];
+    getRowAttributes?: RowProps<TData>['getRowAttributes'];
+    groupHeaderClassName?: RowProps<TData>['groupHeaderClassName'];
     headerCellClassName?: string;
     headerClassName?: string;
     headerRowClassName?: string;
-    onRowClick?: BaseRowProps<TData>['onClick'];
-    renderGroupHeader?: BaseRowProps<TData>['renderGroupHeader'];
+    onRowClick?: RowProps<TData>['onClick'];
+    renderCustomRowContent?: RowProps<TData>['renderCustomRowContent'];
+    renderGroupHeader?: RowProps<TData>['renderGroupHeader'];
+    renderGroupHeaderRowContent?: RowProps<TData>['renderGroupHeaderRowContent'];
+    renderResizeHandle?: HeaderRowProps<TData, unknown>['renderResizeHandle'];
     renderSortIndicator?: HeaderRowProps<TData, unknown>['renderSortIndicator'];
+    resizeHandleClassName?: HeaderRowProps<TData, unknown>['resizeHandleClassName'];
     rowClassName?: string;
     rowVirtualizer?: Virtualizer<TScrollElement, HTMLTableRowElement>;
     sortIndicatorClassName?: HeaderRowProps<TData, unknown>['sortIndicatorClassName'];
@@ -48,17 +49,20 @@ export const Table = React.forwardRef(
         {
             bodyClassName,
             cellClassName,
-            checkIsGroupRow,
             className,
             enableNesting,
             getGroupTitle,
+            getIsGroupHeaderRow,
             getRowAttributes,
             headerCellClassName,
             headerClassName,
             headerRowClassName,
             onRowClick,
             renderGroupHeader,
+            renderGroupHeaderRowContent,
+            renderResizeHandle,
             renderSortIndicator,
+            resizeHandleClassName,
             rowClassName,
             rowVirtualizer,
             sortIndicatorClassName,
@@ -78,13 +82,6 @@ export const Table = React.forwardRef(
             [table],
         );
 
-        const renderCell = React.useCallback(
-            (cell: CellProperties<TData, unknown>) => {
-                return <Cell cell={cell} className={cellClassName} />;
-            },
-            [cellClassName],
-        );
-
         const {rows} = table.getRowModel();
 
         const headerGroups = table.getHeaderGroups();
@@ -101,12 +98,14 @@ export const Table = React.forwardRef(
                             {headerGroups.map((headerGroup, index) => (
                                 <HeaderRow
                                     key={headerGroup.id}
+                                    cellClassName={headerCellClassName}
+                                    className={headerRowClassName}
                                     headerGroup={headerGroup}
                                     parentHeaderGroup={headerGroups[index - 1]}
-                                    className={headerRowClassName}
-                                    cellClassName={headerCellClassName}
-                                    sortIndicatorClassName={sortIndicatorClassName}
+                                    renderResizeHandle={renderResizeHandle}
                                     renderSortIndicator={renderSortIndicator}
+                                    resizeHandleClassName={resizeHandleClassName}
+                                    sortIndicatorClassName={sortIndicatorClassName}
                                 />
                             ))}
                         </thead>
@@ -120,18 +119,17 @@ export const Table = React.forwardRef(
                         {(rowVirtualizer?.getVirtualItems() || rows).map((virtualItemOrRow) => {
                             const row = rowVirtualizer
                                 ? rows[virtualItemOrRow.index]
-                                : (virtualItemOrRow as RowProperties<TData>);
+                                : (virtualItemOrRow as RowType<TData>);
 
-                            const baseRowProps: BaseRowProps<TData, TScrollElement> = {
+                            const rowProps: RowProps<TData, TScrollElement> = {
                                 cellClassName,
-                                checkIsGroupRow,
                                 className: rowClassName,
-                                columnsCount: table.options.columns.length,
                                 getGroupTitle,
+                                getIsGroupHeaderRow,
                                 getRowAttributes,
                                 onClick: onRowClick,
-                                renderCell,
                                 renderGroupHeader,
+                                renderGroupHeaderRowContent,
                                 row,
                                 rowVirtualizer,
                                 virtualItem: rowVirtualizer
@@ -140,10 +138,10 @@ export const Table = React.forwardRef(
                             };
 
                             if (draggableContext) {
-                                return <DraggableRow key={row.id} {...baseRowProps} />;
+                                return <DraggableRow key={row.id} {...rowProps} />;
                             }
 
-                            return <BaseRow key={row.id} {...baseRowProps} />;
+                            return <Row key={row.id} {...rowProps} />;
                         })}
                     </tbody>
                 </table>

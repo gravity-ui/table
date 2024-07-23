@@ -9,7 +9,10 @@ export interface UseDraggableRowDepthParams<TData> {
     isDragging?: boolean;
 }
 
-export function useDraggableRowDepth<TData>({row, isDragging}: UseDraggableRowDepthParams<TData>) {
+export const useDraggableRowDepth = <TData,>({
+    row,
+    isDragging,
+}: UseDraggableRowDepthParams<TData>) => {
     const {
         isChildMode,
         isParentMode,
@@ -61,4 +64,4 @@ export function useDraggableRowDepth<TData>({row, isDragging}: UseDraggableRowDe
         depth,
         isFirstChild,
     };
-}
+};

@@ -15,8 +15,8 @@ import './GroupingDemo.scss';
 const data = generateData(300);
 const grouping: Array<keyof Item> = ['status', 'age'];
 
-const checkIsGroupRow = (row: Row<Item>) => row.getIsGrouped();
 const getGroupTitle = (row: Row<Item>) => row.getValue<string>('name');
+const getIsGroupHeaderRow = (row: Row<Item>) => row.getIsGrouped();
 
 export const GroupingDemo2 = () => {
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
@@ -31,15 +31,14 @@ export const GroupingDemo2 = () => {
             expanded,
             grouping,
         },
-        checkIsGroupRow,
     });
 
     return (
         <Table
             className={cnGroupingDemo()}
             table={table}
-            checkIsGroupRow={checkIsGroupRow}
             getGroupTitle={getGroupTitle}
+            getIsGroupHeaderRow={getIsGroupHeaderRow}
         />
     );
 };
