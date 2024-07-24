@@ -2,6 +2,7 @@ export * from './Cell';
 export * from './DragHandle';
 export * from './DraggableRow';
 export * from './DraggableRowMarker';
+export * from './FooterCell';
 export * from './GroupHeader';
 export * from './HeaderCell';
 export * from './HeaderRow';
