@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.4.0](https://github.com/gravity-ui/table/compare/v0.3.0...v0.4.0) (2024-07-24)
+
+
+### Features
+
+* **Table:** footer ([#22](https://github.com/gravity-ui/table/issues/22)) ([484954c](https://github.com/gravity-ui/table/commit/484954c5baa636b4eebb3ce7db9624fe3f397ec7))
+* **Table:** get rid of gravity usage in the base table ([#17](https://github.com/gravity-ui/table/issues/17)) ([431d5de](https://github.com/gravity-ui/table/commit/431d5de9be8489afaaa75c21ddb2180a8d6dc913))
+* **Table:** remove cell-content ([#15](https://github.com/gravity-ui/table/issues/15)) ([51a84c5](https://github.com/gravity-ui/table/commit/51a84c5b1bbcc3203e7998a2d6139d51b689ddfb))
+* **Table:** rework render props ([#21](https://github.com/gravity-ui/table/issues/21)) ([3360374](https://github.com/gravity-ui/table/commit/3360374e7182863ca797cd641436eee62ee34111))
+* **Table:** sticky header support added ([#18](https://github.com/gravity-ui/table/issues/18)) ([a87a5d9](https://github.com/gravity-ui/table/commit/a87a5d9efbb275a057334bb99372352f294f0e37))
+
 ## [0.3.0](https://github.com/gravity-ui/table/compare/v0.2.1...v0.3.0) (2024-07-15)
 
 
