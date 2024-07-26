@@ -9,7 +9,7 @@ import {b} from '../Table/Table.classname';
 export interface CellProps<TData>
     extends Omit<React.TdHTMLAttributes<HTMLTableCellElement>, 'className'> {
     cell?: CellType<TData, unknown>;
-    className?: string | ((cell: CellType<TData, unknown>) => string);
+    className?: string | ((cell?: CellType<TData, unknown>) => string);
 }
 
 export const Cell = <TData,>({
@@ -20,11 +20,7 @@ export const Cell = <TData,>({
     ...restProps
 }: CellProps<TData>) => {
     const className = React.useMemo(() => {
-        if (typeof classNameProp === 'function') {
-            return cell ? classNameProp(cell) : undefined;
-        }
-
-        return classNameProp;
+        return typeof classNameProp === 'function' ? classNameProp(cell) : classNameProp;
     }, [cell, classNameProp]);
 
     return (

@@ -8,9 +8,7 @@ import type {ResizeHandleProps} from '../ResizeHandle';
 import {b} from '../Table/Table.classname';
 
 export interface HeaderRowProps<TData, TValue> {
-    cellClassName?:
-        | string
-        | ((headerGroup: HeaderGroup<TData>, parentHeaderGroup?: HeaderGroup<TData>) => string);
+    cellClassName?: HeaderCellProps<TData, TValue>['className'];
     className?:
         | string
         | ((headerGroup: HeaderGroup<TData>, parentHeaderGroup?: HeaderGroup<TData>) => string);
@@ -23,7 +21,7 @@ export interface HeaderRowProps<TData, TValue> {
 }
 
 export const HeaderRow = <TData, TValue>({
-    cellClassName: cellClassNameProp,
+    cellClassName,
     className: classNameProp,
     headerGroup,
     parentHeaderGroup,
@@ -37,12 +35,6 @@ export const HeaderRow = <TData, TValue>({
             ? classNameProp(headerGroup, parentHeaderGroup)
             : classNameProp;
     }, [classNameProp, headerGroup, parentHeaderGroup]);
-
-    const cellClassName = React.useMemo(() => {
-        return typeof cellClassNameProp === 'function'
-            ? cellClassNameProp(headerGroup, parentHeaderGroup)
-            : cellClassNameProp;
-    }, [cellClassNameProp, headerGroup, parentHeaderGroup]);
 
     return (
         <tr className={b('header-row', className)}>

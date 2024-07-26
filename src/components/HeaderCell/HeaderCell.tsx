@@ -11,7 +11,9 @@ import {SortIndicator} from '../SortIndicator';
 import {b} from '../Table/Table.classname';
 
 export interface HeaderCellProps<TData, TValue> {
-    className?: string;
+    className?:
+        | string
+        | ((header: Header<TData, TValue>, parentHeader?: Header<TData, unknown>) => string);
     header: Header<TData, TValue>;
     parentHeader?: Header<TData, unknown>;
     renderResizeHandle?: (props: ResizeHandleProps<TData, TValue>) => React.ReactNode;
@@ -21,7 +23,7 @@ export interface HeaderCellProps<TData, TValue> {
 }
 
 export const HeaderCell = <TData, TValue>({
-    className,
+    className: classNameProp,
     header,
     parentHeader,
     renderResizeHandle,
@@ -29,6 +31,12 @@ export const HeaderCell = <TData, TValue>({
     resizeHandleClassName,
     sortIndicatorClassName,
 }: HeaderCellProps<TData, TValue>) => {
+    const className = React.useMemo(() => {
+        return typeof classNameProp === 'function'
+            ? classNameProp(header, parentHeader)
+            : classNameProp;
+    }, [classNameProp, header, parentHeader]);
+
     const isPlaceholderRowSpannedCell =
         header.isPlaceholder &&
         parentHeader?.isPlaceholder &&
