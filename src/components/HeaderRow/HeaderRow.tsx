@@ -7,7 +7,8 @@ import {HeaderCell} from '../HeaderCell';
 import type {ResizeHandleProps} from '../ResizeHandle';
 import {b} from '../Table/Table.classname';
 
-export interface HeaderRowProps<TData, TValue> {
+export interface HeaderRowProps<TData, TValue>
+    extends Omit<React.TdHTMLAttributes<HTMLTableRowElement>, 'className'> {
     cellClassName?: HeaderCellProps<TData, TValue>['className'];
     className?:
         | string
@@ -29,6 +30,7 @@ export const HeaderRow = <TData, TValue>({
     renderSortIndicator,
     resizeHandleClassName,
     sortIndicatorClassName,
+    ...restProps
 }: HeaderRowProps<TData, TValue>) => {
     const className = React.useMemo(() => {
         return typeof classNameProp === 'function'
@@ -37,7 +39,7 @@ export const HeaderRow = <TData, TValue>({
     }, [classNameProp, headerGroup, parentHeaderGroup]);
 
     return (
-        <tr className={b('header-row', className)}>
+        <tr className={b('header-row', className)} {...restProps}>
             {headerGroup.headers.map((header) => (
                 <HeaderCell
                     key={header.column.id}
