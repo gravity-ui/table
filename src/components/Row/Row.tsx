@@ -5,13 +5,14 @@ import type {Row as RowType} from '@tanstack/react-table';
 import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 
 import {Cell} from '../Cell';
+import type {CellProps} from '../Cell';
 import type {GroupHeaderProps} from '../GroupHeader';
 import {GroupHeader} from '../GroupHeader';
 import {b} from '../Table/Table.classname';
 
 export interface RowProps<TData, TScrollElement extends Element | Window = HTMLDivElement> {
-    cellClassName?: string;
-    className?: string;
+    cellClassName?: CellProps<TData>['className'];
+    className?: string | ((row: RowType<TData>) => string);
     getGroupTitle?: (row: RowType<TData>) => React.ReactNode;
     getIsCustomRow?: (row: RowType<TData>) => boolean;
     getIsGroupHeaderRow?: (row: RowType<TData>) => boolean;
@@ -22,13 +23,13 @@ export interface RowProps<TData, TScrollElement extends Element | Window = HTMLD
     onClick?: (row: RowType<TData>, event: React.MouseEvent<HTMLTableRowElement>) => void;
     renderCustomRowContent?: (props: {
         Cell: typeof Cell<TData>;
-        cellClassName?: string;
+        cellClassName?: CellProps<TData>['className'];
         row: RowType<TData>;
     }) => React.ReactNode;
     renderGroupHeader?: (props: GroupHeaderProps<TData>) => React.ReactNode;
     renderGroupHeaderRowContent?: (props: {
         Cell: typeof Cell<TData>;
-        cellClassName?: string;
+        cellClassName?: CellProps<TData>['className'];
         getGroupTitle?: (row: RowType<TData>) => React.ReactNode;
         row: RowType<TData>;
     }) => React.ReactNode;
@@ -42,7 +43,7 @@ export const Row = React.forwardRef(
     <TData, TScrollElement extends Element | Window = HTMLDivElement>(
         {
             cellClassName,
-            className,
+            className: classNameProp,
             getGroupTitle,
             getIsCustomRow,
             getIsGroupHeaderRow,
@@ -61,6 +62,10 @@ export const Row = React.forwardRef(
     ) => {
         const rowRef = useForkRef(rowVirtualizer?.measureElement, ref);
 
+        const className = React.useMemo(() => {
+            return typeof classNameProp === 'function' ? classNameProp(row) : classNameProp;
+        }, [classNameProp, row]);
+
         const handleClick = React.useCallback(
             (event: React.MouseEvent<HTMLTableRowElement>) => {
                 onClick?.(row, event);
@@ -71,7 +76,12 @@ export const Row = React.forwardRef(
         const renderRowContent = () => {
             if (getIsGroupHeaderRow?.(row)) {
                 return renderGroupHeaderRowContent ? (
-                    renderGroupHeaderRowContent({Cell, cellClassName, getGroupTitle, row})
+                    renderGroupHeaderRowContent({
+                        Cell,
+                        cellClassName,
+                        getGroupTitle,
+                        row,
+                    })
                 ) : (
                     <Cell className={cellClassName} colSpan={row.getVisibleCells().length}>
                         {renderGroupHeader ? (

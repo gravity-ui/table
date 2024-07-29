@@ -19,7 +19,7 @@ import './Table.scss';
 
 export interface TableProps<TData, TScrollElement extends Element | Window = HTMLDivElement> {
     bodyClassName?: string;
-    cellClassName?: string;
+    cellClassName?: RowProps<TData>['cellClassName'];
     className?: string;
     enableNesting?: boolean;
     footerCellClassName?: string;
@@ -30,9 +30,9 @@ export interface TableProps<TData, TScrollElement extends Element | Window = HTM
     getIsGroupHeaderRow?: RowProps<TData>['getIsGroupHeaderRow'];
     getRowAttributes?: RowProps<TData>['getRowAttributes'];
     groupHeaderClassName?: RowProps<TData>['groupHeaderClassName'];
-    headerCellClassName?: string;
+    headerCellClassName?: HeaderRowProps<TData, unknown>['cellClassName'];
     headerClassName?: string;
-    headerRowClassName?: string;
+    headerRowClassName?: HeaderRowProps<TData, unknown>['className'];
     onRowClick?: RowProps<TData>['onClick'];
     renderCustomRowContent?: RowProps<TData>['renderCustomRowContent'];
     renderGroupHeader?: RowProps<TData>['renderGroupHeader'];
@@ -40,7 +40,7 @@ export interface TableProps<TData, TScrollElement extends Element | Window = HTM
     renderResizeHandle?: HeaderRowProps<TData, unknown>['renderResizeHandle'];
     renderSortIndicator?: HeaderRowProps<TData, unknown>['renderSortIndicator'];
     resizeHandleClassName?: HeaderRowProps<TData, unknown>['resizeHandleClassName'];
-    rowClassName?: string;
+    rowClassName?: RowProps<TData>['className'];
     rowVirtualizer?: Virtualizer<TScrollElement, HTMLTableRowElement>;
     sortIndicatorClassName?: HeaderRowProps<TData, unknown>['sortIndicatorClassName'];
     stickyFooter?: boolean;

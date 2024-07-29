@@ -8,8 +8,10 @@ import type {ResizeHandleProps} from '../ResizeHandle';
 import {b} from '../Table/Table.classname';
 
 export interface HeaderRowProps<TData, TValue> {
-    cellClassName: HeaderCellProps<TData, TValue>['className'];
-    className?: string;
+    cellClassName?: HeaderCellProps<TData, TValue>['className'];
+    className?:
+        | string
+        | ((headerGroup: HeaderGroup<TData>, parentHeaderGroup?: HeaderGroup<TData>) => string);
     headerGroup: HeaderGroup<TData>;
     parentHeaderGroup?: HeaderGroup<TData>;
     renderResizeHandle?: (props: ResizeHandleProps<TData, TValue>) => React.ReactNode;
@@ -20,7 +22,7 @@ export interface HeaderRowProps<TData, TValue> {
 
 export const HeaderRow = <TData, TValue>({
     cellClassName,
-    className,
+    className: classNameProp,
     headerGroup,
     parentHeaderGroup,
     renderResizeHandle,
@@ -28,6 +30,12 @@ export const HeaderRow = <TData, TValue>({
     resizeHandleClassName,
     sortIndicatorClassName,
 }: HeaderRowProps<TData, TValue>) => {
+    const className = React.useMemo(() => {
+        return typeof classNameProp === 'function'
+            ? classNameProp(headerGroup, parentHeaderGroup)
+            : classNameProp;
+    }, [classNameProp, headerGroup, parentHeaderGroup]);
+
     return (
         <tr className={b('header-row', className)}>
             {headerGroup.headers.map((header) => (
