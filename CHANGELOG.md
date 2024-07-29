@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/gravity-ui/table/compare/v0.4.0...v0.5.0) (2024-07-29)
+
+
+### Features
+
+* **Table:** some classNames functions support added ([#23](https://github.com/gravity-ui/table/issues/23)) ([f23aa92](https://github.com/gravity-ui/table/commit/f23aa92943ffa279c18bd70e5380a892b4327f39))
+
 ## [0.4.0](https://github.com/gravity-ui/table/compare/v0.3.0...v0.4.0) (2024-07-24)
 
 
