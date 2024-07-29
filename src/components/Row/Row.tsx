@@ -10,7 +10,8 @@ import type {GroupHeaderProps} from '../GroupHeader';
 import {GroupHeader} from '../GroupHeader';
 import {b} from '../Table/Table.classname';
 
-export interface RowProps<TData, TScrollElement extends Element | Window = HTMLDivElement> {
+export interface RowProps<TData, TScrollElement extends Element | Window = HTMLDivElement>
+    extends Omit<React.TdHTMLAttributes<HTMLTableRowElement>, 'className' | 'onClick'> {
     cellClassName?: CellProps<TData>['className'];
     className?: string | ((row: RowType<TData>) => string);
     getGroupTitle?: (row: RowType<TData>) => React.ReactNode;
@@ -57,6 +58,7 @@ export const Row = React.forwardRef(
             rowVirtualizer,
             style,
             virtualItem,
+            ...restProps
         }: RowProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableRowElement>,
     ) => {
@@ -83,7 +85,11 @@ export const Row = React.forwardRef(
                         row,
                     })
                 ) : (
-                    <Cell className={cellClassName} colSpan={row.getVisibleCells().length}>
+                    <Cell
+                        className={cellClassName}
+                        colSpan={row.getVisibleCells().length}
+                        aria-colindex={1}
+                    >
                         {renderGroupHeader ? (
                             renderGroupHeader({
                                 className: b('group-header', groupHeaderClassName),
@@ -107,7 +113,14 @@ export const Row = React.forwardRef(
 
             return row
                 .getVisibleCells()
-                .map((cell) => <Cell key={cell.id} cell={cell} className={cellClassName} />);
+                .map((cell) => (
+                    <Cell
+                        key={cell.id}
+                        cell={cell}
+                        aria-colindex={cell.column.getIndex() + 1}
+                        className={cellClassName}
+                    />
+                ));
         };
 
         return (
@@ -127,6 +140,7 @@ export const Row = React.forwardRef(
                 )}
                 onClick={handleClick}
                 data-index={virtualItem?.index}
+                {...restProps}
                 {...getRowAttributes?.(row)}
             >
                 {renderRowContent()}
