@@ -53,6 +53,8 @@ export const HeaderCell = <TData, TValue>({
 
     const rowSpan = header.isPlaceholder ? header.getLeafHeaders().length : 1;
 
+    const isSorted = header.column.getIsSorted();
+
     return (
         <th
             className={b('header-cell', getHeaderCellClassModes(header), className)}
@@ -60,6 +62,7 @@ export const HeaderCell = <TData, TValue>({
             rowSpan={rowSpan > 1 ? rowSpan : undefined}
             onClick={header.column.getToggleSortingHandler()}
             style={getCellStyles(header)}
+            aria-sort={isSorted ? `${isSorted}ending` : undefined}
         >
             {flexRender(header.column.columnDef.header, header.getContext())}{' '}
             {header.column.getCanSort() &&
