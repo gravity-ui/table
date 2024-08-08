@@ -20,6 +20,12 @@ export interface HeaderCellProps<TData, TValue> {
     renderSortIndicator?: (props: SortIndicatorProps<TData, TValue>) => React.ReactNode;
     resizeHandleClassName?: string;
     sortIndicatorClassName?: string;
+    attributes?:
+        | React.TdHTMLAttributes<HTMLTableCellElement>
+        | ((
+              header: Header<TData, TValue>,
+              parentHeader?: Header<TData, unknown>,
+          ) => React.TdHTMLAttributes<HTMLTableCellElement>);
 }
 
 export const HeaderCell = <TData, TValue>({
@@ -30,6 +36,7 @@ export const HeaderCell = <TData, TValue>({
     renderSortIndicator,
     resizeHandleClassName,
     sortIndicatorClassName,
+    attributes: getAttributes,
 }: HeaderCellProps<TData, TValue>) => {
     const className = React.useMemo(() => {
         return typeof classNameProp === 'function'
@@ -53,6 +60,9 @@ export const HeaderCell = <TData, TValue>({
 
     const rowSpan = header.isPlaceholder ? header.getLeafHeaders().length : 1;
 
+    const attributes =
+        typeof getAttributes === 'function' ? getAttributes(header, parentHeader) : getAttributes;
+
     return (
         <th
             className={b('header-cell', getHeaderCellClassModes(header), className)}
@@ -60,6 +70,7 @@ export const HeaderCell = <TData, TValue>({
             rowSpan={rowSpan > 1 ? rowSpan : undefined}
             onClick={header.column.getToggleSortingHandler()}
             style={getCellStyles(header)}
+            {...attributes}
         >
             {flexRender(header.column.columnDef.header, header.getContext())}{' '}
             {header.column.getCanSort() &&
