@@ -2,6 +2,7 @@ import React from 'react';
 
 import {useSortable} from '@dnd-kit/sortable';
 import {useForkRef} from '@gravity-ui/uikit';
+import type {Row as RowType} from '@tanstack/react-table';
 
 import {useDraggableRowDepth, useDraggableRowStyle} from '../../hooks';
 import type {RowProps} from '../Row';
@@ -14,7 +15,12 @@ export interface DraggableRowProps<TData, TScrollElement extends Element | Windo
 
 export const DraggableRow = React.forwardRef(
     <TData, TScrollElement extends Element | Window = HTMLDivElement>(
-        {getRowAttributes, row, style, ...restProps}: DraggableRowProps<TData, TScrollElement>,
+        {
+            attributes: attributesProp,
+            row,
+            style,
+            ...restProps
+        }: DraggableRowProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableRowElement>,
     ) => {
         const {setNodeRef, transform, transition, isDragging} = useSortable({
@@ -48,25 +54,30 @@ export const DraggableRow = React.forwardRef(
             nestingEnabled: enableNesting,
         });
 
-        const getDraggableRowDataAttributes = React.useCallback<
-            NonNullable<RowProps<TData>['getRowAttributes']>
-        >(
-            (draggableRow) => ({
-                ...getRowAttributes?.(draggableRow),
-                'data-key': draggableRow.id,
-                'data-depth': depth,
-                'data-draggable': true,
-                'data-dragging': isDragging,
-                'data-drag-active': isDragActive,
-                'data-expanded': isDragActive && isParent,
-            }),
-            [getRowAttributes, depth, isDragging, isDragActive, isParent],
+        const getDraggableRowDataAttributes = React.useCallback(
+            (draggableRow: RowType<TData>) => {
+                const attributes =
+                    typeof attributesProp === 'function'
+                        ? attributesProp(draggableRow)
+                        : attributesProp;
+
+                return {
+                    ...attributes,
+                    'data-key': draggableRow.id,
+                    'data-depth': depth,
+                    'data-draggable': true,
+                    'data-dragging': isDragging,
+                    'data-drag-active': isDragActive,
+                    'data-expanded': isDragActive && isParent,
+                };
+            },
+            [attributesProp, depth, isDragging, isDragActive, isParent],
         );
 
         return (
             <Row
                 ref={handleRowRef}
-                getRowAttributes={getDraggableRowDataAttributes}
+                attributes={getDraggableRowDataAttributes}
                 row={row}
                 style={draggableStyle}
                 {...restProps}
