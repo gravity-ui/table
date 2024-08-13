@@ -28,7 +28,6 @@ export interface TableProps<TData, TScrollElement extends Element | Window = HTM
     getGroupTitle?: RowProps<TData>['getGroupTitle'];
     getIsCustomRow?: RowProps<TData>['getIsCustomRow'];
     getIsGroupHeaderRow?: RowProps<TData>['getIsGroupHeaderRow'];
-    getRowAttributes?: RowProps<TData>['getRowAttributes'];
     groupHeaderClassName?: RowProps<TData>['groupHeaderClassName'];
     headerCellClassName?: HeaderRowProps<TData, unknown>['cellClassName'];
     headerClassName?: string;
@@ -48,6 +47,13 @@ export interface TableProps<TData, TScrollElement extends Element | Window = HTM
     table: TableType<TData>;
     withFooter?: boolean;
     withHeader?: boolean;
+    attributes?: React.TableHTMLAttributes<HTMLTableElement>;
+    headerAttributes?: React.HTMLAttributes<HTMLTableSectionElement>;
+    headerRowAttributes?: HeaderRowProps<TData, unknown>['attributes'];
+    headerCellAttributes?: HeaderRowProps<TData, unknown>['cellAttributes'];
+    bodyAttributes?: React.HTMLAttributes<HTMLTableSectionElement>;
+    rowAttributes?: RowProps<TData>['attributes'];
+    cellAttributes?: RowProps<TData>['cellAttributes'];
 }
 
 export const Table = React.forwardRef(
@@ -62,7 +68,6 @@ export const Table = React.forwardRef(
             footerRowClassName,
             getGroupTitle,
             getIsGroupHeaderRow,
-            getRowAttributes,
             headerCellClassName,
             headerClassName,
             headerRowClassName,
@@ -80,6 +85,13 @@ export const Table = React.forwardRef(
             table,
             withFooter,
             withHeader = true,
+            attributes,
+            headerAttributes,
+            headerRowAttributes,
+            headerCellAttributes,
+            bodyAttributes,
+            rowAttributes,
+            cellAttributes,
         }: TableProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableElement>,
     ) => {
@@ -104,9 +116,13 @@ export const Table = React.forwardRef(
                     ref={ref}
                     className={b({'with-row-virtualization': Boolean(rowVirtualizer)}, className)}
                     data-dragging-row-index={draggingRowIndex > -1 ? draggingRowIndex : undefined}
+                    {...attributes}
                 >
                     {headerGroups && (
-                        <thead className={b('header', {sticky: stickyHeader}, headerClassName)}>
+                        <thead
+                            className={b('header', {sticky: stickyHeader}, headerClassName)}
+                            {...headerAttributes}
+                        >
                             {headerGroups.map((headerGroup, index) => (
                                 <HeaderRow
                                     key={headerGroup.id}
@@ -118,6 +134,8 @@ export const Table = React.forwardRef(
                                     renderSortIndicator={renderSortIndicator}
                                     resizeHandleClassName={resizeHandleClassName}
                                     sortIndicatorClassName={sortIndicatorClassName}
+                                    attributes={headerRowAttributes}
+                                    cellAttributes={headerCellAttributes}
                                 />
                             ))}
                         </thead>
@@ -127,6 +145,7 @@ export const Table = React.forwardRef(
                         style={{
                             height: rowVirtualizer?.getTotalSize(),
                         }}
+                        {...bodyAttributes}
                     >
                         {(rowVirtualizer?.getVirtualItems() || rows).map((virtualItemOrRow) => {
                             const row = rowVirtualizer
@@ -138,7 +157,8 @@ export const Table = React.forwardRef(
                                 className: rowClassName,
                                 getGroupTitle,
                                 getIsGroupHeaderRow,
-                                getRowAttributes,
+                                attributes: rowAttributes,
+                                cellAttributes,
                                 onClick: onRowClick,
                                 renderGroupHeader,
                                 renderGroupHeaderRowContent,
