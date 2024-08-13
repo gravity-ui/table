@@ -16,9 +16,6 @@ export interface RowProps<TData, TScrollElement extends Element | Window = HTMLD
     getGroupTitle?: (row: RowType<TData>) => React.ReactNode;
     getIsCustomRow?: (row: RowType<TData>) => boolean;
     getIsGroupHeaderRow?: (row: RowType<TData>) => boolean;
-    getRowAttributes?: (
-        row: RowType<TData>,
-    ) => React.TdHTMLAttributes<HTMLTableRowElement> | undefined;
     groupHeaderClassName?: string;
     onClick?: (row: RowType<TData>, event: React.MouseEvent<HTMLTableRowElement>) => void;
     renderCustomRowContent?: (props: {
@@ -37,6 +34,10 @@ export interface RowProps<TData, TScrollElement extends Element | Window = HTMLD
     rowVirtualizer?: Virtualizer<TScrollElement, HTMLTableRowElement>;
     style?: React.CSSProperties;
     virtualItem?: VirtualItem<HTMLTableRowElement>;
+    attributes?:
+        | React.HTMLAttributes<HTMLTableRowElement>
+        | ((row: RowType<TData>) => React.HTMLAttributes<HTMLTableRowElement>);
+    cellAttributes?: CellProps<TData>['attributes'];
 }
 
 export const Row = React.forwardRef(
@@ -47,7 +48,6 @@ export const Row = React.forwardRef(
             getGroupTitle,
             getIsCustomRow,
             getIsGroupHeaderRow,
-            getRowAttributes,
             groupHeaderClassName,
             onClick,
             renderCustomRowContent,
@@ -57,6 +57,8 @@ export const Row = React.forwardRef(
             rowVirtualizer,
             style,
             virtualItem,
+            attributes: attributesProp,
+            cellAttributes,
         }: RowProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableRowElement>,
     ) => {
@@ -83,7 +85,11 @@ export const Row = React.forwardRef(
                         row,
                     })
                 ) : (
-                    <Cell className={cellClassName} colSpan={row.getVisibleCells().length}>
+                    <Cell
+                        className={cellClassName}
+                        colSpan={row.getVisibleCells().length}
+                        attributes={cellAttributes}
+                    >
                         {renderGroupHeader ? (
                             renderGroupHeader({
                                 className: b('group-header', groupHeaderClassName),
@@ -107,8 +113,18 @@ export const Row = React.forwardRef(
 
             return row
                 .getVisibleCells()
-                .map((cell) => <Cell key={cell.id} cell={cell} className={cellClassName} />);
+                .map((cell) => (
+                    <Cell
+                        key={cell.id}
+                        cell={cell}
+                        className={cellClassName}
+                        attributes={cellAttributes}
+                    />
+                ));
         };
+
+        const attributes =
+            typeof attributesProp === 'function' ? attributesProp(row) : attributesProp;
 
         return (
             <tr
@@ -127,7 +143,7 @@ export const Row = React.forwardRef(
                 )}
                 onClick={handleClick}
                 data-index={virtualItem?.index}
-                {...getRowAttributes?.(row)}
+                {...attributes}
             >
                 {renderRowContent()}
             </tr>

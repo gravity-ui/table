@@ -18,6 +18,13 @@ export interface HeaderRowProps<TData, TValue> {
     renderSortIndicator: HeaderCellProps<TData, TValue>['renderSortIndicator'];
     resizeHandleClassName?: HeaderCellProps<TData, TValue>['resizeHandleClassName'];
     sortIndicatorClassName: HeaderCellProps<TData, TValue>['sortIndicatorClassName'];
+    attributes?:
+        | React.HTMLAttributes<HTMLTableRowElement>
+        | ((
+              headerGroup: HeaderGroup<TData>,
+              parentHeaderGroup?: HeaderGroup<TData>,
+          ) => React.HTMLAttributes<HTMLTableRowElement>);
+    cellAttributes?: HeaderCellProps<TData, TValue>['attributes'];
 }
 
 export const HeaderRow = <TData, TValue>({
@@ -29,6 +36,8 @@ export const HeaderRow = <TData, TValue>({
     renderSortIndicator,
     resizeHandleClassName,
     sortIndicatorClassName,
+    attributes: attributesProp,
+    cellAttributes,
 }: HeaderRowProps<TData, TValue>) => {
     const className = React.useMemo(() => {
         return typeof classNameProp === 'function'
@@ -36,8 +45,13 @@ export const HeaderRow = <TData, TValue>({
             : classNameProp;
     }, [classNameProp, headerGroup, parentHeaderGroup]);
 
+    const attributes =
+        typeof attributesProp === 'function'
+            ? attributesProp(headerGroup, parentHeaderGroup)
+            : attributesProp;
+
     return (
-        <tr className={b('header-row', className)}>
+        <tr className={b('header-row', className)} {...attributes}>
             {headerGroup.headers.map((header) => (
                 <HeaderCell
                     key={header.column.id}
@@ -50,6 +64,7 @@ export const HeaderRow = <TData, TValue>({
                     renderSortIndicator={renderSortIndicator}
                     resizeHandleClassName={resizeHandleClassName}
                     sortIndicatorClassName={sortIndicatorClassName}
+                    attributes={cellAttributes}
                 />
             ))}
         </tr>
