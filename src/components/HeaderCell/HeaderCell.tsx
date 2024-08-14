@@ -3,7 +3,7 @@ import React from 'react';
 import type {Header} from '@tanstack/react-table';
 import {flexRender} from '@tanstack/react-table';
 
-import {getCellStyles, getHeaderCellClassModes} from '../../utils';
+import {getAriaSort, getCellStyles, getHeaderCellClassModes} from '../../utils';
 import type {ResizeHandleProps} from '../ResizeHandle';
 import {ResizeHandle} from '../ResizeHandle';
 import type {SortIndicatorProps} from '../SortIndicator';
@@ -72,6 +72,7 @@ export const HeaderCell = <TData, TValue>({
             rowSpan={rowSpan > 1 ? rowSpan : undefined}
             onClick={header.column.getToggleSortingHandler()}
             style={getCellStyles(header)}
+            aria-sort={getAriaSort(header.column.getIsSorted())}
             {...attributes}
         >
             {flexRender(header.column.columnDef.header, header.getContext())}{' '}
