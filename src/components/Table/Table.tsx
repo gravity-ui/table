@@ -110,12 +110,20 @@ export const Table = React.forwardRef(
         const headerGroups = withHeader && table.getHeaderGroups();
         const footerGroups = withFooter && table.getFooterGroups();
 
+        const colCount = table.getVisibleLeafColumns().length;
+        const headerRowCount = headerGroups ? headerGroups.length : 0;
+        const bodyRowCount = rows.length;
+        const footerRowCount = footerGroups ? footerGroups.length : 0;
+        const rowCount = bodyRowCount + headerRowCount + footerRowCount;
+
         return (
             <TableContextProvider getRowByIndex={getRowByIndex} enableNesting={enableNesting}>
                 <table
                     ref={ref}
                     className={b({'with-row-virtualization': Boolean(rowVirtualizer)}, className)}
                     data-dragging-row-index={draggingRowIndex > -1 ? draggingRowIndex : undefined}
+                    aria-colcount={colCount > 0 ? colCount : undefined}
+                    aria-rowcount={rowCount > 0 ? rowCount : undefined}
                     {...attributes}
                 >
                     {headerGroups && (
@@ -136,6 +144,7 @@ export const Table = React.forwardRef(
                                     sortIndicatorClassName={sortIndicatorClassName}
                                     attributes={headerRowAttributes}
                                     cellAttributes={headerCellAttributes}
+                                    aria-rowindex={index + 1}
                                 />
                             ))}
                         </thead>
@@ -167,6 +176,7 @@ export const Table = React.forwardRef(
                                 virtualItem: rowVirtualizer
                                     ? (virtualItemOrRow as VirtualItem<HTMLTableRowElement>)
                                     : undefined,
+                                'aria-rowindex': headerRowCount + row.index + 1,
                             };
 
                             if (draggableContext) {
@@ -178,12 +188,13 @@ export const Table = React.forwardRef(
                     </tbody>
                     {footerGroups && (
                         <tfoot className={b('footer', {sticky: stickyFooter}, footerClassName)}>
-                            {footerGroups.map((footerGroup) => (
+                            {footerGroups.map((footerGroup, index) => (
                                 <FooterRow
                                     key={footerGroup.id}
                                     cellClassName={footerCellClassName}
                                     className={footerRowClassName}
                                     footerGroup={footerGroup}
+                                    aria-rowindex={headerRowCount + bodyRowCount + index + 1}
                                 />
                             ))}
                         </tfoot>

@@ -10,7 +10,8 @@ import type {GroupHeaderProps} from '../GroupHeader';
 import {GroupHeader} from '../GroupHeader';
 import {b} from '../Table/Table.classname';
 
-export interface RowProps<TData, TScrollElement extends Element | Window = HTMLDivElement> {
+export interface RowProps<TData, TScrollElement extends Element | Window = HTMLDivElement>
+    extends Omit<React.TdHTMLAttributes<HTMLTableRowElement>, 'className' | 'onClick'> {
     cellClassName?: CellProps<TData>['className'];
     className?: string | ((row: RowType<TData>) => string);
     getGroupTitle?: (row: RowType<TData>) => React.ReactNode;
@@ -59,6 +60,7 @@ export const Row = React.forwardRef(
             virtualItem,
             attributes: attributesProp,
             cellAttributes,
+            ...restProps
         }: RowProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableRowElement>,
     ) => {
@@ -89,6 +91,7 @@ export const Row = React.forwardRef(
                         className={cellClassName}
                         colSpan={row.getVisibleCells().length}
                         attributes={cellAttributes}
+                        aria-colindex={1}
                     >
                         {renderGroupHeader ? (
                             renderGroupHeader({
@@ -119,6 +122,7 @@ export const Row = React.forwardRef(
                         cell={cell}
                         className={cellClassName}
                         attributes={cellAttributes}
+                        aria-colindex={cell.column.getIndex() + 1}
                     />
                 ));
         };
@@ -143,6 +147,7 @@ export const Row = React.forwardRef(
                 )}
                 onClick={handleClick}
                 data-index={virtualItem?.index}
+                {...restProps}
                 {...attributes}
             >
                 {renderRowContent()}
