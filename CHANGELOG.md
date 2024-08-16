@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.6.0](https://github.com/gravity-ui/table/compare/v0.5.0...v0.6.0) (2024-08-16)
+
+
+### Features
+
+* **Table:** aria-(colcount,colindex,rowcount,rowindex) support added ([#24](https://github.com/gravity-ui/table/issues/24)) ([e07d74a](https://github.com/gravity-ui/table/commit/e07d74a837579183734cb6bd54d7341ae261c075))
+* **Table:** aria-sort support added ([#26](https://github.com/gravity-ui/table/issues/26)) ([81987fe](https://github.com/gravity-ui/table/commit/81987fe5ba524e8af1d036f94c4898d083b244ad))
+* **Table:** attributes customization ([#27](https://github.com/gravity-ui/table/issues/27)) ([018dd18](https://github.com/gravity-ui/table/commit/018dd188d06dbb7399660d814ee295d4ca0dcfe6))
+
 ## [0.5.0](https://github.com/gravity-ui/table/compare/v0.4.0...v0.5.0) (2024-07-29)
 
 
