@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {useTable, useWindowRowVirtualizer} from '../../hooks';
-import {Table} from '../Table';
+import {BaseTable} from '../BaseTable';
 
 import {cnVirtualizationDemo} from './VirtualizationDemo.classname';
 import {columns} from './constants/columns';
@@ -25,7 +25,7 @@ export const WindowVirtualizationDemo = () => {
     });
 
     return (
-        <Table
+        <BaseTable
             table={table}
             rowVirtualizer={rowVirtualizer}
             className={cnVirtualizationDemo()}

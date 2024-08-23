@@ -3,7 +3,7 @@ import React from 'react';
 import type {ColumnDef} from '@tanstack/react-table';
 
 import {useTable} from '../../hooks';
-import {Table} from '../Table';
+import {BaseTable} from '../BaseTable';
 
 import {cnHeaderGroupsDemo} from './HeaderGroupsDemo.classname';
 import {columns as nestedColumns} from './constants/columns';
@@ -54,5 +54,5 @@ export const HeaderGroupsDemo = () => {
         data,
     });
 
-    return <Table table={table} className={cnHeaderGroupsDemo()} />;
+    return <BaseTable table={table} className={cnHeaderGroupsDemo()} />;
 };

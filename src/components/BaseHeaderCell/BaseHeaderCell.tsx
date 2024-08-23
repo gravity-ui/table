@@ -1,0 +1,111 @@
+import React from 'react';
+
+import type {Header} from '@tanstack/react-table';
+import {flexRender} from '@tanstack/react-table';
+
+import {
+    getAriaSort,
+    getCellStyles,
+    getHeaderCellAriaColIndex,
+    getHeaderCellClassModes,
+} from '../../utils';
+import type {BaseResizeHandleProps} from '../BaseResizeHandle';
+import {BaseResizeHandle} from '../BaseResizeHandle';
+import type {BaseSortIndicatorProps} from '../BaseSortIndicator';
+import {BaseSortIndicator} from '../BaseSortIndicator';
+import {b} from '../BaseTable/BaseTable.classname';
+
+export interface BaseHeaderCellProps<TData, TValue> {
+    className?:
+        | string
+        | ((header: Header<TData, TValue>, parentHeader?: Header<TData, unknown>) => string);
+    header: Header<TData, TValue>;
+    parentHeader?: Header<TData, unknown>;
+    renderResizeHandle?: (props: BaseResizeHandleProps<TData, TValue>) => React.ReactNode;
+    renderSortIndicator?: (props: BaseSortIndicatorProps<TData, TValue>) => React.ReactNode;
+    resizeHandleClassName?: string;
+    sortIndicatorClassName?: string;
+    attributes?:
+        | React.TdHTMLAttributes<HTMLTableCellElement>
+        | ((
+              header: Header<TData, TValue>,
+              parentHeader?: Header<TData, unknown>,
+          ) => React.TdHTMLAttributes<HTMLTableCellElement>);
+}
+
+export const BaseHeaderCell = <TData, TValue>({
+    className: classNameProp,
+    header,
+    parentHeader,
+    renderResizeHandle,
+    renderSortIndicator,
+    resizeHandleClassName,
+    sortIndicatorClassName,
+    attributes: attributesProp,
+}: BaseHeaderCellProps<TData, TValue>) => {
+    const className = React.useMemo(() => {
+        return typeof classNameProp === 'function'
+            ? classNameProp(header, parentHeader)
+            : classNameProp;
+    }, [classNameProp, header, parentHeader]);
+
+    const isPlaceholderRowSpannedCell =
+        header.isPlaceholder &&
+        parentHeader?.isPlaceholder &&
+        parentHeader.placeholderId === header.placeholderId;
+
+    const isLeafRowSpannedCell =
+        !header.isPlaceholder &&
+        header.id === header.column.id &&
+        header.depth - header.column.depth > 1;
+
+    if (isPlaceholderRowSpannedCell || isLeafRowSpannedCell) {
+        return null;
+    }
+
+    const rowSpan = header.isPlaceholder ? header.getLeafHeaders().length : 1;
+
+    const attributes =
+        typeof attributesProp === 'function'
+            ? attributesProp(header, parentHeader)
+            : attributesProp;
+
+    return (
+        <th
+            className={b('header-cell', getHeaderCellClassModes(header), className)}
+            colSpan={header.colSpan > 1 ? header.colSpan : undefined}
+            rowSpan={rowSpan > 1 ? rowSpan : undefined}
+            onClick={header.column.getToggleSortingHandler()}
+            style={getCellStyles(header)}
+            aria-sort={getAriaSort(header.column.getIsSorted())}
+            aria-colindex={getHeaderCellAriaColIndex(header)}
+            {...attributes}
+        >
+            {flexRender(header.column.columnDef.header, header.getContext())}{' '}
+            {header.column.getCanSort() &&
+                (renderSortIndicator ? (
+                    renderSortIndicator({
+                        className: b('sort-indicator', sortIndicatorClassName),
+                        header,
+                    })
+                ) : (
+                    <BaseSortIndicator
+                        className={b('sort-indicator', sortIndicatorClassName)}
+                        header={header}
+                    />
+                ))}
+            {header.column.getCanResize() &&
+                (renderResizeHandle ? (
+                    renderResizeHandle({
+                        className: b('resize-handle', resizeHandleClassName),
+                        header,
+                    })
+                ) : (
+                    <BaseResizeHandle
+                        className={b('resize-handle', resizeHandleClassName)}
+                        header={header}
+                    />
+                ))}
+        </th>
+    );
+};

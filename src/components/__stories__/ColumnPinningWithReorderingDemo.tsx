@@ -5,8 +5,8 @@ import type {ColumnDef, ColumnPinningState} from '@tanstack/react-table';
 import {defaultDragHandleColumn} from '../../constants';
 import {withTableReorder} from '../../hocs';
 import {useTable} from '../../hooks';
+import {BaseTable} from '../BaseTable';
 import type {SortableListDragResult} from '../SortableList';
-import {Table} from '../Table';
 
 import {cnColumnPinningDemo} from './ColumnPinningDemo.classname';
 import {columns} from './constants/columnPinning';
@@ -15,7 +15,7 @@ import type {Item} from './types';
 
 import './ColumnPinningDemo.scss';
 
-const TableWithReordering = withTableReorder(Table);
+const TableWithReordering = withTableReorder(BaseTable);
 
 const columnsWithReordering: ColumnDef<Item>[] = [
     {

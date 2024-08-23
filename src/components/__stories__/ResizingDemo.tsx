@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {useTable} from '../../hooks';
-import {Table} from '../Table';
+import {BaseTable} from '../BaseTable';
 
 import {columns} from './constants/columns';
 import {data} from './constants/data';
@@ -14,5 +14,5 @@ export const ResizingDemo = () => {
         columnResizeMode: 'onChange',
     });
 
-    return <Table table={table} />;
+    return <BaseTable table={table} />;
 };

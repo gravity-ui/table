@@ -1,17 +1,17 @@
 import React from 'react';
 
 import {ReorderingProvider} from '../components';
-import type {ReorderingProviderProps, TableProps} from '../components';
+import type {BaseTableProps, ReorderingProviderProps} from '../components';
 
 export interface WithTableReorderProps<
     TData,
     TScrollElement extends Element | Window = HTMLDivElement,
-> extends TableProps<TData, TScrollElement>,
+> extends BaseTableProps<TData, TScrollElement>,
         Pick<ReorderingProviderProps<TData>, 'onReorder' | 'dndModifiers' | 'enableNesting'> {}
 
 export const withTableReorder = (
     Component: <TData, TScrollElement extends Element | Window = HTMLDivElement>(
-        props: TableProps<TData, TScrollElement> & {ref?: React.Ref<HTMLTableElement>},
+        props: BaseTableProps<TData, TScrollElement> & {ref?: React.Ref<HTMLTableElement>},
     ) => React.ReactElement,
 ) => {
     const TableWithReorder = React.forwardRef(

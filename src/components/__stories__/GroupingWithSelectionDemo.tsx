@@ -4,7 +4,7 @@ import type {ColumnDef, ExpandedState, Row, RowSelectionState} from '@tanstack/r
 
 import {defaultSelectionColumn} from '../../constants';
 import {useTable} from '../../hooks';
-import {Table} from '../Table';
+import {BaseTable} from '../BaseTable';
 
 import {cnGroupingDemo} from './GroupingDemo.classname';
 import type {GroupOrItem} from './constants/grouping';
@@ -39,7 +39,7 @@ export const GroupingWithSelectionDemo = () => {
     });
 
     return (
-        <Table
+        <BaseTable
             className={cnGroupingDemo()}
             table={table}
             getGroupTitle={getGroupTitle}

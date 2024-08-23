@@ -6,8 +6,8 @@ import {defaultDragHandleColumn} from '../../constants';
 import {withTableReorder} from '../../hocs';
 import {useTable, useWindowRowVirtualizer} from '../../hooks';
 import {getVirtualRowRangeExtractor} from '../../utils';
+import {BaseTable} from '../BaseTable';
 import type {SortableListDragResult} from '../SortableList';
-import {Table} from '../Table';
 
 import {cnVirtualizationDemo} from './VirtualizationDemo.classname';
 import {columns as originalColumns} from './constants/columns';
@@ -16,7 +16,7 @@ import {generateData} from './utils';
 
 import './VirtualizationDemo.scss';
 
-const TableWithReordering = withTableReorder(Table);
+const TableWithReordering = withTableReorder(BaseTable);
 
 const columns: ColumnDef<Item>[] = [defaultDragHandleColumn as ColumnDef<Item>, ...originalColumns];
 
