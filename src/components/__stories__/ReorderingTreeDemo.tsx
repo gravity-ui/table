@@ -5,13 +5,13 @@ import type {ColumnDef, ExpandedState} from '@tanstack/react-table';
 import {defaultDragHandleColumn} from '../../constants';
 import {withTableReorder} from '../../hocs';
 import {useTable} from '../../hooks';
-import {Table} from '../Table';
+import {BaseTable} from '../BaseTable';
 
 import type {TreeItem} from './constants/tree';
 import {draggableTreeColumns, data as originalData} from './constants/tree';
 import {useTreeDataReordering} from './hooks/useTreeDataReordering';
 
-const TableWithReordering = withTableReorder(Table);
+const TableWithReordering = withTableReorder(BaseTable);
 
 const columns: ColumnDef<TreeItem>[] = [
     defaultDragHandleColumn as ColumnDef<TreeItem>,

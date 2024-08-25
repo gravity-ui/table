@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {useTable} from '../../hooks';
-import {Table} from '../Table';
+import {BaseTable} from '../BaseTable';
 
 import {columns} from './constants/columns';
 import {data} from './constants/data';
@@ -12,5 +12,5 @@ export const WithoutHeaderDemo = () => {
         data,
     });
 
-    return <Table table={table} withHeader={false} />;
+    return <BaseTable table={table} withHeader={false} />;
 };

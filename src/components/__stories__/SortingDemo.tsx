@@ -3,7 +3,7 @@ import React from 'react';
 import type {SortingState} from '@tanstack/react-table';
 
 import {useTable} from '../../hooks';
-import {Table} from '../Table';
+import {BaseTable} from '../BaseTable';
 
 import {columns} from './constants/columns';
 import {data} from './constants/data';
@@ -22,5 +22,5 @@ export const SortingDemo = () => {
         },
     });
 
-    return <Table table={table} />;
+    return <BaseTable table={table} />;
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {useTable} from '../../hooks';
-import {Table} from '../Table';
+import {BaseTable} from '../BaseTable';
 
 import {cnStickyHeaderDemo} from './StickyHeaderDemo.classname';
 import {columns} from './constants/columns';
@@ -19,7 +19,7 @@ export const StickyHeaderDemo = () => {
 
     return (
         <div className={cnStickyHeaderDemo()}>
-            <Table className={cnStickyHeaderDemo('table')} table={table} stickyHeader />
+            <BaseTable className={cnStickyHeaderDemo('table')} table={table} stickyHeader />
         </div>
     );
 };

@@ -10,7 +10,7 @@ npm install --save @gravity-ui/table
 
 ```tsx
 import React from 'react';
-import {Table, useTable} from '@gravity-ui/table';
+import {BaseTable, useTable} from '@gravity-ui/table';
 import type {ColumnDef} from '@tanstack/react-table';
 
 interface Person {
@@ -35,7 +35,7 @@ const BasicExample = () => {
     data,
   });
 
-  return <Table table={table} />;
+  return <BaseTable table={table} />;
 };
 ```
 
@@ -68,7 +68,7 @@ const RowSelectionExample = () => {
     },
   });
 
-  return <Table table={table} />;
+  return <BaseTable table={table} />;
 };
 ```
 
@@ -101,7 +101,7 @@ const SortingExample = () => {
     },
   });
 
-  return <Table table={table} />;
+  return <BaseTable table={table} />;
 };
 ```
 
@@ -117,7 +117,7 @@ const table = useTable({
 ### Grouping
 
 ```tsx
-import type {ExpandedState, Row} from '@tanstack/react-table';
+import type {ExpandedState, BaseRow} from '@tanstack/react-table';
 
 interface Person {
   id: string;
@@ -157,7 +157,7 @@ const data: Item[] = [
   },
 ];
 
-const getGroupTitle = (row: Row<Item>) => row.getValue<string>('name');
+const getGroupTitle = (row: BaseRow<Item>) => row.getValue<string>('name');
 
 const GroupingExample = () => {
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
@@ -173,7 +173,7 @@ const GroupingExample = () => {
     },
   });
 
-  return <Table table={table} getGroupTitle={getGroupTitle} />;
+  return <BaseTable table={table} getGroupTitle={getGroupTitle} />;
 };
 ```
 
@@ -182,7 +182,7 @@ const GroupingExample = () => {
 ```tsx
 import {defaultDragHandleColumn, withTableReorder, SortableListDragResult} from '@gravity-ui/table';
 
-const TableWithReordering = withTableReorder(Table);
+const TableWithReordering = withTableReorder(BaseTable);
 
 const columns: ColumnDef<Person>[] = [
   defaultDragHandleColumn,
@@ -228,7 +228,7 @@ Or use `ReorderingProvider`:
   enableNesting={enableNesting}
   onReorder={onReorder}
 >
-  <Table table={table} enableNesting={enableNesting} />
+  <BaseTable table={table} enableNesting={enableNesting} />
 </ReorderingProvider>
 ```
 
@@ -265,7 +265,7 @@ const VirtualizationExample = () => {
 
   return (
     <div ref={containerRef} style={{height: '500px', overflow: 'auto'}}>
-      <Table table={table} rowVirtualizer={rowVirtualizer} />
+      <BaseTable table={table} rowVirtualizer={rowVirtualizer} />
     </div>
   );
 };
@@ -323,7 +323,7 @@ const WindowVirtualizationExample = () => {
     overscan: 5,
   });
 
-  return <Table table={table} rowVirtualizer={rowVirtualizer} />;
+  return <BaseTable table={table} rowVirtualizer={rowVirtualizer} />;
 };
 ```
 
@@ -346,7 +346,7 @@ const ResizingDemo = () => {
     columnResizeMode: 'onChange',
   });
 
-  return <Table table={table} />;
+  return <BaseTable table={table} />;
 };
 ```
 

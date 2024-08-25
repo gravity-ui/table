@@ -4,7 +4,7 @@ import type {ColumnDef, RowSelectionState} from '@tanstack/react-table';
 
 import {defaultSelectionColumn} from '../../constants';
 import {useTable} from '../../hooks';
-import {Table} from '../Table';
+import {BaseTable} from '../BaseTable';
 
 import {columns as originalColumns} from './constants/columns';
 import {data} from './constants/data';
@@ -26,5 +26,5 @@ export const WithSelectionDemo = () => {
         },
     });
 
-    return <Table table={table} />;
+    return <BaseTable table={table} />;
 };

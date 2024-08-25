@@ -1,5 +1,5 @@
-export {ReorderingProvider, Table} from './components';
-export type {ReorderingProviderProps, SortableListDragResult, TableProps} from './components';
+export {ReorderingProvider, BaseTable} from './components';
+export type {ReorderingProviderProps, SortableListDragResult, BaseTableProps} from './components';
 
 export {defaultDragHandleColumn, defaultSelectionColumn} from './constants';
 

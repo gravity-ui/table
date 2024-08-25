@@ -3,7 +3,7 @@ import React from 'react';
 import type {ExpandedState, Row} from '@tanstack/react-table';
 
 import {useTable} from '../../hooks';
-import {Table} from '../Table';
+import {BaseTable} from '../BaseTable';
 
 import {cnGroupingDemo} from './GroupingDemo.classname';
 import type {TreeGroupItem} from './constants/tree';
@@ -29,7 +29,7 @@ export const TreeWithGroupsDemo = () => {
     });
 
     return (
-        <Table
+        <BaseTable
             className={cnGroupingDemo()}
             table={table}
             getGroupTitle={getGroupTitle}

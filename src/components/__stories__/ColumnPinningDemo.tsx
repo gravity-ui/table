@@ -3,7 +3,7 @@ import React from 'react';
 import type {ColumnPinningState} from '@tanstack/react-table';
 
 import {useTable} from '../../hooks';
-import {Table} from '../Table';
+import {BaseTable} from '../BaseTable';
 
 import {cnColumnPinningDemo} from './ColumnPinningDemo.classname';
 import {columns} from './constants/columnPinning';
@@ -29,7 +29,7 @@ export const ColumnPinningDemo = () => {
 
     return (
         <div className={cnColumnPinningDemo()}>
-            <Table className={cnColumnPinningDemo('table')} table={table} />
+            <BaseTable className={cnColumnPinningDemo('table')} table={table} />
         </div>
     );
 };

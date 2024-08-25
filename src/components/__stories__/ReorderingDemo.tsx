@@ -5,14 +5,14 @@ import type {ColumnDef} from '@tanstack/react-table';
 import {defaultDragHandleColumn} from '../../constants';
 import {withTableReorder} from '../../hocs';
 import {useTable} from '../../hooks';
+import {BaseTable} from '../BaseTable';
 import type {SortableListDragResult} from '../SortableList';
-import {Table} from '../Table';
 
 import {columns as originalColumns} from './constants/columns';
 import {data as originalData} from './constants/data';
 import type {Item} from './types';
 
-const TableWithReordering = withTableReorder(Table);
+const TableWithReordering = withTableReorder(BaseTable);
 
 const columns: ColumnDef<Item>[] = [defaultDragHandleColumn as ColumnDef<Item>, ...originalColumns];
 

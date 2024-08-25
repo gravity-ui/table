@@ -3,7 +3,7 @@ import React from 'react';
 import type {ExpandedState} from '@tanstack/react-table';
 
 import {useTable} from '../../hooks';
-import {Table} from '../Table';
+import {BaseTable} from '../BaseTable';
 
 import {columns, data} from './constants/tree';
 
@@ -21,5 +21,5 @@ export const TreeDemo = () => {
         },
     });
 
-    return <Table table={table} />;
+    return <BaseTable table={table} />;
 };
