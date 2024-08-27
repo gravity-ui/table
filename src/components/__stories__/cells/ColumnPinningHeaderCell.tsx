@@ -2,7 +2,7 @@ import React from 'react';
 
 import type {HeaderContext} from '@tanstack/react-table';
 
-import {cnColumnPinningDemo} from '../ColumnPinningDemo.classname';
+import {cnColumnPinningDemo} from '../components/BaseTable/ColumnPinningDemo.classname';
 
 interface ColumnPinningHeaderCellProps<TData> {
     info: HeaderContext<TData, unknown>;
