@@ -3,6 +3,7 @@ import React from 'react';
 import type {Row as RowType, Table as TableType} from '@tanstack/react-table';
 import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 
+import {getCellClassModes} from '../../utils';
 import {BaseDraggableRow} from '../BaseDraggableRow';
 import {BaseFooterRow} from '../BaseFooterRow';
 import type {BaseHeaderRowProps} from '../BaseHeaderRow';
@@ -118,13 +119,22 @@ export const BaseTable = React.forwardRef(
         const footerRowCount = footerGroups ? footerGroups.length : 0;
         const rowCount = bodyRowCount + headerRowCount + footerRowCount;
 
-        const renderBodyRows = React.useCallback(() => {
+        const renderBodyRows = () => {
             const bodyRows = rowVirtualizer?.getVirtualItems() || rows;
 
             if (bodyRows.length === 0) {
+                const rClassName =
+                    typeof rowClassName === 'function' ? rowClassName() : rowClassName;
+
+                const cClassName =
+                    typeof cellClassName === 'function' ? cellClassName() : cellClassName;
+
                 return (
-                    <tr>
-                        <td colSpan={colCount}>
+                    <tr className={b('row', {}, rClassName)}>
+                        <td
+                            className={b('cell', getCellClassModes(), cClassName)}
+                            colSpan={colCount}
+                        >
                             {typeof emptyContent === 'function' ? emptyContent() : emptyContent}
                         </td>
                     </tr>
@@ -160,23 +170,7 @@ export const BaseTable = React.forwardRef(
 
                 return <BaseRow key={row.id} {...rowProps} />;
             });
-        }, [
-            cellAttributes,
-            cellClassName,
-            colCount,
-            draggableContext,
-            emptyContent,
-            getGroupTitle,
-            getIsGroupHeaderRow,
-            headerRowCount,
-            onRowClick,
-            renderGroupHeader,
-            renderGroupHeaderRowContent,
-            rowAttributes,
-            rowClassName,
-            rowVirtualizer,
-            rows,
-        ]);
+        };
 
         return (
             <TableContextProvider getRowByIndex={getRowByIndex} enableNesting={enableNesting}>
