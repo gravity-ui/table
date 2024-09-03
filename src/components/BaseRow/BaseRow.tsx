@@ -13,7 +13,7 @@ import {b} from '../BaseTable/BaseTable.classname';
 export interface BaseRowProps<TData, TScrollElement extends Element | Window = HTMLDivElement>
     extends Omit<React.TdHTMLAttributes<HTMLTableRowElement>, 'className' | 'onClick'> {
     cellClassName?: BaseCellProps<TData>['className'];
-    className?: string | ((row: RowType<TData>) => string);
+    className?: string | ((row?: RowType<TData>) => string);
     getGroupTitle?: (row: RowType<TData>) => React.ReactNode;
     getIsCustomRow?: (row: RowType<TData>) => boolean;
     getIsGroupHeaderRow?: (row: RowType<TData>) => boolean;

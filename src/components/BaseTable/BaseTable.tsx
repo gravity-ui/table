@@ -3,6 +3,7 @@ import React from 'react';
 import type {Row as RowType, Table as TableType} from '@tanstack/react-table';
 import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 
+import {getCellClassModes} from '../../utils';
 import {BaseDraggableRow} from '../BaseDraggableRow';
 import {BaseFooterRow} from '../BaseFooterRow';
 import type {BaseHeaderRowProps} from '../BaseHeaderRow';
@@ -21,6 +22,7 @@ export interface BaseTableProps<TData, TScrollElement extends Element | Window =
     bodyClassName?: string;
     cellClassName?: BaseRowProps<TData>['cellClassName'];
     className?: string;
+    emptyContent?: React.ReactNode | (() => React.ReactNode);
     enableNesting?: boolean;
     footerCellClassName?: string;
     footerClassName?: string;
@@ -62,6 +64,7 @@ export const BaseTable = React.forwardRef(
             bodyClassName,
             cellClassName,
             className,
+            emptyContent,
             enableNesting,
             footerCellClassName,
             footerClassName,
@@ -116,6 +119,59 @@ export const BaseTable = React.forwardRef(
         const footerRowCount = footerGroups ? footerGroups.length : 0;
         const rowCount = bodyRowCount + headerRowCount + footerRowCount;
 
+        const renderBodyRows = () => {
+            const bodyRows = rowVirtualizer?.getVirtualItems() || rows;
+
+            if (bodyRows.length === 0) {
+                const rClassName =
+                    typeof rowClassName === 'function' ? rowClassName() : rowClassName;
+
+                const cClassName =
+                    typeof cellClassName === 'function' ? cellClassName() : cellClassName;
+
+                return (
+                    <tr className={b('row', {}, rClassName)}>
+                        <td
+                            className={b('cell', getCellClassModes(), cClassName)}
+                            colSpan={colCount}
+                        >
+                            {typeof emptyContent === 'function' ? emptyContent() : emptyContent}
+                        </td>
+                    </tr>
+                );
+            }
+
+            return bodyRows.map((virtualItemOrRow) => {
+                const row = rowVirtualizer
+                    ? rows[virtualItemOrRow.index]
+                    : (virtualItemOrRow as RowType<TData>);
+
+                const rowProps: BaseRowProps<TData, TScrollElement> = {
+                    cellClassName,
+                    className: rowClassName,
+                    getGroupTitle,
+                    getIsGroupHeaderRow,
+                    attributes: rowAttributes,
+                    cellAttributes,
+                    onClick: onRowClick,
+                    renderGroupHeader,
+                    renderGroupHeaderRowContent,
+                    row,
+                    rowVirtualizer,
+                    virtualItem: rowVirtualizer
+                        ? (virtualItemOrRow as VirtualItem<HTMLTableRowElement>)
+                        : undefined,
+                    'aria-rowindex': headerRowCount + row.index + 1,
+                };
+
+                if (draggableContext) {
+                    return <BaseDraggableRow key={row.id} {...rowProps} />;
+                }
+
+                return <BaseRow key={row.id} {...rowProps} />;
+            });
+        };
+
         return (
             <TableContextProvider getRowByIndex={getRowByIndex} enableNesting={enableNesting}>
                 <table
@@ -156,35 +212,7 @@ export const BaseTable = React.forwardRef(
                         }}
                         {...bodyAttributes}
                     >
-                        {(rowVirtualizer?.getVirtualItems() || rows).map((virtualItemOrRow) => {
-                            const row = rowVirtualizer
-                                ? rows[virtualItemOrRow.index]
-                                : (virtualItemOrRow as RowType<TData>);
-
-                            const rowProps: BaseRowProps<TData, TScrollElement> = {
-                                cellClassName,
-                                className: rowClassName,
-                                getGroupTitle,
-                                getIsGroupHeaderRow,
-                                attributes: rowAttributes,
-                                cellAttributes,
-                                onClick: onRowClick,
-                                renderGroupHeader,
-                                renderGroupHeaderRowContent,
-                                row,
-                                rowVirtualizer,
-                                virtualItem: rowVirtualizer
-                                    ? (virtualItemOrRow as VirtualItem<HTMLTableRowElement>)
-                                    : undefined,
-                                'aria-rowindex': headerRowCount + row.index + 1,
-                            };
-
-                            if (draggableContext) {
-                                return <BaseDraggableRow key={row.id} {...rowProps} />;
-                            }
-
-                            return <BaseRow key={row.id} {...rowProps} />;
-                        })}
+                        {renderBodyRows()}
                     </tbody>
                     {footerGroups && (
                         <tfoot className={b('footer', {sticky: stickyFooter}, footerClassName)}>

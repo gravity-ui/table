@@ -8,6 +8,7 @@ import {ColumnPinningDemo} from './ColumnPinningDemo';
 import {ColumnPinningWithReorderingDemo} from './ColumnPinningWithReorderingDemo';
 import {ColumnPinningWithSelectionDemo} from './ColumnPinningWithSelectionDemo';
 import {DefaultDemo} from './DefaultDemo';
+import {EmptyContentDemo} from './EmptyContent';
 import {GroupingDemo} from './GroupingDemo';
 import {GroupingDemo2} from './GroupingDemo2';
 import {GroupingWithSelectionDemo} from './GroupingWithSelectionDemo';
@@ -89,3 +90,6 @@ export const ColumnPinningWithSelection: StoryFn = ColumnPinningWithSelectionTem
 
 const StickyHeaderTamplate: StoryFn = () => <StickyHeaderDemo />;
 export const StickyHeader: StoryFn = StickyHeaderTamplate.bind({});
+
+const EmptyContentTamplate: StoryFn = () => <EmptyContentDemo />;
+export const EmptyContent: StoryFn = EmptyContentTamplate.bind({});
