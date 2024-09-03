@@ -3,7 +3,7 @@ import React from 'react';
 import type {Row as RowType, Table as TableType} from '@tanstack/react-table';
 import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 
-import {getCellClassModes} from '../../utils';
+import {getAriaMultiselectable, getCellClassModes} from '../../utils';
 import {BaseDraggableRow} from '../BaseDraggableRow';
 import {BaseFooterRow} from '../BaseFooterRow';
 import type {BaseHeaderRowProps} from '../BaseHeaderRow';
@@ -162,6 +162,9 @@ export const BaseTable = React.forwardRef(
                         ? (virtualItemOrRow as VirtualItem<HTMLTableRowElement>)
                         : undefined,
                     'aria-rowindex': headerRowCount + row.index + 1,
+                    'aria-selected': table.options.enableRowSelection
+                        ? row.getIsSelected()
+                        : undefined,
                 };
 
                 if (draggableContext) {
@@ -180,6 +183,7 @@ export const BaseTable = React.forwardRef(
                     data-dragging-row-index={draggingRowIndex > -1 ? draggingRowIndex : undefined}
                     aria-colcount={colCount > 0 ? colCount : undefined}
                     aria-rowcount={rowCount > 0 ? rowCount : undefined}
+                    aria-multiselectable={getAriaMultiselectable(table)}
                     {...attributes}
                 >
                     {headerGroups && (
