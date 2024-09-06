@@ -4,27 +4,27 @@ import type {Meta, StoryFn} from '@storybook/react';
 
 import {BaseTable} from '../BaseTable';
 
-import {ColumnPinningDemo} from './ColumnPinningDemo';
-import {ColumnPinningWithReorderingDemo} from './ColumnPinningWithReorderingDemo';
-import {ColumnPinningWithSelectionDemo} from './ColumnPinningWithSelectionDemo';
-import {DefaultDemo} from './DefaultDemo';
-import {EmptyContentDemo} from './EmptyContent';
-import {GroupingDemo} from './GroupingDemo';
-import {GroupingDemo2} from './GroupingDemo2';
-import {GroupingWithSelectionDemo} from './GroupingWithSelectionDemo';
-import {HeaderGroupsDemo} from './HeaderGroupsDemo';
-import {ReorderingDemo} from './ReorderingDemo';
-import {ReorderingTreeDemo} from './ReorderingTreeDemo';
-import {ReorderingWithVirtualizationDemo} from './ReorderingWithVirtualizationDemo';
-import {ResizingDemo} from './ResizingDemo';
-import {SortingDemo} from './SortingDemo';
-import {StickyHeaderDemo} from './StickyHeaderDemo';
-import {TreeDemo} from './TreeDemo';
-import {TreeWithGroupsDemo} from './TreeWithGroupsDemo';
-import {VirtualizationDemo} from './VirtualizationDemo';
-import {WindowVirtualizationDemo} from './WindowVirtualizationDemo';
-import {WithSelectionDemo} from './WithSelectionDemo';
-import {WithoutHeaderDemo} from './WithoutHeaderDemo';
+import {ColumnPinningDemo} from './components/BaseTable/ColumnPinningDemo';
+import {ColumnPinningWithReorderingDemo} from './components/BaseTable/ColumnPinningWithReorderingDemo';
+import {ColumnPinningWithSelectionDemo} from './components/BaseTable/ColumnPinningWithSelectionDemo';
+import {DefaultDemo} from './components/BaseTable/DefaultDemo';
+import {EmptyContentDemo} from './components/BaseTable/EmptyContent';
+import {GroupingDemo} from './components/BaseTable/GroupingDemo';
+import {GroupingDemo2} from './components/BaseTable/GroupingDemo2';
+import {GroupingWithSelectionDemo} from './components/BaseTable/GroupingWithSelectionDemo';
+import {HeaderGroupsDemo} from './components/BaseTable/HeaderGroupsDemo';
+import {ReorderingDemo} from './components/BaseTable/ReorderingDemo';
+import {ReorderingTreeDemo} from './components/BaseTable/ReorderingTreeDemo';
+import {ReorderingWithVirtualizationDemo} from './components/BaseTable/ReorderingWithVirtualizationDemo';
+import {ResizingDemo} from './components/BaseTable/ResizingDemo';
+import {SortingDemo} from './components/BaseTable/SortingDemo';
+import {StickyHeaderDemo} from './components/BaseTable/StickyHeaderDemo';
+import {TreeDemo} from './components/BaseTable/TreeDemo';
+import {TreeWithGroupsDemo} from './components/BaseTable/TreeWithGroupsDemo';
+import {VirtualizationDemo} from './components/BaseTable/VirtualizationDemo';
+import {WindowVirtualizationDemo} from './components/BaseTable/WindowVirtualizationDemo';
+import {WithSelectionDemo} from './components/BaseTable/WithSelectionDemo';
+import {WithoutHeaderDemo} from './components/BaseTable/WithoutHeaderDemo';
 
 export default {
     title: 'BaseTable',

@@ -1,0 +1,25 @@
+@use '@gravity-ui/uikit/styles/mixins';
+@use '../variables';
+
+$block: '.#{variables.$ns}styled-table';
+
+#{$block} {
+    &__header {
+        background: var(--g-color-base-background);
+    }
+
+    &__cell {
+        @include mixins.text-body-1();
+    }
+
+    &__header-cell {
+        @include mixins.text-subheader-1();
+    }
+
+    &__cell,
+    &__header-cell,
+    &__footer-cell {
+        padding: 11px var(--g-spacing-2) 10px;
+        border-block-end: 1px solid var(--g-color-line-generic);
+    }
+}
