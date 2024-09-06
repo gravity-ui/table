@@ -53,7 +53,7 @@ task('copy-i18n', () => {
 
 task('styles-components', () => {
     return src(['src/components/**/*.scss', '!src/components/**/__stories__/**/*'])
-        .pipe(sass().on('error', sass.logError))
+        .pipe(sass({includePaths: ['node_modules']}).on('error', sass.logError))
         .pipe(dest(path.resolve(BUILD_DIR, 'esm', 'components')))
         .pipe(dest(path.resolve(BUILD_DIR, 'cjs', 'components')));
 });
