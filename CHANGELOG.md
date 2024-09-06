@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.7.0](https://github.com/gravity-ui/table/compare/v0.6.0...v0.7.0) (2024-09-06)
+
+
+### Features
+
+* **BaseTable:** aria-(multiselectable,selected) support added ([#33](https://github.com/gravity-ui/table/issues/33)) ([fa5c464](https://github.com/gravity-ui/table/commit/fa5c464c08fa32009832107473aa9194436f36e3))
+* **BaseTable:** custom empty content support added ([#31](https://github.com/gravity-ui/table/issues/31)) ([b92ee11](https://github.com/gravity-ui/table/commit/b92ee11a5481e2cc9ffe8d1dc95ad965719b82ea))
+* rename table components to Base* prefix ([#29](https://github.com/gravity-ui/table/issues/29)) ([aab6643](https://github.com/gravity-ui/table/commit/aab6643467bbaa55a7b463bd548851ab49470b75))
+* **Table:** base border/font design ([#32](https://github.com/gravity-ui/table/issues/32)) ([ec55971](https://github.com/gravity-ui/table/commit/ec559716b2b32637457ef2fcfbf20f147fef416a))
+
 ## [0.6.0](https://github.com/gravity-ui/table/compare/v0.5.0...v0.6.0) (2024-08-16)
 
 
