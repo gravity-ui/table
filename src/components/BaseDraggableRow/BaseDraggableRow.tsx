@@ -1,6 +1,5 @@
 import React from 'react';
 
-import {useSortable} from '@dnd-kit/sortable';
 import {useForkRef} from '@gravity-ui/uikit';
 import type {Row as RowType} from '@tanstack/react-table';
 
@@ -25,15 +24,25 @@ export const BaseDraggableRow = React.forwardRef(
         }: BaseDraggableRowProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableRowElement>,
     ) => {
-        const {setNodeRef, transform, transition, isDragging} = useSortable({
-            id: row.id,
-        });
-
         const {
             isChildMode,
             activeItemKey,
             targetItemIndex = -1,
+            // The `useSortable` hook is provided by `@dnd-kit/sortable` library and imported via `SortableListContext`.
+            // This is a temporary solution to prevent importing the entire `@dnd-kit` library
+            // when the user doesn't use the reordering feature.
+            useSortable,
         } = React.useContext(SortableListContext) ?? {};
+
+        const {
+            setNodeRef,
+            transform = null,
+            transition,
+            isDragging = false,
+        } = useSortable?.({
+            id: row.id,
+        }) || {};
+
         const {enableNesting} = React.useContext(TableContext);
 
         const isDragActive = Boolean(activeItemKey);

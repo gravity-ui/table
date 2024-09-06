@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable';
+import {SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
 
 import type {UseSortableListParams} from '../../hooks';
 import {useSortableList} from '../../hooks';
@@ -39,6 +39,7 @@ export const SortableList = ({
             isNextChildMode,
             isParentMode,
             targetItemIndex,
+            useSortable,
         }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [activeItemKey, isChildMode, isNextChildMode, isParentMode, targetItemIndex],
