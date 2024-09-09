@@ -1,34 +1,36 @@
 import React from 'react';
 
-import type {Row} from '@tanstack/react-table';
+import type {Row, Table} from '@tanstack/react-table';
 
-import {SortableListContext, TableContext} from '../components';
+import {SortableListContext} from '../components';
 
-export interface UseDraggableRowDepthParams<TData> {
+export interface UseDraggableRowDepthOptions<TData> {
     row: Row<TData>;
     isDragging?: boolean;
+    table: Table<TData>;
 }
 
 export const useDraggableRowDepth = <TData,>({
     row,
+    table,
     isDragging,
-}: UseDraggableRowDepthParams<TData>) => {
+}: UseDraggableRowDepthOptions<TData>) => {
     const {
         isChildMode,
         isParentMode,
         isNextChildMode,
         targetItemIndex = -1,
+        enableNesting,
     } = React.useContext(SortableListContext) ?? {};
-
-    const {getRowByIndex, enableNesting} = React.useContext(TableContext);
 
     let isFirstChild = isDragging && targetItemIndex === -1;
     let depth = 0;
 
     if (enableNesting) {
         if (isDragging && targetItemIndex !== -1) {
-            const targetItemDepth = getRowByIndex(targetItemIndex)?.depth ?? 0;
-            const nextItemDepth = getRowByIndex(targetItemIndex + 1)?.depth ?? 0;
+            const rows = table.getRowModel().rows;
+            const targetItemDepth = rows[targetItemIndex]?.depth ?? 0;
+            const nextItemDepth = rows[targetItemIndex + 1]?.depth ?? 0;
 
             isFirstChild = nextItemDepth > targetItemDepth;
 

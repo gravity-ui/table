@@ -1,43 +1,44 @@
 import React from 'react';
 
 import {useForkRef} from '@gravity-ui/uikit';
-import type {Row as RowType} from '@tanstack/react-table';
+import type {Row, Table} from '@tanstack/react-table';
 import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 
-import {BaseCell} from '../BaseCell';
 import type {BaseCellProps} from '../BaseCell';
+import {BaseCell} from '../BaseCell';
 import type {BaseGroupHeaderProps} from '../BaseGroupHeader';
 import {BaseGroupHeader} from '../BaseGroupHeader';
 import {b} from '../BaseTable/BaseTable.classname';
 
 export interface BaseRowProps<TData, TScrollElement extends Element | Window = HTMLDivElement>
-    extends Omit<React.TdHTMLAttributes<HTMLTableRowElement>, 'className' | 'onClick'> {
+    extends Omit<React.HTMLAttributes<HTMLTableRowElement>, 'className' | 'onClick'> {
     cellClassName?: BaseCellProps<TData>['className'];
-    className?: string | ((row?: RowType<TData>) => string);
-    getGroupTitle?: (row: RowType<TData>) => React.ReactNode;
-    getIsCustomRow?: (row: RowType<TData>) => boolean;
-    getIsGroupHeaderRow?: (row: RowType<TData>) => boolean;
+    className?: string | ((row?: Row<TData>) => string);
+    getGroupTitle?: (row: Row<TData>) => React.ReactNode;
+    getIsCustomRow?: (row: Row<TData>) => boolean;
+    getIsGroupHeaderRow?: (row: Row<TData>) => boolean;
     groupHeaderClassName?: string;
-    onClick?: (row: RowType<TData>, event: React.MouseEvent<HTMLTableRowElement>) => void;
+    onClick?: (row: Row<TData>, event: React.MouseEvent<HTMLTableRowElement>) => void;
     renderCustomRowContent?: (props: {
-        Cell: typeof BaseCell<TData>;
+        row: Row<TData>;
+        Cell: React.FunctionComponent<BaseCellProps<TData>>;
         cellClassName?: BaseCellProps<TData>['className'];
-        row: RowType<TData>;
     }) => React.ReactNode;
     renderGroupHeader?: (props: BaseGroupHeaderProps<TData>) => React.ReactNode;
     renderGroupHeaderRowContent?: (props: {
-        Cell: typeof BaseCell<TData>;
+        row: Row<TData>;
+        Cell: React.FunctionComponent<BaseCellProps<TData>>;
         cellClassName?: BaseCellProps<TData>['className'];
-        getGroupTitle?: (row: RowType<TData>) => React.ReactNode;
-        row: RowType<TData>;
+        getGroupTitle?: (row: Row<TData>) => React.ReactNode;
     }) => React.ReactNode;
-    row: RowType<TData>;
+    row: Row<TData>;
     rowVirtualizer?: Virtualizer<TScrollElement, HTMLTableRowElement>;
     style?: React.CSSProperties;
+    table: Table<TData>;
     virtualItem?: VirtualItem<HTMLTableRowElement>;
     attributes?:
         | React.HTMLAttributes<HTMLTableRowElement>
-        | ((row: RowType<TData>) => React.HTMLAttributes<HTMLTableRowElement>);
+        | ((row: Row<TData>) => React.HTMLAttributes<HTMLTableRowElement>);
     cellAttributes?: BaseCellProps<TData>['attributes'];
 }
 
@@ -66,6 +67,10 @@ export const BaseRow = React.forwardRef(
     ) => {
         const rowRef = useForkRef(rowVirtualizer?.measureElement, ref);
 
+        const attributes = React.useMemo(() => {
+            return typeof attributesProp === 'function' ? attributesProp(row) : attributesProp;
+        }, [attributesProp, row]);
+
         const className = React.useMemo(() => {
             return typeof classNameProp === 'function' ? classNameProp(row) : classNameProp;
         }, [classNameProp, row]);
@@ -81,10 +86,10 @@ export const BaseRow = React.forwardRef(
             if (getIsGroupHeaderRow?.(row)) {
                 return renderGroupHeaderRowContent ? (
                     renderGroupHeaderRowContent({
+                        row,
                         Cell: BaseCell,
                         cellClassName,
                         getGroupTitle,
-                        row,
                     })
                 ) : (
                     <BaseCell
@@ -95,15 +100,15 @@ export const BaseRow = React.forwardRef(
                     >
                         {renderGroupHeader ? (
                             renderGroupHeader({
+                                row,
                                 className: b('group-header', groupHeaderClassName),
                                 getGroupTitle,
-                                row,
                             })
                         ) : (
                             <BaseGroupHeader
+                                row={row}
                                 className={b('group-header', groupHeaderClassName)}
                                 getGroupTitle={getGroupTitle}
-                                row={row}
                             />
                         )}
                     </BaseCell>
@@ -111,7 +116,7 @@ export const BaseRow = React.forwardRef(
             }
 
             if (getIsCustomRow?.(row) && renderCustomRowContent) {
-                return renderCustomRowContent({Cell: BaseCell, cellClassName, row});
+                return renderCustomRowContent({row, Cell: BaseCell, cellClassName});
             }
 
             return row
@@ -127,16 +132,9 @@ export const BaseRow = React.forwardRef(
                 ));
         };
 
-        const attributes =
-            typeof attributesProp === 'function' ? attributesProp(row) : attributesProp;
-
         return (
             <tr
                 ref={rowRef}
-                style={{
-                    top: virtualItem?.start,
-                    ...style,
-                }}
                 className={b(
                     'row',
                     {
@@ -149,6 +147,11 @@ export const BaseRow = React.forwardRef(
                 data-index={virtualItem?.index}
                 {...restProps}
                 {...attributes}
+                style={{
+                    top: virtualItem?.start,
+                    ...style,
+                    ...attributes?.style,
+                }}
             >
                 {renderRowContent()}
             </tr>

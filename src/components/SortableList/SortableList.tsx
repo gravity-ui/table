@@ -4,6 +4,7 @@ import {SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-ki
 
 import type {UseSortableListParams} from '../../hooks';
 import {useSortableList} from '../../hooks';
+import type {SortableListContextValue} from '../SortableListContext';
 import {SortableListContext} from '../SortableListContext';
 
 export interface SortableListProps extends UseSortableListParams {
@@ -15,7 +16,7 @@ export const SortableList = ({
     items,
     onDragStart,
     onDragEnd,
-    nestingEnabled,
+    enableNesting,
 }: SortableListProps) => {
     const {
         activeItemKey,
@@ -28,21 +29,23 @@ export const SortableList = ({
         items,
         onDragStart,
         onDragEnd,
-        nestingEnabled,
+        enableNesting,
     });
 
     const contextValue = React.useMemo(
-        () => ({
-            activeItemKey,
-            activeItemIndex,
-            isChildMode,
-            isNextChildMode,
-            isParentMode,
-            targetItemIndex,
-            useSortable,
-        }),
+        () =>
+            ({
+                activeItemKey,
+                activeItemIndex,
+                isChildMode,
+                isNextChildMode,
+                isParentMode,
+                targetItemIndex,
+                enableNesting,
+                useSortable,
+            }) satisfies SortableListContextValue,
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [activeItemKey, isChildMode, isNextChildMode, isParentMode, targetItemIndex],
+        [activeItemKey, isChildMode, isNextChildMode, isParentMode, targetItemIndex, enableNesting],
     );
 
     return (

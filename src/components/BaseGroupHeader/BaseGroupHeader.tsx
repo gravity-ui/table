@@ -7,15 +7,15 @@ import {b} from './BaseGroupHeader.classname';
 import './BaseGroupHeader.scss';
 
 export interface BaseGroupHeaderProps<TData> {
+    row: Row<TData>;
     className?: string;
     getGroupTitle?: (row: Row<TData>) => React.ReactNode;
-    row: Row<TData>;
 }
 
 export const BaseGroupHeader = <TData,>({
+    row,
     className,
     getGroupTitle,
-    row,
 }: BaseGroupHeaderProps<TData>) => {
     return (
         <h2 className={b(null, className)}>

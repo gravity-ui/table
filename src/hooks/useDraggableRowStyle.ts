@@ -10,7 +10,7 @@ export interface UseDraggableRowStyleParams
     isFirstChild?: boolean;
     draggableChildRowOffset?: number;
     style?: React.CSSProperties;
-    nestingEnabled?: boolean;
+    enableNesting?: boolean;
 }
 
 const defaultStyle = {};
@@ -23,7 +23,7 @@ export const useDraggableRowStyle = ({
     isDragActive,
     isFirstChild,
     draggableChildRowOffset = 32,
-    nestingEnabled,
+    enableNesting,
 }: UseDraggableRowStyleParams) => {
     const {isChildMode, isParentMode} = React.useContext(SortableListContext) ?? {};
 
@@ -34,7 +34,7 @@ export const useDraggableRowStyle = ({
 
         let x = 0;
 
-        if (nestingEnabled && isDragging) {
+        if (enableNesting && isDragging) {
             if (isParentMode) {
                 x = -draggableChildRowOffset;
             } else if (isChildMode && !isFirstChild) {
@@ -57,6 +57,6 @@ export const useDraggableRowStyle = ({
         style,
         transform,
         transition,
-        nestingEnabled,
+        enableNesting,
     ]);
 };

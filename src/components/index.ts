@@ -15,5 +15,3 @@ export * from './SortableListContext';
 export * from './SortableListDndContext';
 export * from './BaseTable';
 export * from './Table';
-export * from './TableContext';
-export * from './TableContextProvider';

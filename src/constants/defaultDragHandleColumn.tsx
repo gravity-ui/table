@@ -7,9 +7,7 @@ import {BaseDragHandle} from '../components';
 export const defaultDragHandleColumn: ColumnDef<unknown> = {
     id: '_drag',
     header: '',
-    cell: ({row}) => {
-        return <BaseDragHandle row={row} />;
-    },
+    cell: ({row, table}) => <BaseDragHandle row={row} table={table} />,
     size: 14,
     minSize: 14,
 };

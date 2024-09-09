@@ -26,11 +26,11 @@ export interface BaseHeaderCellProps<TData, TValue> {
     resizeHandleClassName?: string;
     sortIndicatorClassName?: string;
     attributes?:
-        | React.TdHTMLAttributes<HTMLTableCellElement>
+        | React.ThHTMLAttributes<HTMLTableCellElement>
         | ((
               header: Header<TData, TValue>,
               parentHeader?: Header<TData, unknown>,
-          ) => React.TdHTMLAttributes<HTMLTableCellElement>);
+          ) => React.ThHTMLAttributes<HTMLTableCellElement>);
 }
 
 export const BaseHeaderCell = <TData, TValue>({
@@ -43,6 +43,12 @@ export const BaseHeaderCell = <TData, TValue>({
     sortIndicatorClassName,
     attributes: attributesProp,
 }: BaseHeaderCellProps<TData, TValue>) => {
+    const attributes = React.useMemo(() => {
+        return typeof attributesProp === 'function'
+            ? attributesProp(header, parentHeader)
+            : attributesProp;
+    }, [attributesProp, header, parentHeader]);
+
     const className = React.useMemo(() => {
         return typeof classNameProp === 'function'
             ? classNameProp(header, parentHeader)
@@ -65,21 +71,16 @@ export const BaseHeaderCell = <TData, TValue>({
 
     const rowSpan = header.isPlaceholder ? header.getLeafHeaders().length : 1;
 
-    const attributes =
-        typeof attributesProp === 'function'
-            ? attributesProp(header, parentHeader)
-            : attributesProp;
-
     return (
         <th
             className={b('header-cell', getHeaderCellClassModes(header), className)}
             colSpan={header.colSpan > 1 ? header.colSpan : undefined}
             rowSpan={rowSpan > 1 ? rowSpan : undefined}
             onClick={header.column.getToggleSortingHandler()}
-            style={getCellStyles(header)}
             aria-sort={getAriaSort(header.column.getIsSorted())}
             aria-colindex={getHeaderCellAriaColIndex(header)}
             {...attributes}
+            style={getCellStyles(header, attributes?.style)}
         >
             {flexRender(header.column.columnDef.header, header.getContext())}{' '}
             {header.column.getCanSort() &&

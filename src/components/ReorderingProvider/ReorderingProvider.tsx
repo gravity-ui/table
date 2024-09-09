@@ -13,7 +13,7 @@ export interface ReorderingProviderProps<TData> {
     table: Table<TData>;
     children?: React.ReactNode;
     dndModifiers?: SortableListDndContextProps['modifiers'];
-    enableNesting?: SortableListProps['nestingEnabled'];
+    enableNesting?: SortableListProps['enableNesting'];
     onReorder?: SortableListProps['onDragEnd'];
 }
 
@@ -29,7 +29,7 @@ export const ReorderingProvider = <TData,>({
 
     return (
         <SortableListDndContext modifiers={dndModifiers}>
-            <SortableList items={rowIds} onDragEnd={onReorder} nestingEnabled={enableNesting}>
+            <SortableList items={rowIds} onDragEnd={onReorder} enableNesting={enableNesting}>
                 {children}
             </SortableList>
         </SortableListDndContext>

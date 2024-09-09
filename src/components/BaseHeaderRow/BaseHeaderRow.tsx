@@ -7,8 +7,8 @@ import {BaseHeaderCell} from '../BaseHeaderCell';
 import type {BaseResizeHandleProps} from '../BaseResizeHandle';
 import {b} from '../BaseTable/BaseTable.classname';
 
-export interface BaseHeaderRowProps<TData, TValue>
-    extends Omit<React.TdHTMLAttributes<HTMLTableRowElement>, 'className'> {
+export interface BaseHeaderRowProps<TData, TValue = unknown>
+    extends Omit<React.HTMLAttributes<HTMLTableRowElement>, 'className'> {
     cellClassName?: BaseHeaderCellProps<TData, TValue>['className'];
     className?:
         | string
@@ -28,7 +28,7 @@ export interface BaseHeaderRowProps<TData, TValue>
     cellAttributes?: BaseHeaderCellProps<TData, TValue>['attributes'];
 }
 
-export const BaseHeaderRow = <TData, TValue>({
+export const BaseHeaderRow = <TData, TValue = unknown>({
     cellClassName,
     className: classNameProp,
     headerGroup,
@@ -41,16 +41,17 @@ export const BaseHeaderRow = <TData, TValue>({
     cellAttributes,
     ...restProps
 }: BaseHeaderRowProps<TData, TValue>) => {
+    const attributes = React.useMemo(() => {
+        return typeof attributesProp === 'function'
+            ? attributesProp(headerGroup, parentHeaderGroup)
+            : attributesProp;
+    }, [attributesProp, headerGroup, parentHeaderGroup]);
+
     const className = React.useMemo(() => {
         return typeof classNameProp === 'function'
             ? classNameProp(headerGroup, parentHeaderGroup)
             : classNameProp;
     }, [classNameProp, headerGroup, parentHeaderGroup]);
-
-    const attributes =
-        typeof attributesProp === 'function'
-            ? attributesProp(headerGroup, parentHeaderGroup)
-            : attributesProp;
 
     return (
         <tr className={b('header-row', className)} {...restProps} {...attributes}>

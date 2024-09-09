@@ -1,13 +1,12 @@
 import React from 'react';
 
 import {useForkRef} from '@gravity-ui/uikit';
-import type {Row as RowType} from '@tanstack/react-table';
+import type {Row} from '@tanstack/react-table';
 
 import {useDraggableRowDepth, useDraggableRowStyle} from '../../hooks';
 import type {BaseRowProps} from '../BaseRow';
 import {BaseRow} from '../BaseRow';
 import {SortableListContext} from '../SortableListContext';
-import {TableContext} from '../TableContext';
 
 export interface BaseDraggableRowProps<
     TData,
@@ -20,6 +19,7 @@ export const BaseDraggableRow = React.forwardRef(
             attributes: attributesProp,
             row,
             style,
+            table,
             ...restProps
         }: BaseDraggableRowProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableRowElement>,
@@ -28,6 +28,7 @@ export const BaseDraggableRow = React.forwardRef(
             isChildMode,
             activeItemKey,
             targetItemIndex = -1,
+            enableNesting,
             // The `useSortable` hook is provided by `@dnd-kit/sortable` library and imported via `SortableListContext`.
             // This is a temporary solution to prevent importing the entire `@dnd-kit` library
             // when the user doesn't use the reordering feature.
@@ -43,8 +44,6 @@ export const BaseDraggableRow = React.forwardRef(
             id: row.id,
         }) || {};
 
-        const {enableNesting} = React.useContext(TableContext);
-
         const isDragActive = Boolean(activeItemKey);
         const isParent = isChildMode && targetItemIndex === row.index;
 
@@ -52,6 +51,7 @@ export const BaseDraggableRow = React.forwardRef(
 
         const {isFirstChild, depth} = useDraggableRowDepth<TData>({
             row,
+            table,
             isDragging,
         });
 
@@ -62,11 +62,11 @@ export const BaseDraggableRow = React.forwardRef(
             isDragging,
             isDragActive,
             isFirstChild,
-            nestingEnabled: enableNesting,
+            enableNesting,
         });
 
-        const getDraggableRowDataAttributes = React.useCallback(
-            (draggableRow: RowType<TData>) => {
+        const getDraggableRowAttributes = React.useCallback(
+            (draggableRow: Row<TData>) => {
                 const attributes =
                     typeof attributesProp === 'function'
                         ? attributesProp(draggableRow)
@@ -88,9 +88,10 @@ export const BaseDraggableRow = React.forwardRef(
         return (
             <BaseRow
                 ref={handleRowRef}
-                attributes={getDraggableRowDataAttributes}
+                attributes={getDraggableRowAttributes}
                 row={row}
                 style={draggableStyle}
+                table={table}
                 {...restProps}
             />
         );
