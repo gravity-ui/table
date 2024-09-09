@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.1](https://github.com/gravity-ui/table/compare/v0.7.0...v0.7.1) (2024-09-09)
+
+
+### Bug Fixes
+
+* **BaseTable:** do not import dnd-kit if reordering is not used ([#34](https://github.com/gravity-ui/table/issues/34)) ([31ef94d](https://github.com/gravity-ui/table/commit/31ef94d52f47cdd369f5391a103bb2d15d584b50))
+
 ## [0.7.0](https://github.com/gravity-ui/table/compare/v0.6.0...v0.7.0) (2024-09-06)
 
 
