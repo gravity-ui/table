@@ -1,78 +1,88 @@
 import React from 'react';
 
-import type {Row as RowType, Table as TableType} from '@tanstack/react-table';
+import type {Row, Table} from '@tanstack/react-table';
 import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 
-import {getAriaMultiselectable, getCellClassModes} from '../../utils';
+import {getAriaMultiselectable, getCellClassModes, shouldRenderFooterRow} from '../../utils';
 import {BaseDraggableRow} from '../BaseDraggableRow';
+import type {BaseFooterRowProps} from '../BaseFooterRow';
 import {BaseFooterRow} from '../BaseFooterRow';
 import type {BaseHeaderRowProps} from '../BaseHeaderRow';
 import {BaseHeaderRow} from '../BaseHeaderRow';
-import {BaseRow} from '../BaseRow';
 import type {BaseRowProps} from '../BaseRow';
+import {BaseRow} from '../BaseRow';
 import {SortableListContext} from '../SortableListContext';
-import {TableContextProvider} from '../TableContextProvider';
-import type {TableContextProviderProps} from '../TableContextProvider';
 
 import {b} from './BaseTable.classname';
 
 import './BaseTable.scss';
 
 export interface BaseTableProps<TData, TScrollElement extends Element | Window = HTMLDivElement> {
+    table: Table<TData>;
+    attributes?: React.TableHTMLAttributes<HTMLTableElement>;
+    bodyAttributes?: React.HTMLAttributes<HTMLTableSectionElement>;
     bodyClassName?: string;
+    cellAttributes?: BaseRowProps<TData>['cellAttributes'];
     cellClassName?: BaseRowProps<TData>['cellClassName'];
     className?: string;
     emptyContent?: React.ReactNode | (() => React.ReactNode);
-    enableNesting?: boolean;
-    footerCellClassName?: string;
+    footerAttributes?: React.HTMLAttributes<HTMLTableSectionElement>;
+    footerCellAttributes?: BaseFooterRowProps<TData>['cellAttributes'];
+    footerCellClassName?: BaseFooterRowProps<TData>['cellClassName'];
     footerClassName?: string;
-    footerRowClassName?: string;
+    footerRowAttributes?: BaseFooterRowProps<TData>['attributes'];
+    footerRowClassName?: BaseFooterRowProps<TData>['className'];
     getGroupTitle?: BaseRowProps<TData>['getGroupTitle'];
     getIsCustomRow?: BaseRowProps<TData>['getIsCustomRow'];
     getIsGroupHeaderRow?: BaseRowProps<TData>['getIsGroupHeaderRow'];
     groupHeaderClassName?: BaseRowProps<TData>['groupHeaderClassName'];
-    headerCellClassName?: BaseHeaderRowProps<TData, unknown>['cellClassName'];
+    headerAttributes?: React.HTMLAttributes<HTMLTableSectionElement>;
+    headerCellAttributes?: BaseHeaderRowProps<TData>['cellAttributes'];
+    headerCellClassName?: BaseHeaderRowProps<TData>['cellClassName'];
     headerClassName?: string;
-    headerRowClassName?: BaseHeaderRowProps<TData, unknown>['className'];
+    headerRowAttributes?: BaseHeaderRowProps<TData>['attributes'];
+    headerRowClassName?: BaseHeaderRowProps<TData>['className'];
     onRowClick?: BaseRowProps<TData>['onClick'];
     renderCustomRowContent?: BaseRowProps<TData>['renderCustomRowContent'];
     renderGroupHeader?: BaseRowProps<TData>['renderGroupHeader'];
     renderGroupHeaderRowContent?: BaseRowProps<TData>['renderGroupHeaderRowContent'];
-    renderResizeHandle?: BaseHeaderRowProps<TData, unknown>['renderResizeHandle'];
-    renderSortIndicator?: BaseHeaderRowProps<TData, unknown>['renderSortIndicator'];
-    resizeHandleClassName?: BaseHeaderRowProps<TData, unknown>['resizeHandleClassName'];
+    renderResizeHandle?: BaseHeaderRowProps<TData>['renderResizeHandle'];
+    renderSortIndicator?: BaseHeaderRowProps<TData>['renderSortIndicator'];
+    resizeHandleClassName?: BaseHeaderRowProps<TData>['resizeHandleClassName'];
+    rowAttributes?: BaseRowProps<TData>['attributes'];
     rowClassName?: BaseRowProps<TData>['className'];
     rowVirtualizer?: Virtualizer<TScrollElement, HTMLTableRowElement>;
-    sortIndicatorClassName?: BaseHeaderRowProps<TData, unknown>['sortIndicatorClassName'];
+    sortIndicatorClassName?: BaseHeaderRowProps<TData>['sortIndicatorClassName'];
     stickyFooter?: boolean;
     stickyHeader?: boolean;
-    table: TableType<TData>;
     withFooter?: boolean;
     withHeader?: boolean;
-    attributes?: React.TableHTMLAttributes<HTMLTableElement>;
-    headerAttributes?: React.HTMLAttributes<HTMLTableSectionElement>;
-    headerRowAttributes?: BaseHeaderRowProps<TData, unknown>['attributes'];
-    headerCellAttributes?: BaseHeaderRowProps<TData, unknown>['cellAttributes'];
-    bodyAttributes?: React.HTMLAttributes<HTMLTableSectionElement>;
-    rowAttributes?: BaseRowProps<TData>['attributes'];
-    cellAttributes?: BaseRowProps<TData>['cellAttributes'];
 }
 
 export const BaseTable = React.forwardRef(
     <TData, TScrollElement extends Element | Window = HTMLDivElement>(
         {
+            table,
+            attributes,
+            bodyAttributes,
             bodyClassName,
+            cellAttributes,
             cellClassName,
             className,
             emptyContent,
-            enableNesting,
+            footerAttributes,
+            footerCellAttributes,
             footerCellClassName,
             footerClassName,
+            footerRowAttributes,
             footerRowClassName,
             getGroupTitle,
             getIsGroupHeaderRow,
+            headerAttributes,
+            headerCellAttributes,
             headerCellClassName,
             headerClassName,
+            headerRowAttributes,
             headerRowClassName,
             onRowClick,
             renderGroupHeader,
@@ -80,33 +90,19 @@ export const BaseTable = React.forwardRef(
             renderResizeHandle,
             renderSortIndicator,
             resizeHandleClassName,
+            rowAttributes,
             rowClassName,
             rowVirtualizer,
             sortIndicatorClassName,
-            stickyFooter,
-            stickyHeader,
-            table,
-            withFooter,
+            stickyFooter = false,
+            stickyHeader = false,
+            withFooter = false,
             withHeader = true,
-            attributes,
-            headerAttributes,
-            headerRowAttributes,
-            headerCellAttributes,
-            bodyAttributes,
-            rowAttributes,
-            cellAttributes,
         }: BaseTableProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableElement>,
     ) => {
         const draggableContext = React.useContext(SortableListContext);
         const draggingRowIndex = draggableContext?.activeItemIndex ?? -1;
-
-        const getRowByIndex = React.useCallback<TableContextProviderProps<TData>['getRowByIndex']>(
-            (rowIndex: number) => {
-                return table.getRowModel().rows[rowIndex];
-            },
-            [table],
-        );
 
         const {rows} = table.getRowModel();
 
@@ -123,16 +119,16 @@ export const BaseTable = React.forwardRef(
             const bodyRows = rowVirtualizer?.getVirtualItems() || rows;
 
             if (bodyRows.length === 0) {
-                const rClassName =
+                const emptyRowClassName =
                     typeof rowClassName === 'function' ? rowClassName() : rowClassName;
 
-                const cClassName =
+                const emptyCellClassName =
                     typeof cellClassName === 'function' ? cellClassName() : cellClassName;
 
                 return (
-                    <tr className={b('row', {}, rClassName)}>
+                    <tr className={b('row', {}, emptyRowClassName)}>
                         <td
-                            className={b('cell', getCellClassModes(), cClassName)}
+                            className={b('cell', getCellClassModes(), emptyCellClassName)}
                             colSpan={colCount}
                         >
                             {typeof emptyContent === 'function' ? emptyContent() : emptyContent}
@@ -144,7 +140,7 @@ export const BaseTable = React.forwardRef(
             return bodyRows.map((virtualItemOrRow) => {
                 const row = rowVirtualizer
                     ? rows[virtualItemOrRow.index]
-                    : (virtualItemOrRow as RowType<TData>);
+                    : (virtualItemOrRow as Row<TData>);
 
                 const rowProps: BaseRowProps<TData, TScrollElement> = {
                     cellClassName,
@@ -158,6 +154,7 @@ export const BaseTable = React.forwardRef(
                     renderGroupHeaderRowContent,
                     row,
                     rowVirtualizer,
+                    table,
                     virtualItem: rowVirtualizer
                         ? (virtualItemOrRow as VirtualItem<HTMLTableRowElement>)
                         : undefined,
@@ -176,63 +173,69 @@ export const BaseTable = React.forwardRef(
         };
 
         return (
-            <TableContextProvider getRowByIndex={getRowByIndex} enableNesting={enableNesting}>
-                <table
-                    ref={ref}
-                    className={b({'with-row-virtualization': Boolean(rowVirtualizer)}, className)}
-                    data-dragging-row-index={draggingRowIndex > -1 ? draggingRowIndex : undefined}
-                    aria-colcount={colCount > 0 ? colCount : undefined}
-                    aria-rowcount={rowCount > 0 ? rowCount : undefined}
-                    aria-multiselectable={getAriaMultiselectable(table)}
-                    {...attributes}
-                >
-                    {headerGroups && (
-                        <thead
-                            className={b('header', {sticky: stickyHeader}, headerClassName)}
-                            {...headerAttributes}
-                        >
-                            {headerGroups.map((headerGroup, index) => (
-                                <BaseHeaderRow
-                                    key={headerGroup.id}
-                                    cellClassName={headerCellClassName}
-                                    className={headerRowClassName}
-                                    headerGroup={headerGroup}
-                                    parentHeaderGroup={headerGroups[index - 1]}
-                                    renderResizeHandle={renderResizeHandle}
-                                    renderSortIndicator={renderSortIndicator}
-                                    resizeHandleClassName={resizeHandleClassName}
-                                    sortIndicatorClassName={sortIndicatorClassName}
-                                    attributes={headerRowAttributes}
-                                    cellAttributes={headerCellAttributes}
-                                    aria-rowindex={index + 1}
-                                />
-                            ))}
-                        </thead>
-                    )}
-                    <tbody
-                        className={b('body', bodyClassName)}
-                        style={{
-                            height: rowVirtualizer?.getTotalSize(),
-                        }}
-                        {...bodyAttributes}
+            <table
+                ref={ref}
+                className={b({'with-row-virtualization': Boolean(rowVirtualizer)}, className)}
+                data-dragging-row-index={draggingRowIndex > -1 ? draggingRowIndex : undefined}
+                aria-colcount={colCount > 0 ? colCount : undefined}
+                aria-rowcount={rowCount > 0 ? rowCount : undefined}
+                aria-multiselectable={getAriaMultiselectable(table)}
+                {...attributes}
+            >
+                {headerGroups && (
+                    <thead
+                        className={b('header', {sticky: stickyHeader}, headerClassName)}
+                        {...headerAttributes}
                     >
-                        {renderBodyRows()}
-                    </tbody>
-                    {footerGroups && (
-                        <tfoot className={b('footer', {sticky: stickyFooter}, footerClassName)}>
-                            {footerGroups.map((footerGroup, index) => (
+                        {headerGroups.map((headerGroup, index) => (
+                            <BaseHeaderRow
+                                key={headerGroup.id}
+                                cellClassName={headerCellClassName}
+                                className={headerRowClassName}
+                                headerGroup={headerGroup}
+                                parentHeaderGroup={headerGroups[index - 1]}
+                                renderResizeHandle={renderResizeHandle}
+                                renderSortIndicator={renderSortIndicator}
+                                resizeHandleClassName={resizeHandleClassName}
+                                sortIndicatorClassName={sortIndicatorClassName}
+                                attributes={headerRowAttributes}
+                                cellAttributes={headerCellAttributes}
+                                aria-rowindex={index + 1}
+                            />
+                        ))}
+                    </thead>
+                )}
+                <tbody
+                    className={b('body', bodyClassName)}
+                    {...bodyAttributes}
+                    style={{
+                        height: rowVirtualizer?.getTotalSize(),
+                        ...bodyAttributes?.style,
+                    }}
+                >
+                    {renderBodyRows()}
+                </tbody>
+                {footerGroups && (
+                    <tfoot
+                        className={b('footer', {sticky: stickyFooter}, footerClassName)}
+                        {...footerAttributes}
+                    >
+                        {footerGroups.map((footerGroup, index) =>
+                            shouldRenderFooterRow(footerGroup) ? (
                                 <BaseFooterRow
                                     key={footerGroup.id}
+                                    footerGroup={footerGroup}
+                                    attributes={footerRowAttributes}
+                                    cellAttributes={footerCellAttributes}
                                     cellClassName={footerCellClassName}
                                     className={footerRowClassName}
-                                    footerGroup={footerGroup}
                                     aria-rowindex={headerRowCount + bodyRowCount + index + 1}
                                 />
-                            ))}
-                        </tfoot>
-                    )}
-                </table>
-            </TableContextProvider>
+                            ) : null,
+                        )}
+                    </tfoot>
+                )}
+            </table>
         );
     },
 ) as (<TData, TScrollElement extends Element | Window = HTMLDivElement>(

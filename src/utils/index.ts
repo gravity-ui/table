@@ -7,3 +7,6 @@ export * from './getColumnPinningClassModes';
 export * from './getHeaderCellAriaColIndex';
 export * from './getHeaderCellClassModes';
 export * from './getVirtualRowRangeExtractor';
+export * from './shouldRenderFooterCell';
+export * from './shouldRenderFooterRow';
+export * from './shouldRenderHeaderCell';

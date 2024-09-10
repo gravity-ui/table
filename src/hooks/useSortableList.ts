@@ -8,7 +8,7 @@ export interface UseSortableListParams {
     items: string[];
     onDragStart?: (activeId: string) => void;
     onDragEnd?: (result: SortableListDragResult) => void;
-    nestingEnabled?: boolean;
+    enableNesting?: boolean;
     childModeOffset?: number;
     nextChildModeOffset?: number;
 }
@@ -17,7 +17,7 @@ export const useSortableList = ({
     items,
     onDragStart,
     onDragEnd,
-    nestingEnabled,
+    enableNesting,
     childModeOffset = 20,
     nextChildModeOffset = 10,
 }: UseSortableListParams) => {
@@ -74,7 +74,7 @@ export const useSortableList = ({
             document.body.style.setProperty('cursor', 'grabbing');
         },
         onDragMove: (event) => {
-            if (nestingEnabled) {
+            if (enableNesting) {
                 setIsParentMode(event.delta.x < -childModeOffset);
                 setIsChildMode(event.delta.x > childModeOffset);
 
@@ -115,14 +115,14 @@ export const useSortableList = ({
                 onDragEnd?.({
                     draggedItemKey,
                     targetItemKey,
-                    nestingEnabled,
+                    enableNesting,
                 });
             } else {
                 onDragEnd?.({
                     draggedItemKey,
                     baseItemKey: targetItemKey,
                     baseNextItemKey: items[targetItemKey ? getItemIndex(targetItemKey) + 1 : 0],
-                    nestingEnabled,
+                    enableNesting,
                     nextChild: isNextChildMode,
                     pullFromParent: isParentMode,
                 });

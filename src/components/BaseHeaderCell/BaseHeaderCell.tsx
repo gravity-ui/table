@@ -26,11 +26,11 @@ export interface BaseHeaderCellProps<TData, TValue> {
     resizeHandleClassName?: string;
     sortIndicatorClassName?: string;
     attributes?:
-        | React.TdHTMLAttributes<HTMLTableCellElement>
+        | React.ThHTMLAttributes<HTMLTableCellElement>
         | ((
               header: Header<TData, TValue>,
               parentHeader?: Header<TData, unknown>,
-          ) => React.TdHTMLAttributes<HTMLTableCellElement>);
+          ) => React.ThHTMLAttributes<HTMLTableCellElement>);
 }
 
 export const BaseHeaderCell = <TData, TValue>({
@@ -43,32 +43,15 @@ export const BaseHeaderCell = <TData, TValue>({
     sortIndicatorClassName,
     attributes: attributesProp,
 }: BaseHeaderCellProps<TData, TValue>) => {
-    const className = React.useMemo(() => {
-        return typeof classNameProp === 'function'
-            ? classNameProp(header, parentHeader)
-            : classNameProp;
-    }, [classNameProp, header, parentHeader]);
-
-    const isPlaceholderRowSpannedCell =
-        header.isPlaceholder &&
-        parentHeader?.isPlaceholder &&
-        parentHeader.placeholderId === header.placeholderId;
-
-    const isLeafRowSpannedCell =
-        !header.isPlaceholder &&
-        header.id === header.column.id &&
-        header.depth - header.column.depth > 1;
-
-    if (isPlaceholderRowSpannedCell || isLeafRowSpannedCell) {
-        return null;
-    }
-
-    const rowSpan = header.isPlaceholder ? header.getLeafHeaders().length : 1;
-
     const attributes =
         typeof attributesProp === 'function'
             ? attributesProp(header, parentHeader)
             : attributesProp;
+
+    const className =
+        typeof classNameProp === 'function' ? classNameProp(header, parentHeader) : classNameProp;
+
+    const rowSpan = header.isPlaceholder ? header.getLeafHeaders().length : 1;
 
     return (
         <th
@@ -76,10 +59,10 @@ export const BaseHeaderCell = <TData, TValue>({
             colSpan={header.colSpan > 1 ? header.colSpan : undefined}
             rowSpan={rowSpan > 1 ? rowSpan : undefined}
             onClick={header.column.getToggleSortingHandler()}
-            style={getCellStyles(header)}
             aria-sort={getAriaSort(header.column.getIsSorted())}
             aria-colindex={getHeaderCellAriaColIndex(header)}
             {...attributes}
+            style={getCellStyles(header, attributes?.style)}
         >
             {flexRender(header.column.columnDef.header, header.getContext())}{' '}
             {header.column.getCanSort() &&

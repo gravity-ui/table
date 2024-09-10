@@ -27,7 +27,9 @@ export const draggableTreeColumns: ColumnDef<TreeItem>[] = [
         accessorKey: 'name',
         header: 'Name',
         size: 200,
-        cell: (info) => <DraggableTreeNameCell row={info.row} value={info.getValue<string>()} />,
+        cell: ({getValue, row, table}) => (
+            <DraggableTreeNameCell row={row} table={table} value={getValue<string>()} />
+        ),
     },
     {accessorKey: 'age', header: 'Age', size: 100},
 ];

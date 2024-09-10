@@ -3,7 +3,7 @@ export interface SortableListDragResult {
     targetItemKey?: string;
     baseItemKey?: string;
     baseNextItemKey?: string;
-    nestingEnabled?: boolean;
+    enableNesting?: boolean;
     nextChild?: boolean;
     pullFromParent?: boolean;
 }

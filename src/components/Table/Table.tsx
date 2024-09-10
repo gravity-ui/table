@@ -15,7 +15,7 @@ export const Table = React.forwardRef(
         {
             className,
             cellClassName: cellClassNameProp,
-            footerCellClassName,
+            footerCellClassName: footerCellClassNameProp,
             headerCellClassName: headerCellClassNameProp,
             headerClassName,
             ...props
@@ -24,24 +24,34 @@ export const Table = React.forwardRef(
     ) => {
         const cellClassName: TableProps<TData>['cellClassName'] = React.useMemo(() => {
             if (typeof cellClassNameProp === 'function') {
-                return (...params) => b('cell', cellClassNameProp(...params));
+                return (...args) => b('cell', cellClassNameProp(...args));
             }
+
             return b('cell', cellClassNameProp);
         }, [cellClassNameProp]);
 
         const headerCellClassName: TableProps<TData>['headerCellClassName'] = React.useMemo(() => {
             if (typeof headerCellClassNameProp === 'function') {
-                return (...params) => b('header-cell', headerCellClassNameProp(...params));
+                return (...args) => b('header-cell', headerCellClassNameProp(...args));
             }
+
             return b('header-cell', headerCellClassNameProp);
         }, [headerCellClassNameProp]);
+
+        const footerCellClassName: TableProps<TData>['footerCellClassName'] = React.useMemo(() => {
+            if (typeof footerCellClassNameProp === 'function') {
+                return (...args) => b('footer-cell', footerCellClassNameProp(...args));
+            }
+
+            return b('footer-cell', footerCellClassNameProp);
+        }, [footerCellClassNameProp]);
 
         return (
             <BaseTable
                 ref={ref}
                 className={b(null, className)}
                 cellClassName={cellClassName}
-                footerCellClassName={b('footer-cell', footerCellClassName)}
+                footerCellClassName={footerCellClassName}
                 headerCellClassName={headerCellClassName}
                 headerClassName={b('header', headerClassName)}
                 {...props}

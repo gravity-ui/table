@@ -1,11 +1,11 @@
 import React from 'react';
 
 import {useSortable} from '@dnd-kit/sortable';
-import type {Row} from '@tanstack/react-table';
+import type {Row, Table} from '@tanstack/react-table';
 
 import {useDraggableRowDepth} from '../../hooks';
 import {BaseDraggableRowMarker} from '../BaseDraggableRowMarker';
-import {TableContext} from '../TableContext';
+import {SortableListContext} from '../SortableListContext';
 
 import {b} from './BaseDragHandle.classname';
 
@@ -13,16 +13,17 @@ import './BaseDragHandle.scss';
 
 export interface BaseDragHandleProps<TData> {
     row: Row<TData>;
+    table: Table<TData>;
 }
 
-export const BaseDragHandle = <TData,>({row}: BaseDragHandleProps<TData>) => {
+export const BaseDragHandle = <TData,>({row, table}: BaseDragHandleProps<TData>) => {
     const {attributes, listeners, isDragging} = useSortable({
         id: row.id,
     });
 
-    const {enableNesting} = React.useContext(TableContext);
+    const {enableNesting} = React.useContext(SortableListContext) || {};
 
-    const {depth} = useDraggableRowDepth({row, isDragging});
+    const {depth} = useDraggableRowDepth({row, table, isDragging});
 
     return (
         <React.Fragment>

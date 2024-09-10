@@ -32,12 +32,7 @@ export const withTableReorder = (
                     enableNesting={enableNesting}
                     onReorder={onReorder}
                 >
-                    <Component
-                        ref={ref}
-                        table={table}
-                        enableNesting={enableNesting}
-                        {...restProps}
-                    />
+                    <Component ref={ref} table={table} {...restProps} />
                 </ReorderingProvider>
             );
         },
