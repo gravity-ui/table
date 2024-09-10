@@ -61,6 +61,7 @@ export const BaseRow = React.forwardRef(
             virtualItem,
             attributes: attributesProp,
             cellAttributes,
+            table: _,
             ...restProps
         }: BaseRowProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableRowElement>,

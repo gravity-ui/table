@@ -18,8 +18,6 @@ export const getCellStyles = <TData>(
         maxWidth: cell.column.columnDef.maxSize,
         left: isPinned === 'left' ? `${cell.column.getStart('left')}px` : undefined,
         right: isPinned === 'right' ? `${cell.column.getAfter('right')}px` : undefined,
-        position: isPinned ? 'sticky' : undefined,
-        zIndex: isPinned ? 1 : undefined,
         ...style,
     };
 };
