@@ -35,7 +35,7 @@ export interface BaseRowProps<TData, TScrollElement extends Element | Window = H
     rowVirtualizer?: Virtualizer<TScrollElement, HTMLTableRowElement>;
     style?: React.CSSProperties;
     table: Table<TData>;
-    virtualItem?: VirtualItem<HTMLTableRowElement>;
+    virtualItem?: VirtualItem;
     attributes?:
         | React.HTMLAttributes<HTMLTableRowElement>
         | ((row: Row<TData>) => React.HTMLAttributes<HTMLTableRowElement>);
