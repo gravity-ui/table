@@ -67,13 +67,10 @@ export const BaseRow = React.forwardRef(
     ) => {
         const rowRef = useForkRef(rowVirtualizer?.measureElement, ref);
 
-        const attributes = React.useMemo(() => {
-            return typeof attributesProp === 'function' ? attributesProp(row) : attributesProp;
-        }, [attributesProp, row]);
+        const attributes =
+            typeof attributesProp === 'function' ? attributesProp(row) : attributesProp;
 
-        const className = React.useMemo(() => {
-            return typeof classNameProp === 'function' ? classNameProp(row) : classNameProp;
-        }, [classNameProp, row]);
+        const className = typeof classNameProp === 'function' ? classNameProp(row) : classNameProp;
 
         const handleClick = React.useCallback(
             (event: React.MouseEvent<HTMLTableRowElement>) => {

@@ -19,17 +19,10 @@ export const BaseFooterCell = <TData, TValue>({
     attributes: attributesProp,
     className: classNameProp,
 }: BaseFooterCellProps<TData, TValue>) => {
-    const attributes = React.useMemo(() => {
-        return typeof attributesProp === 'function' ? attributesProp(header) : attributesProp;
-    }, [attributesProp, header]);
+    const attributes =
+        typeof attributesProp === 'function' ? attributesProp(header) : attributesProp;
 
-    const className = React.useMemo(() => {
-        return typeof classNameProp === 'function' ? classNameProp(header) : classNameProp;
-    }, [classNameProp, header]);
-
-    if (header.isPlaceholder) {
-        return null;
-    }
+    const className = typeof classNameProp === 'function' ? classNameProp(header) : classNameProp;
 
     const rowSpan = header.depth - header.column.depth;
 

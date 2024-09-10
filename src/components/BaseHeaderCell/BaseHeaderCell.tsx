@@ -43,31 +43,13 @@ export const BaseHeaderCell = <TData, TValue>({
     sortIndicatorClassName,
     attributes: attributesProp,
 }: BaseHeaderCellProps<TData, TValue>) => {
-    const attributes = React.useMemo(() => {
-        return typeof attributesProp === 'function'
+    const attributes =
+        typeof attributesProp === 'function'
             ? attributesProp(header, parentHeader)
             : attributesProp;
-    }, [attributesProp, header, parentHeader]);
 
-    const className = React.useMemo(() => {
-        return typeof classNameProp === 'function'
-            ? classNameProp(header, parentHeader)
-            : classNameProp;
-    }, [classNameProp, header, parentHeader]);
-
-    const isPlaceholderRowSpannedCell =
-        header.isPlaceholder &&
-        parentHeader?.isPlaceholder &&
-        parentHeader.placeholderId === header.placeholderId;
-
-    const isLeafRowSpannedCell =
-        !header.isPlaceholder &&
-        header.id === header.column.id &&
-        header.depth - header.column.depth > 1;
-
-    if (isPlaceholderRowSpannedCell || isLeafRowSpannedCell) {
-        return null;
-    }
+    const className =
+        typeof classNameProp === 'function' ? classNameProp(header, parentHeader) : classNameProp;
 
     const rowSpan = header.isPlaceholder ? header.getLeafHeaders().length : 1;
 

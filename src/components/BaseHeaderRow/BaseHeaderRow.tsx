@@ -2,6 +2,7 @@ import React from 'react';
 
 import type {Header, HeaderGroup} from '@tanstack/react-table';
 
+import {shouldRenderHeaderCell} from '../../utils';
 import type {BaseHeaderCellProps} from '../BaseHeaderCell';
 import {BaseHeaderCell} from '../BaseHeaderCell';
 import type {BaseResizeHandleProps} from '../BaseResizeHandle';
@@ -41,35 +42,37 @@ export const BaseHeaderRow = <TData, TValue = unknown>({
     cellAttributes,
     ...restProps
 }: BaseHeaderRowProps<TData, TValue>) => {
-    const attributes = React.useMemo(() => {
-        return typeof attributesProp === 'function'
+    const attributes =
+        typeof attributesProp === 'function'
             ? attributesProp(headerGroup, parentHeaderGroup)
             : attributesProp;
-    }, [attributesProp, headerGroup, parentHeaderGroup]);
 
-    const className = React.useMemo(() => {
-        return typeof classNameProp === 'function'
+    const className =
+        typeof classNameProp === 'function'
             ? classNameProp(headerGroup, parentHeaderGroup)
             : classNameProp;
-    }, [classNameProp, headerGroup, parentHeaderGroup]);
 
     return (
         <tr className={b('header-row', className)} {...restProps} {...attributes}>
-            {headerGroup.headers.map((header) => (
-                <BaseHeaderCell
-                    key={header.column.id}
-                    className={cellClassName}
-                    header={header as Header<TData, TValue>}
-                    parentHeader={parentHeaderGroup?.headers.find(
-                        (item) => header.column.id === item.column.id,
-                    )}
-                    renderResizeHandle={renderResizeHandle}
-                    renderSortIndicator={renderSortIndicator}
-                    resizeHandleClassName={resizeHandleClassName}
-                    sortIndicatorClassName={sortIndicatorClassName}
-                    attributes={cellAttributes}
-                />
-            ))}
+            {headerGroup.headers.map((header) => {
+                const parentHeader = parentHeaderGroup?.headers.find(
+                    (item) => header.column.id === item.column.id,
+                );
+
+                return shouldRenderHeaderCell(header, parentHeader) ? (
+                    <BaseHeaderCell
+                        key={header.column.id}
+                        className={cellClassName}
+                        header={header as Header<TData, TValue>}
+                        parentHeader={parentHeader}
+                        renderResizeHandle={renderResizeHandle}
+                        renderSortIndicator={renderSortIndicator}
+                        resizeHandleClassName={resizeHandleClassName}
+                        sortIndicatorClassName={sortIndicatorClassName}
+                        attributes={cellAttributes}
+                    />
+                ) : null;
+            })}
         </tr>
     );
 };

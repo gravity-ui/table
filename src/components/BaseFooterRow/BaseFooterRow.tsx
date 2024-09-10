@@ -1,7 +1,8 @@
 import React from 'react';
 
-import type {HeaderGroup} from '@tanstack/react-table';
+import type {Header, HeaderGroup} from '@tanstack/react-table';
 
+import {shouldRenderFooterCell} from '../../utils';
 import type {BaseFooterCellProps} from '../BaseFooterCell';
 import {BaseFooterCell} from '../BaseFooterCell';
 import {b} from '../BaseTable/BaseTable.classname';
@@ -25,30 +26,24 @@ export const BaseFooterRow = <TData, TValue = unknown>({
     className: classNameProp,
     ...restProps
 }: BaseFooterRowProps<TData, TValue>) => {
-    const attributes = React.useMemo(() => {
-        return typeof attributesProp === 'function' ? attributesProp(footerGroup) : attributesProp;
-    }, [attributesProp, footerGroup]);
+    const attributes =
+        typeof attributesProp === 'function' ? attributesProp(footerGroup) : attributesProp;
 
-    const className = React.useMemo(() => {
-        return typeof classNameProp === 'function' ? classNameProp(footerGroup) : classNameProp;
-    }, [classNameProp, footerGroup]);
-
-    const isEmptyRow = footerGroup.headers.every((header) => !header.column.columnDef.footer);
-
-    if (isEmptyRow) {
-        return null;
-    }
+    const className =
+        typeof classNameProp === 'function' ? classNameProp(footerGroup) : classNameProp;
 
     return (
         <tr className={b('footer-row', className)} {...restProps} {...attributes}>
-            {footerGroup.headers.map((header) => (
-                <BaseFooterCell
-                    key={header.column.id}
-                    header={header}
-                    attributes={cellAttributes}
-                    className={cellClassName}
-                />
-            ))}
+            {footerGroup.headers.map((header) =>
+                shouldRenderFooterCell(header) ? (
+                    <BaseFooterCell
+                        key={header.column.id}
+                        header={header as Header<TData, TValue>}
+                        attributes={cellAttributes}
+                        className={cellClassName}
+                    />
+                ) : null,
+            )}
         </tr>
     );
 };

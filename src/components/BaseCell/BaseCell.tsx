@@ -23,13 +23,8 @@ export const BaseCell = <TData,>({
     attributes: attributesProp,
     ...restProps
 }: BaseCellProps<TData>) => {
-    const attributes = React.useMemo(() => {
-        return typeof attributesProp === 'function' ? attributesProp(cell) : attributesProp;
-    }, [attributesProp, cell]);
-
-    const className = React.useMemo(() => {
-        return typeof classNameProp === 'function' ? classNameProp(cell) : classNameProp;
-    }, [cell, classNameProp]);
+    const attributes = typeof attributesProp === 'function' ? attributesProp(cell) : attributesProp;
+    const className = typeof classNameProp === 'function' ? classNameProp(cell) : classNameProp;
 
     return (
         <td

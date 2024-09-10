@@ -3,7 +3,7 @@ import React from 'react';
 import type {Row, Table} from '@tanstack/react-table';
 import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 
-import {getAriaMultiselectable, getCellClassModes} from '../../utils';
+import {getAriaMultiselectable, getCellClassModes, shouldRenderFooterRow} from '../../utils';
 import {BaseDraggableRow} from '../BaseDraggableRow';
 import type {BaseFooterRowProps} from '../BaseFooterRow';
 import {BaseFooterRow} from '../BaseFooterRow';
@@ -220,17 +220,19 @@ export const BaseTable = React.forwardRef(
                         className={b('footer', {sticky: stickyFooter}, footerClassName)}
                         {...footerAttributes}
                     >
-                        {footerGroups.map((footerGroup, index) => (
-                            <BaseFooterRow
-                                key={footerGroup.id}
-                                footerGroup={footerGroup}
-                                attributes={footerRowAttributes}
-                                cellAttributes={footerCellAttributes}
-                                cellClassName={footerCellClassName}
-                                className={footerRowClassName}
-                                aria-rowindex={headerRowCount + bodyRowCount + index + 1}
-                            />
-                        ))}
+                        {footerGroups.map((footerGroup, index) =>
+                            shouldRenderFooterRow(footerGroup) ? (
+                                <BaseFooterRow
+                                    key={footerGroup.id}
+                                    footerGroup={footerGroup}
+                                    attributes={footerRowAttributes}
+                                    cellAttributes={footerCellAttributes}
+                                    cellClassName={footerCellClassName}
+                                    className={footerRowClassName}
+                                    aria-rowindex={headerRowCount + bodyRowCount + index + 1}
+                                />
+                            ) : null,
+                        )}
                     </tfoot>
                 )}
             </table>
