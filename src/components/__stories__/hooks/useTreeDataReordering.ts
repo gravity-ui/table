@@ -2,7 +2,7 @@ import React from 'react';
 
 import cloneDeep from 'lodash/cloneDeep';
 
-import type {SortableListDragResult} from '../../SortableList';
+import type {ReorderingProviderProps} from '../../ReorderingProvider';
 import type {TreeItem} from '../constants/tree';
 
 export type UseTreeDataReorderingProps = {
@@ -18,7 +18,7 @@ type UpdateRankPayload = {
 };
 
 export const useTreeDataReordering = ({data, setData}: UseTreeDataReorderingProps) => {
-    return React.useCallback(
+    return React.useCallback<NonNullable<ReorderingProviderProps<TreeItem>['onReorder']>>(
         // eslint-disable-next-line complexity
         ({
             draggedItemKey,
@@ -27,7 +27,7 @@ export const useTreeDataReordering = ({data, setData}: UseTreeDataReorderingProp
             targetItemKey,
             nextChild,
             pullFromParent,
-        }: SortableListDragResult) => {
+        }) => {
             if (!draggedItemKey) {
                 return;
             }
