@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.0](https://github.com/gravity-ui/table/compare/v0.7.1...v0.8.0) (2024-09-10)
+
+
+### Features
+
+* **BaseTable:** additional properties for classNames and attributes customization ([#36](https://github.com/gravity-ui/table/issues/36)) ([33db774](https://github.com/gravity-ui/table/commit/33db774a4d25b5901dfa0136d8d56d09d5089a9a))
+* **BaseTable:** remove withTableReorder hoc ([#38](https://github.com/gravity-ui/table/issues/38)) ([b672d8d](https://github.com/gravity-ui/table/commit/b672d8d77d9fafccc59a6e8b52b8653d4ddf6ddf))
+
 ## [0.7.1](https://github.com/gravity-ui/table/compare/v0.7.0...v0.7.1) (2024-09-09)
 
 
