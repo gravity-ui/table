@@ -3,10 +3,10 @@ import React from 'react';
 import type {ColumnDef, ColumnPinningState} from '@tanstack/react-table';
 
 import {defaultDragHandleColumn} from '../../../../constants';
-import {withTableReorder} from '../../../../hocs';
 import {useTable} from '../../../../hooks';
 import {BaseTable} from '../../../BaseTable';
-import type {SortableListDragResult} from '../../../SortableList';
+import type {ReorderingProviderProps} from '../../../ReorderingProvider';
+import {ReorderingProvider} from '../../../ReorderingProvider';
 import {columns} from '../../constants/columnPinning';
 import {data as originalData} from '../../constants/data';
 import type {Item} from '../../types';
@@ -14,8 +14,6 @@ import type {Item} from '../../types';
 import {cnColumnPinningDemo} from './ColumnPinningDemo.classname';
 
 import './ColumnPinningDemo.scss';
-
-const TableWithReordering = withTableReorder(BaseTable);
 
 const columnsWithReordering: ColumnDef<Item>[] = [
     {
@@ -44,37 +42,34 @@ export const ColumnPinningWithReorderingDemo = () => {
         },
     });
 
-    const handleReorder = React.useCallback(
-        ({draggedItemKey, baseItemKey}: SortableListDragResult) => {
-            setData((prevData) => {
-                const dataClone = prevData.slice();
+    const handleReorder = React.useCallback<
+        NonNullable<ReorderingProviderProps<Item>['onReorder']>
+    >(({draggedItemKey, baseItemKey}) => {
+        setData((prevData) => {
+            const dataClone = prevData.slice();
 
-                const index = dataClone.findIndex((item) => item.id === draggedItemKey);
+            const index = dataClone.findIndex((item) => item.id === draggedItemKey);
 
-                if (index >= 0) {
-                    const dragged = dataClone.splice(index, 1)[0] as Item;
-                    const insertIndex = dataClone.findIndex((item) => item.id === baseItemKey);
+            if (index >= 0) {
+                const dragged = dataClone.splice(index, 1)[0] as Item;
+                const insertIndex = dataClone.findIndex((item) => item.id === baseItemKey);
 
-                    if (insertIndex >= 0) {
-                        dataClone.splice(insertIndex + 1, 0, dragged);
-                    } else {
-                        dataClone.unshift(dragged);
-                    }
+                if (insertIndex >= 0) {
+                    dataClone.splice(insertIndex + 1, 0, dragged);
+                } else {
+                    dataClone.unshift(dragged);
                 }
+            }
 
-                return dataClone;
-            });
-        },
-        [],
-    );
+            return dataClone;
+        });
+    }, []);
 
     return (
         <div className={cnColumnPinningDemo()}>
-            <TableWithReordering
-                className={cnColumnPinningDemo('table')}
-                table={table}
-                onReorder={handleReorder}
-            />
+            <ReorderingProvider table={table} onReorder={handleReorder}>
+                <BaseTable className={cnColumnPinningDemo('table')} table={table} />
+            </ReorderingProvider>
         </div>
     );
 };

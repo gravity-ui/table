@@ -3,14 +3,12 @@ import React from 'react';
 import type {ColumnDef, ExpandedState} from '@tanstack/react-table';
 
 import {defaultDragHandleColumn} from '../../../../constants';
-import {withTableReorder} from '../../../../hocs';
 import {useTable} from '../../../../hooks';
 import {BaseTable} from '../../../BaseTable';
+import {ReorderingProvider} from '../../../ReorderingProvider';
 import type {TreeItem} from '../../constants/tree';
 import {draggableTreeColumns, data as originalData} from '../../constants/tree';
 import {useTreeDataReordering} from '../../hooks/useTreeDataReordering';
-
-const TableWithReordering = withTableReorder(BaseTable);
 
 const columns: ColumnDef<TreeItem>[] = [
     defaultDragHandleColumn as ColumnDef<TreeItem>,
@@ -35,5 +33,9 @@ export const ReorderingTreeDemo = () => {
         },
     });
 
-    return <TableWithReordering table={table} enableNesting onReorder={handleReorder} />;
+    return (
+        <ReorderingProvider table={table} enableNesting onReorder={handleReorder}>
+            <BaseTable table={table} />
+        </ReorderingProvider>
+    );
 };

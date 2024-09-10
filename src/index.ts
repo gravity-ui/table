@@ -3,9 +3,6 @@ export type {BaseTableProps, ReorderingProviderProps, TableProps} from './compon
 
 export {defaultDragHandleColumn, defaultSelectionColumn} from './constants';
 
-export {withTableReorder} from './hocs';
-export type {WithTableReorderProps} from './hocs';
-
 export {useDraggableRowDepth, useRowVirtualizer, useTable, useWindowRowVirtualizer} from './hooks';
 
 export type {

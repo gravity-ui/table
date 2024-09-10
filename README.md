@@ -180,9 +180,8 @@ const GroupingExample = () => {
 ### Reordering
 
 ```tsx
-import {defaultDragHandleColumn, withTableReorder, SortableListDragResult} from '@gravity-ui/table';
-
-const TableWithReordering = withTableReorder(BaseTable);
+import type {ReorderingProviderProps} from '@gravity-ui/table';
+import {defaultDragHandleColumn, ReorderingProvider} from '@gravity-ui/table';
 
 const columns: ColumnDef<Person>[] = [
   defaultDragHandleColumn,
@@ -200,7 +199,9 @@ const ReorderingExample = () => {
     getRowId: (item) => item.id,
   });
 
-  const handleReorder = React.useCallback(
+  const handleReorder = React.useCallback<
+    NonNullable<ReorderingProviderProps<Person>['onReorder']>
+  >(
     ({
       draggedItemKey,
       targetItemKey,
@@ -209,27 +210,18 @@ const ReorderingExample = () => {
       nestingEnabled,
       nextChild,
       pullFromParent,
-    }: SortableListDragResult) => {
+    }) => {
       // ...
     },
     [],
   );
 
-  return <TableWithReordering table={table} onReorder={handleReorder} />;
+  return (
+    <ReorderingProvider table={table} onReorder={handleReorder}>
+      <BaseTable table={table} />
+    </ReorderingProvider>
+  );
 };
-```
-
-Or use `ReorderingProvider`:
-
-```tsx
-<ReorderingProvider
-  table={table}
-  dndModifiers={dndModifiers}
-  enableNesting={enableNesting}
-  onReorder={onReorder}
->
-  <BaseTable table={table} enableNesting={enableNesting} />
-</ReorderingProvider>
 ```
 
 ### Virtualization
