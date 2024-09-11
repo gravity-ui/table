@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.1](https://github.com/gravity-ui/table/compare/v0.8.0...v0.8.1) (2024-09-11)
+
+
+### Bug Fixes
+
+* **BaseTable:** do not pass table prop as row html attribute, move some inline styles to css ([#39](https://github.com/gravity-ui/table/issues/39)) ([634a28e](https://github.com/gravity-ui/table/commit/634a28ed0c38683fde25feb13fba4da8080f58dd))
+
 ## [0.8.0](https://github.com/gravity-ui/table/compare/v0.7.1...v0.8.0) (2024-09-10)
 
 
