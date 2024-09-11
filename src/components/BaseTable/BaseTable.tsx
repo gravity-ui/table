@@ -155,9 +155,7 @@ export const BaseTable = React.forwardRef(
                     row,
                     rowVirtualizer,
                     table,
-                    virtualItem: rowVirtualizer
-                        ? (virtualItemOrRow as VirtualItem<HTMLTableRowElement>)
-                        : undefined,
+                    virtualItem: rowVirtualizer ? (virtualItemOrRow as VirtualItem) : undefined,
                     'aria-rowindex': headerRowCount + row.index + 1,
                     'aria-selected': table.options.enableRowSelection
                         ? row.getIsSelected()
