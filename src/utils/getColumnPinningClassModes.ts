@@ -11,6 +11,7 @@ export const getColumnPinningClassModes = <TData>(
     const isFirstPinnedRight = isPinnedRight && cell.column.getIsFirstColumn('right');
 
     return {
+        pinned: Boolean(isPinned),
         'pinned-left': isPinnedLeft,
         'pinned-right': isPinnedRight,
         'last-pinned-left': isLastPinnedLeft,
