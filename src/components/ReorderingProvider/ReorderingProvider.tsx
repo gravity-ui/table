@@ -10,10 +10,15 @@ import type {SortableListDndContextProps} from '../SortableListDndContext';
 import './ReorderingProvider.scss';
 
 export interface ReorderingProviderProps<TData> {
+    /** The table instance returned from the `useTable` hook */
     table: Table<TData>;
+    /** Children */
     children?: React.ReactNode;
+    /** A list of the dnd-kit modifiers */
     dndModifiers?: SortableListDndContextProps['modifiers'];
+    /** Determines whether elements can be nested using drag-and-drop */
     enableNesting?: SortableListProps['enableNesting'];
+    /** Reorder handler triggered when the dnd-kit's `onDragEnd` event fires */
     onReorder?: SortableListProps['onDragEnd'];
 }
 

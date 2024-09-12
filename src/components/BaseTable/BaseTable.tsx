@@ -18,44 +18,83 @@ import {b} from './BaseTable.classname';
 import './BaseTable.scss';
 
 export interface BaseTableProps<TData, TScrollElement extends Element | Window = HTMLDivElement> {
+    /** The table instance returned from the `useTable` hook */
     table: Table<TData>;
+    /** HTML attributes for the `<table>` element */
     attributes?: React.TableHTMLAttributes<HTMLTableElement>;
+    /** HTML attributes for the `<tbody>` element */
     bodyAttributes?: React.HTMLAttributes<HTMLTableSectionElement>;
+    /** CSS classes for the `<tbody>` element */
     bodyClassName?: string;
+    /** HTML attributes for the `<td>` elements inside `<tbody>` */
     cellAttributes?: BaseRowProps<TData>['cellAttributes'];
+    /** CSS classes for the `<td>` elements inside `<tbody>` */
     cellClassName?: BaseRowProps<TData>['cellClassName'];
+    /** CSS classes for the `<table>` element */
     className?: string;
+    /** Content displayed when the table has no data rows */
     emptyContent?: React.ReactNode | (() => React.ReactNode);
+    /** HTML attributes for the `<tfoot>` element */
     footerAttributes?: React.HTMLAttributes<HTMLTableSectionElement>;
+    /** HTML attributes for the `<th>` elements inside `<tfoot>` */
     footerCellAttributes?: BaseFooterRowProps<TData>['cellAttributes'];
+    /** CSS classes for the `<th>` elements inside `<tfoot>` */
     footerCellClassName?: BaseFooterRowProps<TData>['cellClassName'];
+    /** CSS classes for the `<tfoot>` element */
     footerClassName?: string;
+    /** HTML attributes for the `<tr>` elements inside `<tfoot>` */
     footerRowAttributes?: BaseFooterRowProps<TData>['attributes'];
+    /** CSS classes for the `<tr>` elements inside `<tfoot>` */
     footerRowClassName?: BaseFooterRowProps<TData>['className'];
+    /** Returns the title for a group header row */
     getGroupTitle?: BaseRowProps<TData>['getGroupTitle'];
+    /** Checks if the row is custom and should be rendered using `renderCustomRowContent` */
     getIsCustomRow?: BaseRowProps<TData>['getIsCustomRow'];
+    /** Checks if the row should be rendered as a group header */
     getIsGroupHeaderRow?: BaseRowProps<TData>['getIsGroupHeaderRow'];
+    /** CSS classes for the group header elements */
     groupHeaderClassName?: BaseRowProps<TData>['groupHeaderClassName'];
+    /** HTML attributes for the `<thead>` element */
     headerAttributes?: React.HTMLAttributes<HTMLTableSectionElement>;
+    /** HTML attributes for the `<th>` elements inside `<thead>` */
     headerCellAttributes?: BaseHeaderRowProps<TData>['cellAttributes'];
+    /** CSS classes for the `<th>` elements inside `<thead>` */
     headerCellClassName?: BaseHeaderRowProps<TData>['cellClassName'];
+    /** CSS classes for the `<thead>` element */
     headerClassName?: string;
+    /** HTML attributes for the `<tr>` elements inside `<thead>` */
     headerRowAttributes?: BaseHeaderRowProps<TData>['attributes'];
+    /** CSS classes for the `<tr>` elements inside `<thead>` */
     headerRowClassName?: BaseHeaderRowProps<TData>['className'];
+    /** Click handler for rows inside `<tbody>` */
     onRowClick?: BaseRowProps<TData>['onClick'];
+    /** Function to render custom rows */
     renderCustomRowContent?: BaseRowProps<TData>['renderCustomRowContent'];
+    /** Function to override the default rendering of group headers */
     renderGroupHeader?: BaseRowProps<TData>['renderGroupHeader'];
+    /** Function to override the default rendering of the entire group header row */
     renderGroupHeaderRowContent?: BaseRowProps<TData>['renderGroupHeaderRowContent'];
+    /** Function to override the default rendering of resize handles */
     renderResizeHandle?: BaseHeaderRowProps<TData>['renderResizeHandle'];
+    /** Function to override the default rendering of sort indicators */
     renderSortIndicator?: BaseHeaderRowProps<TData>['renderSortIndicator'];
+    /** CSS classes for resize handles in `<th>` elements */
     resizeHandleClassName?: BaseHeaderRowProps<TData>['resizeHandleClassName'];
+    /** HTML attributes for `<tr>` elements inside `<tbody>` */
     rowAttributes?: BaseRowProps<TData>['attributes'];
+    /** CSS classes for `<tr>` elements inside `<tbody>` */
     rowClassName?: BaseRowProps<TData>['className'];
+    /** The row virtualizer instance returned from `useRowVirtualizer` or `useWindowRowVirtualizer` hooks */
     rowVirtualizer?: Virtualizer<TScrollElement, HTMLTableRowElement>;
+    /** CSS classes for the sort indicator inside `<th>` elements */
     sortIndicatorClassName?: BaseHeaderRowProps<TData>['sortIndicatorClassName'];
+    /** Makes the `<tfoot>` element sticky */
     stickyFooter?: boolean;
+    /** Makes the `<thead>` element sticky */
     stickyHeader?: boolean;
+    /** Determines whether the `<tfoot>` element should be rendered */
     withFooter?: boolean;
+    /** Determines whether the `<thead>` element should be rendered */
     withHeader?: boolean;
 }
 

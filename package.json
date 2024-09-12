@@ -34,7 +34,7 @@
     "lint:styles:fix": "npm run lint:styles -- --fix",
     "prepare": "husky",
     "prepublishOnly": "npm run build",
-    "start": "storybook dev",
+    "start": "storybook dev -p 6006",
     "test": "jest --passWithNoTests",
     "test-storybook": "test-storybook",
     "test:coverage": "jest --coverage",

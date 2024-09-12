@@ -13,7 +13,7 @@ const config: StorybookConfig = {
         '@storybook/addon-webpack5-compiler-babel',
     ],
     framework: '@storybook/react-webpack5',
-    stories: ['../src/**/*.stories.@(ts|tsx)'],
+    stories: ['../src/**/*.mdx', '../src/**/*.stories.@(ts|tsx)'],
     typescript: {
         reactDocgen: 'react-docgen-typescript',
     },

@@ -10,7 +10,7 @@ npm install --save @gravity-ui/table
 
 ```tsx
 import React from 'react';
-import {BaseTable, useTable} from '@gravity-ui/table';
+import {Table, useTable} from '@gravity-ui/table';
 import type {ColumnDef} from '@tanstack/react-table';
 
 interface Person {
@@ -35,9 +35,16 @@ const BasicExample = () => {
     data,
   });
 
-  return <BaseTable table={table} />;
+  return <Table table={table} />;
 };
 ```
+
+## Components
+
+There are two Table components that you can use:
+
+- `BaseTable` - a component with basic styles only;
+- `Table` - a component with Gravity UI based styles.
 
 ### Row selection
 
@@ -68,7 +75,7 @@ const RowSelectionExample = () => {
     },
   });
 
-  return <BaseTable table={table} />;
+  return <Table table={table} />;
 };
 ```
 
@@ -101,7 +108,7 @@ const SortingExample = () => {
     },
   });
 
-  return <BaseTable table={table} />;
+  return <Table table={table} />;
 };
 ```
 
@@ -173,7 +180,7 @@ const GroupingExample = () => {
     },
   });
 
-  return <BaseTable table={table} getGroupTitle={getGroupTitle} />;
+  return <Table table={table} getGroupTitle={getGroupTitle} />;
 };
 ```
 
@@ -207,7 +214,7 @@ const ReorderingExample = () => {
       targetItemKey,
       baseItemKey,
       baseNextItemKey,
-      nestingEnabled,
+      enableNesting,
       nextChild,
       pullFromParent,
     }) => {
@@ -218,7 +225,7 @@ const ReorderingExample = () => {
 
   return (
     <ReorderingProvider table={table} onReorder={handleReorder}>
-      <BaseTable table={table} />
+      <Table table={table} />
     </ReorderingProvider>
   );
 };
@@ -257,7 +264,7 @@ const VirtualizationExample = () => {
 
   return (
     <div ref={containerRef} style={{height: '500px', overflow: 'auto'}}>
-      <BaseTable table={table} rowVirtualizer={rowVirtualizer} />
+      <Table table={table} rowVirtualizer={rowVirtualizer} />
     </div>
   );
 };
@@ -315,7 +322,7 @@ const WindowVirtualizationExample = () => {
     overscan: 5,
   });
 
-  return <BaseTable table={table} rowVirtualizer={rowVirtualizer} />;
+  return <Table table={table} rowVirtualizer={rowVirtualizer} />;
 };
 ```
 
@@ -338,7 +345,7 @@ const ResizingDemo = () => {
     columnResizeMode: 'onChange',
   });
 
-  return <BaseTable table={table} />;
+  return <Table table={table} />;
 };
 ```
 

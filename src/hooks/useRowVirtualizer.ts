@@ -4,6 +4,14 @@ export type UseRowVirtualizerOptions<TScrollElement extends Element> = Parameter
     typeof useTanstackVirtualizer<TScrollElement, HTMLTableRowElement>
 >[0];
 
+/**
+ * @param options
+ *
+ * @see https://tanstack.com/virtual/latest/docs/api/virtualizer
+ * @see https://tanstack.com/virtual/latest/docs/framework/react/react-virtual#usevirtualizer
+ *
+ * @returns virtualizer instance
+ */
 export const useRowVirtualizer = <TScrollElement extends Element>(
     options: UseRowVirtualizerOptions<TScrollElement>,
 ) => {
