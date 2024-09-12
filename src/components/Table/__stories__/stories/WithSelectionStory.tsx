@@ -4,10 +4,10 @@ import type {ColumnDef, RowSelectionState} from '@tanstack/react-table';
 
 import {selectionColumn} from '../../../../constants';
 import {useTable} from '../../../../hooks';
-import {BaseTable} from '../../../BaseTable';
-import {columns as originalColumns} from '../constants/columns';
-import {data} from '../constants/data';
-import type {Item} from '../types';
+import {columns as originalColumns} from '../../../BaseTable/__stories__/constants/columns';
+import {data} from '../../../BaseTable/__stories__/constants/data';
+import type {Item} from '../../../BaseTable/__stories__/types';
+import {Table} from '../../Table';
 
 const columns: ColumnDef<Item>[] = [selectionColumn as ColumnDef<Item>, ...originalColumns];
 
@@ -25,5 +25,5 @@ export const WithSelectionStory = () => {
         },
     });
 
-    return <BaseTable table={table} />;
+    return <Table table={table} />;
 };

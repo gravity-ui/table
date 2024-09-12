@@ -1,7 +1,7 @@
 export {BaseTable, ReorderingProvider, Table} from './components';
 export type {BaseTableProps, ReorderingProviderProps, TableProps} from './components';
 
-export {defaultDragHandleColumn, defaultSelectionColumn} from './constants';
+export {defaultDragHandleColumn, selectionColumn} from './constants';
 
 export {useDraggableRowDepth, useRowVirtualizer, useTable, useWindowRowVirtualizer} from './hooks';
 

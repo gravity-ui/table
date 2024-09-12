@@ -1,13 +1,13 @@
 import React from 'react';
 
-import {Checkbox} from '@gravity-ui/uikit';
 import type {ColumnDef} from '@tanstack/react-table';
 
-export const defaultSelectionColumn: ColumnDef<unknown> = {
+import {SelectionCheckbox} from '../components';
+
+export const selectionColumn: ColumnDef<unknown> = {
     id: '_select',
     header: ({table}) => (
-        <Checkbox
-            size="l"
+        <SelectionCheckbox
             checked={table.getIsAllRowsSelected()}
             disabled={!table.options.enableRowSelection}
             indeterminate={table.getIsSomeRowsSelected()}
@@ -15,14 +15,13 @@ export const defaultSelectionColumn: ColumnDef<unknown> = {
         />
     ),
     cell: ({row}) => (
-        <Checkbox
-            size="l"
+        <SelectionCheckbox
             checked={row.getIsSelected()}
             disabled={!row.getCanSelect()}
             indeterminate={row.getIsSomeSelected()}
             onChange={row.getToggleSelectedHandler()}
         />
     ),
-    size: 41,
-    minSize: 41,
+    size: 32,
+    minSize: 32,
 };
