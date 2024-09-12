@@ -8,6 +8,7 @@ import {EmptyContentStory} from './stories/EmptyContentStory';
 import {GroupingStory} from './stories/GroupingStory';
 import {GroupingStory2} from './stories/GroupingStory2';
 import {GroupingWithSelectionStory} from './stories/GroupingWithSelectionStory';
+import {GroupingWithVirtualizationStory} from './stories/GroupingWithVirtualizationStory';
 import {HeaderGroupsStory} from './stories/HeaderGroupsStory';
 import {ReorderingStory} from './stories/ReorderingStory';
 import {ReorderingTreeStory} from './stories/ReorderingTreeStory';
@@ -83,6 +84,10 @@ export const Virtualization: StoryObj<typeof VirtualizationStory> = {
 
 export const WindowVirtualization: StoryObj<typeof WindowVirtualizationStory> = {
     render: WindowVirtualizationStory,
+};
+
+export const GroupingWithVirtualization: StoryObj<typeof GroupingWithVirtualizationStory> = {
+    render: GroupingWithVirtualizationStory,
 };
 
 export const ReorderingWithVirtualization: StoryObj<typeof ReorderingWithVirtualizationStory> = {

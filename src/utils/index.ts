@@ -1,5 +1,6 @@
 export * from './cn';
 export * from './getAriaMultiselectable';
+export * from './getAriaRowIndexMap';
 export * from './getAriaSort';
 export * from './getCellClassModes';
 export * from './getCellStyles';
