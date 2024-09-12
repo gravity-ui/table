@@ -4,12 +4,12 @@ import type {ColumnDef} from '@tanstack/react-table';
 
 import {dragHandleColumn} from '../../../../constants';
 import {useTable} from '../../../../hooks';
-import {BaseTable} from '../../../BaseTable';
-import {ReorderingProvider} from '../../../ReorderingProvider';
+import {columns as originalColumns} from '../../../BaseTable/__stories__/constants/columns';
+import {data as originalData} from '../../../BaseTable/__stories__/constants/data';
+import type {Item} from '../../../BaseTable/__stories__/types';
 import type {ReorderingProviderProps} from '../../../ReorderingProvider';
-import {columns as originalColumns} from '../constants/columns';
-import {data as originalData} from '../constants/data';
-import type {Item} from '../types';
+import {ReorderingProvider} from '../../../ReorderingProvider';
+import {Table} from '../../Table';
 
 const columns: ColumnDef<Item>[] = [dragHandleColumn as ColumnDef<Item>, ...originalColumns];
 
@@ -47,7 +47,7 @@ export const ReorderingStory = () => {
 
     return (
         <ReorderingProvider table={table} onReorder={handleReorder}>
-            <BaseTable table={table} />
+            <Table table={table} />
         </ReorderingProvider>
     );
 };

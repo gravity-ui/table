@@ -1,7 +1,5 @@
 export * from './BaseCell';
-export * from './BaseDragHandle';
 export * from './BaseDraggableRow';
-export * from './BaseDraggableRowMarker';
 export * from './BaseFooterCell';
 export * from './BaseGroupHeader';
 export * from './BaseHeaderCell';
@@ -11,6 +9,7 @@ export * from './BaseResizeHandle';
 export * from './BaseRow';
 export * from './BaseSortIndicator';
 export * from './SelectionCheckbox';
+export * from './DragHandle';
 export * from './SortableList';
 export * from './SortableListContext';
 export * from './SortableListDndContext';

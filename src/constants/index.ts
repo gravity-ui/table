@@ -1,2 +1,2 @@
-export * from './defaultDragHandleColumn';
+export * from './dragHandleColumn';
 export * from './selectionColumn';

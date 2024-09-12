@@ -3,23 +3,32 @@ import React from 'react';
 import type {ColumnDef} from '@tanstack/react-table';
 
 import {dragHandleColumn} from '../../../../constants';
-import {useTable} from '../../../../hooks';
-import {BaseTable} from '../../../BaseTable';
-import {ReorderingProvider} from '../../../ReorderingProvider';
+import {useTable, useWindowRowVirtualizer} from '../../../../hooks';
+import {getVirtualRowRangeExtractor} from '../../../../utils';
+import {columns as originalColumns} from '../../../BaseTable/__stories__/constants/columns';
+import type {Item} from '../../../BaseTable/__stories__/types';
+import {generateData} from '../../../BaseTable/__stories__/utils';
 import type {ReorderingProviderProps} from '../../../ReorderingProvider';
-import {columns as originalColumns} from '../constants/columns';
-import {data as originalData} from '../constants/data';
-import type {Item} from '../types';
+import {ReorderingProvider} from '../../../ReorderingProvider';
+import {Table} from '../../Table';
 
 const columns: ColumnDef<Item>[] = [dragHandleColumn as ColumnDef<Item>, ...originalColumns];
 
-export const ReorderingStory = () => {
-    const [data, setData] = React.useState(originalData);
+export const ReorderingWithVirtualizationStory = () => {
+    const tableRef = React.useRef<HTMLTableElement>(null);
+    const [data, setData] = React.useState(() => generateData(300));
 
     const table = useTable({
         columns,
         data,
         getRowId: (item) => item.id,
+    });
+
+    const rowVirtualizer = useWindowRowVirtualizer({
+        count: table.getRowModel().rows.length,
+        estimateSize: () => 20,
+        overscan: 5,
+        rangeExtractor: getVirtualRowRangeExtractor(tableRef.current),
     });
 
     const handleReorder = React.useCallback<
@@ -47,7 +56,7 @@ export const ReorderingStory = () => {
 
     return (
         <ReorderingProvider table={table} onReorder={handleReorder}>
-            <BaseTable table={table} />
+            <Table ref={tableRef} table={table} rowVirtualizer={rowVirtualizer} stickyHeader />
         </ReorderingProvider>
     );
 };

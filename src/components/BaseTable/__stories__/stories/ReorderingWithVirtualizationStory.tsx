@@ -2,7 +2,7 @@ import React from 'react';
 
 import type {ColumnDef} from '@tanstack/react-table';
 
-import {defaultDragHandleColumn} from '../../../../constants';
+import {dragHandleColumn} from '../../../../constants';
 import {useTable, useWindowRowVirtualizer} from '../../../../hooks';
 import {getVirtualRowRangeExtractor} from '../../../../utils';
 import {BaseTable} from '../../../BaseTable';
@@ -16,7 +16,7 @@ import {cnVirtualizationStory} from './VirtualizationStory.classname';
 
 import './VirtualizationStory.scss';
 
-const columns: ColumnDef<Item>[] = [defaultDragHandleColumn as ColumnDef<Item>, ...originalColumns];
+const columns: ColumnDef<Item>[] = [dragHandleColumn as ColumnDef<Item>, ...originalColumns];
 
 export const ReorderingWithVirtualizationStory = () => {
     const tableRef = React.useRef<HTMLTableElement>(null);

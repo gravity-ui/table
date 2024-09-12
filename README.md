@@ -188,10 +188,10 @@ const GroupingExample = () => {
 
 ```tsx
 import type {ReorderingProviderProps} from '@gravity-ui/table';
-import {defaultDragHandleColumn, ReorderingProvider} from '@gravity-ui/table';
+import {dragHandleColumn, ReorderingProvider} from '@gravity-ui/table';
 
 const columns: ColumnDef<Person>[] = [
-  defaultDragHandleColumn,
+  dragHandleColumn,
   // ...other columns
 ];
 
