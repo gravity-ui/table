@@ -2,7 +2,7 @@ import React from 'react';
 
 import type {ColumnDef, ExpandedState} from '@tanstack/react-table';
 
-import {defaultDragHandleColumn} from '../../../../constants';
+import {dragHandleColumn} from '../../../../constants';
 import {useTable} from '../../../../hooks';
 import {ReorderingProvider} from '../../../ReorderingProvider';
 import {BaseTable} from '../../BaseTable';
@@ -11,7 +11,7 @@ import {draggableTreeColumns, data as originalData} from '../constants/tree';
 import {useTreeDataReordering} from '../hooks/useTreeDataReordering';
 
 const columns: ColumnDef<TreeItem>[] = [
-    defaultDragHandleColumn as ColumnDef<TreeItem>,
+    dragHandleColumn as ColumnDef<TreeItem>,
     ...draggableTreeColumns,
 ];
 

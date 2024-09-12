@@ -4,7 +4,6 @@ $block: '.#{variables.$ns}table';
 
 #{$block} {
     --gc-tree-view-padding: 0px;
-    --gc-draggable-row-marker-offset: 20px;
 
     border-spacing: 0;
     border-collapse: separate;
