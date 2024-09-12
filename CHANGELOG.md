@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.9.0](https://github.com/gravity-ui/table/compare/v0.8.1...v0.9.0) (2024-09-12)
+
+
+### Features
+
+* **BaseTable:** improve base table styles ([#45](https://github.com/gravity-ui/table/issues/45)) ([f43d9ce](https://github.com/gravity-ui/table/commit/f43d9ce21a6469973c840880004f171802b8414a))
+* **Table:** drag column added ([#43](https://github.com/gravity-ui/table/issues/43)) ([2c47d99](https://github.com/gravity-ui/table/commit/2c47d99691746c1cc117e4a8d8d789709d34c2dc))
+* **Table:** selection column added ([#41](https://github.com/gravity-ui/table/issues/41)) ([951b48c](https://github.com/gravity-ui/table/commit/951b48cc478d7cf4c9a699957c868a435e17ad45))
+
+
+### Bug Fixes
+
+* **BaseTable:** calc aria-rowindex fixed ([#47](https://github.com/gravity-ui/table/issues/47)) ([5216d52](https://github.com/gravity-ui/table/commit/5216d52dbc0cf2697f046e2fe9bf61cac9923a7d))
+
 ## [0.8.1](https://github.com/gravity-ui/table/compare/v0.8.0...v0.8.1) (2024-09-11)
 
 
