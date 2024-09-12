@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.0](https://github.com/gravity-ui/table/compare/v0.9.0...v1.0.0) (2024-09-12)
+
+
+### chore
+
+* release 1.0.0 ([39e558b](https://github.com/gravity-ui/table/commit/39e558b4db4631a149d8a9c84726800aa42fd096))
+
 ## [0.9.0](https://github.com/gravity-ui/table/compare/v0.8.1...v0.9.0) (2024-09-12)
 
 
