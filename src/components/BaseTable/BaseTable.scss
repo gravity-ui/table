@@ -3,8 +3,6 @@
 $block: '.#{variables.$ns}table';
 
 #{$block} {
-    --gc-tree-view-padding: 0px;
-
     border-spacing: 0;
     border-collapse: separate;
 
@@ -87,7 +85,6 @@ $block: '.#{variables.$ns}table';
         &__footer-row {
             display: flex;
 
-            width: 100%;
             height: auto;
         }
 
@@ -96,7 +93,6 @@ $block: '.#{variables.$ns}table';
 
             position: absolute;
 
-            width: 100%;
             height: auto;
         }
     }
