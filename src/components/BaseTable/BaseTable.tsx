@@ -3,7 +3,12 @@ import React from 'react';
 import type {Row, Table} from '@tanstack/react-table';
 import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 
-import {getAriaMultiselectable, getCellClassModes, shouldRenderFooterRow} from '../../utils';
+import {
+    getAriaMultiselectable,
+    getAriaRowIndexMap,
+    getCellClassModes,
+    shouldRenderFooterRow,
+} from '../../utils';
 import {BaseDraggableRow} from '../BaseDraggableRow';
 import type {BaseFooterRowProps} from '../BaseFooterRow';
 import {BaseFooterRow} from '../BaseFooterRow';
@@ -143,14 +148,18 @@ export const BaseTable = React.forwardRef(
         const draggableContext = React.useContext(SortableListContext);
         const draggingRowIndex = draggableContext?.activeItemIndex ?? -1;
 
-        const {rows} = table.getRowModel();
+        const {rows, rowsById} = table.getRowModel();
+
+        const ariaRowIndexMap = React.useMemo(() => {
+            return getAriaRowIndexMap(rows);
+        }, [rows]);
 
         const headerGroups = withHeader && table.getHeaderGroups();
         const footerGroups = withFooter && table.getFooterGroups();
 
         const colCount = table.getVisibleLeafColumns().length;
         const headerRowCount = headerGroups ? headerGroups.length : 0;
-        const bodyRowCount = rows.length;
+        const bodyRowCount = Object.keys(rowsById).length;
         const footerRowCount = footerGroups ? footerGroups.length : 0;
         const rowCount = bodyRowCount + headerRowCount + footerRowCount;
 
@@ -195,7 +204,7 @@ export const BaseTable = React.forwardRef(
                     rowVirtualizer,
                     table,
                     virtualItem: rowVirtualizer ? (virtualItemOrRow as VirtualItem) : undefined,
-                    'aria-rowindex': headerRowCount + row.index + 1,
+                    'aria-rowindex': headerRowCount + ariaRowIndexMap[row.id],
                     'aria-selected': table.options.enableRowSelection
                         ? row.getIsSelected()
                         : undefined,
