@@ -10,6 +10,7 @@ export * from './ReorderingProvider';
 export * from './BaseResizeHandle';
 export * from './BaseRow';
 export * from './BaseSortIndicator';
+export * from './SelectionCheckbox';
 export * from './SortableList';
 export * from './SortableListContext';
 export * from './SortableListDndContext';

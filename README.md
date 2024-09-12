@@ -49,11 +49,11 @@ There are two Table components that you can use:
 ### Row selection
 
 ```tsx
-import {defaultSelectionColumn} from '@gravity-ui/table';
+import {selectionColumn} from '@gravity-ui/table';
 import type {RowSelectionState} from '@tanstack/react-table';
 
 const columns: ColumnDef<Person>[] = [
-  defaultSelectionColumn as ColumnDef<Person>,
+  selectionColumn as ColumnDef<Person>,
   // ...other columns
 ];
 

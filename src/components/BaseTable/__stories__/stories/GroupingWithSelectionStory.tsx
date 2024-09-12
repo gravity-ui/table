@@ -2,7 +2,7 @@ import React from 'react';
 
 import type {ColumnDef, ExpandedState, Row, RowSelectionState} from '@tanstack/react-table';
 
-import {defaultSelectionColumn} from '../../../../constants';
+import {selectionColumn} from '../../../../constants';
 import {useTable} from '../../../../hooks';
 import {BaseTable} from '../../../BaseTable';
 import type {GroupOrItem} from '../constants/grouping';
@@ -12,7 +12,7 @@ import {cnGroupingStory} from './GroupingStory.classname';
 
 import './GroupingStory.scss';
 const columns: ColumnDef<GroupOrItem>[] = [
-    defaultSelectionColumn as ColumnDef<GroupOrItem>,
+    selectionColumn as ColumnDef<GroupOrItem>,
     ...originalColumns,
 ];
 
