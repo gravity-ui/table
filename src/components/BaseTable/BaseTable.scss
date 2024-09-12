@@ -54,6 +54,8 @@ $block: '.#{variables.$ns}table';
     &__cell,
     &__header-cell,
     &__footer-cell {
+        box-sizing: border-box;
+        padding: 0;
         height: inherit;
 
         text-align: start;
@@ -97,12 +99,6 @@ $block: '.#{variables.$ns}table';
 
             width: 100%;
             height: auto;
-        }
-
-        &__cell,
-        &__header-cell,
-        &__footer-cell {
-            display: flex;
         }
     }
 }
