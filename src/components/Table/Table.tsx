@@ -4,11 +4,15 @@ import {BaseTable} from '../BaseTable';
 import type {BaseTableProps} from '../BaseTable';
 
 import {b} from './Table.classname';
+import type {TableSize} from './types';
 
 import './Table.scss';
 
 export interface TableProps<TData, TScrollElement extends Element | Window = HTMLDivElement>
-    extends BaseTableProps<TData, TScrollElement> {}
+    extends BaseTableProps<TData, TScrollElement> {
+    /** Table size */
+    size?: TableSize;
+}
 
 export const Table = React.forwardRef(
     <TData, TScrollElement extends Element | Window = HTMLDivElement>(
@@ -18,6 +22,7 @@ export const Table = React.forwardRef(
             footerCellClassName: footerCellClassNameProp,
             headerCellClassName: headerCellClassNameProp,
             headerClassName,
+            size = 'm',
             ...props
         }: TableProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableElement>,
@@ -49,7 +54,7 @@ export const Table = React.forwardRef(
         return (
             <BaseTable
                 ref={ref}
-                className={b(null, className)}
+                className={b({size}, className)}
                 cellClassName={cellClassName}
                 footerCellClassName={footerCellClassName}
                 headerCellClassName={headerCellClassName}
