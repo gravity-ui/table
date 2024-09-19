@@ -349,4 +349,43 @@ const ResizingDemo = () => {
 };
 ```
 
+### Column settings
+
+```tsx
+const columns: ColumnDef<Person>[] = [
+  // ...other columns
+  {
+    id: 'settings_column',
+    header: TableSettings,
+  }, // or u can use prepared column: settingsColumn
+];
+
+const data: Person[] = [
+  /* ... */
+];
+
+const TableSettingsDemo = () => {
+  const [columnVisibility, onColumnVisibilityChange] = React.useState<VisibilityState>({
+    // for outside control and initial state
+    column_id: false, // for hidding by default
+  });
+  const [columnOrder, onColumnOrderChange] = React.useState<string[]>([
+    /* leaf columns ids */
+  ]); // for outside control and initial state
+
+  const table = useTable({
+    columns,
+    data,
+    state: {
+      columnVisibility,
+      columnOrder,
+    },
+    onColumnVisibilityChange,
+    onColumnOrderChange,
+  });
+
+  return <Table table={table} />;
+};
+```
+
 Learn more about the table and the column resizing properties in the react-table [docs](https://tanstack.com/table/v8/docs/api/features/column-sizing)

@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "@bem-react/classname": "^1.6.0",
+    "@gravity-ui/i18n": "^1.6.0",
     "@tanstack/react-table": "^8.20.5",
     "@tanstack/react-virtual": "^3.10.7"
   },

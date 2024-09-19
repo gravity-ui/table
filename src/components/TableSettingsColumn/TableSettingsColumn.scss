@@ -1,0 +1,37 @@
+@use '../variables';
+
+$block: '.#{variables.$ns}table-settings-column';
+
+#{$block} {
+    &__column {
+        border-radius: 4px;
+        overflow: hidden;
+
+        &:hover:not(:has(> #{$block}__column:hover)) {
+            background-color: var(--g-color-base-simple-hover);
+        }
+    }
+
+    &__drag-handle {
+        cursor: grab;
+
+        &_dragging {
+            cursor: grabbing;
+        }
+    }
+
+    &__column-content {
+        padding-inline: 12px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    &__vertical-spacer {
+        content: '';
+        width: 7px;
+        height: 100%;
+        border-inline-end: 1px solid var(--g-color-line-generic);
+    }
+}
