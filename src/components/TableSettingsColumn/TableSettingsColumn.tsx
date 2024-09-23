@@ -7,7 +7,7 @@ import {Checkbox, Icon} from '@gravity-ui/uikit';
 import type {Column, Header, Updater, VisibilityState} from '@tanstack/react-table';
 
 import {b} from './TableSettingsColumn.classname';
-import {getIsVisible} from './TableSettingsColumn.utils';
+import {getIsVisible, isEnabledHidding} from './TableSettingsColumn.utils';
 
 import './TableSettingsColumn.scss';
 
@@ -47,7 +47,7 @@ export const TableSettingsColumn = <TData extends unknown>({
             const newState = innerColumns.reduce(
                 (acc, innerColumn) => {
                     const result = {...acc};
-                    result[innerColumn.id] = !isVisible;
+                    if (isEnabledHidding(innerColumn)) result[innerColumn.id] = !isVisible;
                     return result;
                 },
                 {} as Record<string, boolean>,
@@ -88,7 +88,12 @@ export const TableSettingsColumn = <TData extends unknown>({
                 <span className={b('drag-handle', {dragging: isDragging})} {...listeners}>
                     <Icon data={Grip} size={16} />
                 </span>
-                <Checkbox checked={isVisible} onChange={toggle} indeterminate={isIndeterminate} />
+                <Checkbox
+                    checked={isVisible}
+                    disabled={!isEnabledHidding(column)}
+                    onChange={toggle}
+                    indeterminate={isIndeterminate}
+                />
                 {renderSpacers()}
                 {columnHeader}
             </div>

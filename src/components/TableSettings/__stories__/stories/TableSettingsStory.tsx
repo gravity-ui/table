@@ -41,9 +41,10 @@ const columns: ColumnDef<unknown>[] = [
     {
         id: 'second',
         header: 'Second group',
+        enableHiding: false,
         columns: [
-            {id: 'second-1', header: 'Child 1'},
-            {id: 'second-2', header: 'Child 2'},
+            {id: 'second-1', header: 'Child 1', enableHiding: false},
+            {id: 'second-2', header: 'Child 2', enableHiding: false},
         ],
     },
     {
