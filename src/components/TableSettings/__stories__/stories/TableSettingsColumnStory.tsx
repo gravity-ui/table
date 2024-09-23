@@ -7,6 +7,7 @@ import {useTable} from '../../../../hooks';
 import {Table} from '../../../Table/Table';
 
 type Item = {
+    id: string;
     operatorName: string;
     contactGroupName: string;
     contactName: string;
@@ -15,7 +16,7 @@ type Item = {
     contactPriority: string;
 };
 
-const data = [
+const data: Item[] = [
     {
         id: '32',
         operatorName: 'Some telecom',
