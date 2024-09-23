@@ -16,10 +16,20 @@ $block: '.#{variables.$ns}styled-table';
         @include mixins.text-subheader-1();
     }
 
+    &_size {
+        &_s {
+            --_--cell-padding: 7px var(--g-spacing-2) 6px;
+        }
+
+        &_m {
+            --_--cell-padding: 11px var(--g-spacing-2) 10px;
+        }
+    }
+
     &__cell,
     &__header-cell,
     &__footer-cell {
-        padding: 11px var(--g-spacing-2) 10px;
+        padding: var(--_--cell-padding);
         border-block-end: 1px solid var(--g-color-line-generic);
     }
 }
