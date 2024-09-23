@@ -44,7 +44,7 @@ export const TableSettingsColumn = <TData extends unknown>({
                 (acc, innerColumn) => {
                     const result = {...acc};
                     result[innerColumn.id] = !isVisible;
-                    return acc;
+                    return result;
                 },
                 {} as Record<string, boolean>,
             );
