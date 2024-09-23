@@ -5,6 +5,7 @@ import {Table} from '../index';
 import {DefaultStory} from './stories/DefaultStory';
 import {ReorderingStory} from './stories/ReorderingStory';
 import {ReorderingWithVirtualizationStory} from './stories/ReorderingWithVirtualizationStory';
+import {SizeSStory} from './stories/SizeSStory';
 import {StickyHeaderStory} from './stories/StickyHeaderStory';
 import {VirtualizationStory} from './stories/VirtualizationStory';
 import {WindowVirtualizationStory} from './stories/WindowVirtualizationStory';
@@ -19,6 +20,10 @@ export default meta;
 
 export const Default: StoryObj<typeof DefaultStory> = {
     render: DefaultStory,
+};
+
+export const SizeS: StoryObj<typeof SizeSStory> = {
+    render: SizeSStory,
 };
 
 export const WithSelection: StoryObj<typeof WithSelectionStory> = {
