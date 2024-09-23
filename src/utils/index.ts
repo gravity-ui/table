@@ -7,6 +7,7 @@ export * from './getCellStyles';
 export * from './getColumnPinningClassModes';
 export * from './getHeaderCellAriaColIndex';
 export * from './getHeaderCellClassModes';
+export * from './getSortIndicatorIcon';
 export * from './getVirtualRowRangeExtractor';
 export * from './shouldRenderFooterCell';
 export * from './shouldRenderFooterRow';

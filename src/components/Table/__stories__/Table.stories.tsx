@@ -6,6 +6,7 @@ import {DefaultStory} from './stories/DefaultStory';
 import {ReorderingStory} from './stories/ReorderingStory';
 import {ReorderingWithVirtualizationStory} from './stories/ReorderingWithVirtualizationStory';
 import {SizeSStory} from './stories/SizeSStory';
+import {SortingStory} from './stories/SortingStory';
 import {StickyHeaderStory} from './stories/StickyHeaderStory';
 import {VirtualizationStory} from './stories/VirtualizationStory';
 import {WindowVirtualizationStory} from './stories/WindowVirtualizationStory';
@@ -28,6 +29,10 @@ export const SizeS: StoryObj<typeof SizeSStory> = {
 
 export const WithSelection: StoryObj<typeof WithSelectionStory> = {
     render: WithSelectionStory,
+};
+
+export const Sorting: StoryObj<typeof SortingStory> = {
+    render: SortingStory,
 };
 
 export const Reordering: StoryObj<typeof ReorderingStory> = {

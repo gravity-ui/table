@@ -3,7 +3,7 @@ import React from 'react';
 import type {ExpandedState, Row} from '@tanstack/react-table';
 
 import {useTable} from '../../../../hooks';
-import {BaseTable} from '../../../BaseTable';
+import {BaseTable} from '../../BaseTable';
 import {columns} from '../constants/columns';
 import type {Item} from '../types';
 import {generateData} from '../utils';

@@ -4,7 +4,7 @@ import type {ColumnDef, ExpandedState, Row, RowSelectionState} from '@tanstack/r
 
 import {selectionColumn} from '../../../../constants';
 import {useTable} from '../../../../hooks';
-import {BaseTable} from '../../../BaseTable';
+import {BaseTable} from '../../BaseTable';
 import type {GroupOrItem} from '../constants/grouping';
 import {data, columns as originalColumns} from '../constants/grouping';
 

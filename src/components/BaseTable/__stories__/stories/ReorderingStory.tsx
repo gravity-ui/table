@@ -4,9 +4,9 @@ import type {ColumnDef} from '@tanstack/react-table';
 
 import {dragHandleColumn} from '../../../../constants';
 import {useTable} from '../../../../hooks';
-import {BaseTable} from '../../../BaseTable';
 import {ReorderingProvider} from '../../../ReorderingProvider';
 import type {ReorderingProviderProps} from '../../../ReorderingProvider';
+import {BaseTable} from '../../BaseTable';
 import {columns as originalColumns} from '../constants/columns';
 import {data as originalData} from '../constants/data';
 import type {Item} from '../types';

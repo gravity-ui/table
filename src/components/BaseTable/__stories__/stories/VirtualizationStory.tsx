@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {useRowVirtualizer, useTable} from '../../../../hooks';
-import {BaseTable} from '../../../BaseTable';
+import {BaseTable} from '../../BaseTable';
 import {columns} from '../constants/columns';
 import {generateData} from '../utils';
 
