@@ -27,7 +27,7 @@ const data: Item[] = [
         contactPriority: '1',
     },
     {
-        id: '34',
+        id: '33',
         operatorName: 'Some telecom',
         contactGroupName: 'Contact Group 2',
         contactName: 'Contact 2',
