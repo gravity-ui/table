@@ -1,9 +1,9 @@
 import React from 'react';
 
-import {SortableContext, useSortable} from '@dnd-kit/sortable';
+import {SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 import {Grip} from '@gravity-ui/icons';
-import {Checkbox, Icon} from '@gravity-ui/uikit';
+import {Checkbox, Divider, Icon} from '@gravity-ui/uikit';
 import type {Column, Header, Updater, VisibilityState} from '@tanstack/react-table';
 
 import {b} from './TableSettingsColumn.classname';
@@ -16,11 +16,13 @@ export const TableSettingsColumn = <TData extends unknown>({
     header,
     children,
     visibilityState,
+    showDivider,
     onVisibilityToggle,
 }: React.PropsWithChildren<{
     column: Column<TData, unknown>;
     header: Header<TData, unknown>;
     visibilityState: VisibilityState;
+    showDivider: boolean;
     onVisibilityToggle: (updater: Updater<VisibilityState>) => void;
 }>) => {
     const innerColumns = column.getLeafColumns();
@@ -70,37 +72,48 @@ export const TableSettingsColumn = <TData extends unknown>({
         id: column.id,
     });
 
+    if (transform) transform.scaleY = 1;
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
     };
 
     return (
-        <div
-            key={column.id}
-            className={b()}
-            style={style}
-            {...attributes}
-            ref={setNodeRef}
-            data-role="drag-handle"
-        >
-            <div className={b('content')}>
-                <span className={b('drag-handle', {dragging: isDragging})} {...listeners}>
-                    <Icon data={Grip} size={16} />
-                </span>
-                <Checkbox
-                    checked={isVisible}
-                    disabled={!isEnabledHidding(column)}
-                    onChange={toggle}
-                    indeterminate={isIndeterminate}
-                />
-                {renderSpacers()}
-                {columnHeader}
-            </div>
+        <div style={style} ref={setNodeRef}>
+            <div
+                key={column.id}
+                className={b({'with-divider': showDivider && !isDragging})}
+                {...attributes}
+                ref={setNodeRef}
+                data-role="drag-handle"
+            >
+                <div className={b('content')}>
+                    <span className={b('drag-handle', {dragging: isDragging})} {...listeners}>
+                        <Icon data={Grip} size={16} />
+                    </span>
+                    <Checkbox
+                        checked={isVisible}
+                        disabled={!isEnabledHidding(column)}
+                        onChange={toggle}
+                        indeterminate={isIndeterminate}
+                    />
+                    {renderSpacers()}
+                    {columnHeader}
+                </div>
 
-            <SortableContext id={column.id} items={column.columns?.map(({id}) => id)}>
-                {children}
-            </SortableContext>
+                <SortableContext
+                    id={column.id}
+                    items={column.columns?.map(({id}) => id)}
+                    strategy={verticalListSortingStrategy}
+                >
+                    {children}
+                </SortableContext>
+            </div>
+            {showDivider && !isDragging ? (
+                <div className={b('divider')}>
+                    <Divider />
+                </div>
+            ) : null}
         </div>
     );
 };

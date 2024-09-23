@@ -3,10 +3,6 @@
 $block: '.#{variables.$ns}table-settings';
 
 #{$block} {
-    &__divider {
-        padding: 4px 8px;
-    }
-
     &__popover-content {
         padding: 4px;
     }

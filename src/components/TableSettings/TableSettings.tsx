@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {DndContext, MouseSensor, useSensor, useSensors} from '@dnd-kit/core';
-import {SortableContext} from '@dnd-kit/sortable';
+import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import {Gear} from '@gravity-ui/icons';
 import {Button, Divider, Icon, Popup} from '@gravity-ui/uikit';
 import type {PopperPlacement} from '@gravity-ui/uikit/build/esm/hooks/private';
@@ -64,14 +64,10 @@ export const TableSettings = <TData extends unknown>({table, column}: Props<TDat
                         header={header}
                         visibilityState={visibilityState}
                         onVisibilityToggle={setVisibilityState}
+                        showDivider={rootNode && !lastInGroup}
                     >
                         {children}
                     </TableSettingsColumn>
-                    {rootNode && !lastInGroup ? (
-                        <div className={b('divider')}>
-                            <Divider />
-                        </div>
-                    ) : null}
                 </React.Fragment>
             );
         });
@@ -101,7 +97,10 @@ export const TableSettings = <TData extends unknown>({table, column}: Props<TDat
             >
                 <div className={b('popover-content')}>
                     <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
-                        <SortableContext items={orderedItems.map(({id}) => id)}>
+                        <SortableContext
+                            items={orderedItems.map(({id}) => id)}
+                            strategy={verticalListSortingStrategy}
+                        >
                             {renderColumns(orderedItems)}
                         </SortableContext>
                     </DndContext>

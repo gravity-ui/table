@@ -6,7 +6,7 @@ $block: '.#{variables.$ns}table-settings-column';
     border-radius: 4px;
     overflow: hidden;
 
-    &:hover:not(:has(> #{$block}__column:hover)) {
+    &:hover:not(:has(#{$block}:hover)) {
         background-color: var(--g-color-base-simple-hover);
     }
 
@@ -31,5 +31,9 @@ $block: '.#{variables.$ns}table-settings-column';
         width: 7px;
         height: 100%;
         border-inline-end: 1px solid var(--g-color-line-generic);
+    }
+
+    &__divider {
+        padding: 4px 8px;
     }
 }
