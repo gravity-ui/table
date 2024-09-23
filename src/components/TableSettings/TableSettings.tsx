@@ -38,7 +38,6 @@ export const TableSettings = <TData extends unknown>({table, column}: Props<TDat
     const headersById = React.useMemo(() => {
         return headers.reduce(
             (acc, header) => {
-                console.log('in reduce');
                 const result = {...acc};
                 result[header.column.id] = header;
                 return acc;
