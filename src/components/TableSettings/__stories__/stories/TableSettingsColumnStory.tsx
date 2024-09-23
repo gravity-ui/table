@@ -49,7 +49,6 @@ const columns: ColumnDef<Item>[] = [
     {
         id: 'contact_group_group',
         header: 'Contact Group',
-        size: 100,
         columns: [
             {
                 id: 'contact_group_name',
@@ -68,7 +67,6 @@ const columns: ColumnDef<Item>[] = [
     {
         id: 'contacts_group',
         header: 'Contact',
-        size: 100,
         columns: [
             {
                 id: 'contacts_group_name',
