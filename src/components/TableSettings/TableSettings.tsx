@@ -30,18 +30,22 @@ export const TableSettings = <TData extends unknown>({table, column}: Props<TDat
     const anchorRef = React.useRef<HTMLButtonElement>(null);
     const [open, setOpen] = React.useState<boolean>(false);
     const columns = table.getAllColumns();
-    const filteredColumns = column
-        ? columns.filter((otherColumn) => otherColumn.id !== column.id)
-        : columns;
-    const headers = table.getFlatHeaders();
-    const headersById = headers.reduce(
-        (acc, header) => {
-            const result = {...acc};
-            result[header.column.id] = header;
-            return acc;
-        },
-        {} as Record<string, Header<TData, unknown>>,
+    const filteredColumns = React.useMemo(
+        () => (column ? columns.filter((otherColumn) => otherColumn.id !== column.id) : columns),
+        [column, columns],
     );
+    const headers = table.getFlatHeaders();
+    const headersById = React.useMemo(() => {
+        return headers.reduce(
+            (acc, header) => {
+                console.log('in reduce');
+                const result = {...acc};
+                result[header.column.id] = header;
+                return acc;
+            },
+            {} as Record<string, Header<TData, unknown>>,
+        );
+    }, [headers]);
 
     const [visibilityState, setVisibilityState] = React.useState(table.getState().columnVisibility);
     const [orderState, setOrderState] = React.useState(getInitialOrderItems(filteredColumns));

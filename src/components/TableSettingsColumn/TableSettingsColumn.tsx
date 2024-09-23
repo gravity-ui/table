@@ -24,13 +24,17 @@ export const TableSettingsColumn = <TData extends unknown>({
     onVisibilityToggle: (updater: Updater<VisibilityState>) => void;
 }>) => {
     const innerColumns = column.getLeafColumns();
-    const isVisible = innerColumns.some((innerColumn) =>
-        getIsVisible(innerColumn, visibilityState),
+    const isVisible = React.useMemo(
+        () => innerColumns.some((innerColumn) => getIsVisible(innerColumn, visibilityState)),
+        [innerColumns, visibilityState],
     );
 
-    const isIndeterminate =
-        isVisible &&
-        innerColumns.some((innerColumn) => !getIsVisible(innerColumn, visibilityState));
+    const isIndeterminate = React.useMemo(
+        () =>
+            isVisible &&
+            innerColumns.some((innerColumn) => !getIsVisible(innerColumn, visibilityState)),
+        [isVisible, innerColumns, visibilityState],
+    );
 
     const context = header?.getContext();
     const columnHeader =
