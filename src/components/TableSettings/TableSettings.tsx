@@ -4,6 +4,7 @@ import {DndContext, MouseSensor, useSensor, useSensors} from '@dnd-kit/core';
 import {SortableContext} from '@dnd-kit/sortable';
 import {Gear} from '@gravity-ui/icons';
 import {Button, Divider, Icon, Popup} from '@gravity-ui/uikit';
+import type {PopperPlacement} from '@gravity-ui/uikit/build/esm/hooks/private';
 import type {Column, Header, Table} from '@tanstack/react-table';
 
 import {TableSettingsColumn} from '../TableSettingsColumn/TableSettingsColumn';
@@ -22,6 +23,8 @@ interface Props<TData> {
     table: Table<TData>;
     column?: Column<TData, unknown>;
 }
+
+const POPUP_PLACEMENT: PopperPlacement = ['bottom-end', 'bottom', 'top-end', 'top', 'auto'];
 
 export const TableSettings = <TData extends unknown>({table, column}: Props<TData>) => {
     const anchorRef = React.useRef<HTMLButtonElement>(null);
@@ -87,7 +90,12 @@ export const TableSettings = <TData extends unknown>({table, column}: Props<TDat
 
     return (
         <React.Fragment>
-            <Popup open={open} onClose={() => setOpen(false)} anchorRef={anchorRef}>
+            <Popup
+                open={open}
+                onClose={() => setOpen(false)}
+                anchorRef={anchorRef}
+                placement={POPUP_PLACEMENT}
+            >
                 <div className={b('popover-content')}>
                     <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
                         <SortableContext items={orderedItems.map(({id}) => id)}>
