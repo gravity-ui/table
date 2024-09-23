@@ -74,13 +74,13 @@ export const TableSettingsColumn = <TData extends unknown>({
     return (
         <div
             key={column.id}
-            className={b('column')}
+            className={b()}
             style={style}
             {...attributes}
             ref={setNodeRef}
             data-role="drag-handle"
         >
-            <div className={b('column-content')}>
+            <div className={b('content')}>
                 <span className={b('drag-handle', {dragging: isDragging})} {...listeners}>
                     <Icon data={Grip} size={16} />
                 </span>

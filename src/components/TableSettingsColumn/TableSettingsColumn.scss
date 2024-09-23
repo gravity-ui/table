@@ -3,13 +3,11 @@
 $block: '.#{variables.$ns}table-settings-column';
 
 #{$block} {
-    &__column {
-        border-radius: 4px;
-        overflow: hidden;
+    border-radius: 4px;
+    overflow: hidden;
 
-        &:hover:not(:has(> #{$block}__column:hover)) {
-            background-color: var(--g-color-base-simple-hover);
-        }
+    &:hover:not(:has(> #{$block}__column:hover)) {
+        background-color: var(--g-color-base-simple-hover);
     }
 
     &__drag-handle {
@@ -20,7 +18,7 @@ $block: '.#{variables.$ns}table-settings-column';
         }
     }
 
-    &__column-content {
+    &__content {
         padding-inline: 12px;
         height: 30px;
         display: flex;
