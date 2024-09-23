@@ -13,4 +13,3 @@ export * from './shouldRenderFooterCell';
 export * from './shouldRenderFooterRow';
 export * from './shouldRenderHeaderCell';
 export * from './configure';
-export * from './addComponentKeysets';
