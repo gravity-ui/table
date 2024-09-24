@@ -58,7 +58,7 @@ export const BaseHeaderCell = <TData, TValue>({
             className={b('header-cell', getHeaderCellClassModes(header), className)}
             colSpan={header.colSpan > 1 ? header.colSpan : undefined}
             rowSpan={rowSpan > 1 ? rowSpan : undefined}
-            onClick={header.column.getToggleSortingHandler()}
+            onMouseDown={header.column.getToggleSortingHandler()}
             aria-sort={getAriaSort(header.column.getIsSorted())}
             aria-colindex={getHeaderCellAriaColIndex(header)}
             {...attributes}
