@@ -355,9 +355,9 @@ const ResizingDemo = () => {
 const columns: ColumnDef<Person>[] = [
   // ...other columns
   {
-    id: 'settings_column',
-    header: TableSettings,
-  }, // or u can use prepared column: settingsColumn
+    id: 'settings_column_id',
+    header: (context) => <TableSettings {...context} columnId="settings_column_id" />,
+  }, // or u can use function getSettingsColumn
 ];
 
 const data: Person[] = [
