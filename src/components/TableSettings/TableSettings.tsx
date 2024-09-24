@@ -24,7 +24,7 @@ export interface TableSettingsOptions {
     filterable?: boolean;
 }
 
-interface Props<TData> extends TableSettingsOptions {
+export interface TableSettingsProps<TData> extends TableSettingsOptions {
     table: Table<TData>;
     columnId?: string;
     onSettingsApply?: ({
@@ -44,7 +44,7 @@ export const TableSettings = <TData extends unknown>({
     filterable = true,
     columnId,
     onSettingsApply,
-}: Props<TData>) => {
+}: TableSettingsProps<TData>) => {
     const anchorRef = React.useRef<HTMLButtonElement>(null);
     const [open, setOpen] = React.useState<boolean>(false);
     const columns = table.getAllColumns();

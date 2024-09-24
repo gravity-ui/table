@@ -4,14 +4,14 @@ import type {Updater, VisibilityState} from '@tanstack/react-table';
 
 import type {TableSettingsOptions} from '../components';
 
-interface TableSettingsHookProps extends TableSettingsOptions {
+export interface UseTableSettingsOptions extends TableSettingsOptions {
     initialOrdering?: string[];
     initialVisibility?: VisibilityState;
     onOrderingChange?: (ordering: string[]) => void;
     onVisibilityChange?: (visibility: VisibilityState) => void;
 }
 
-export const useTableSettings: (options?: TableSettingsHookProps) => {
+export const useTableSettings: (options?: UseTableSettingsOptions) => {
     settingsState: {columnVisibility: VisibilityState; columnOrder: string[]};
     settingsCallbacks: {
         onColumnVisibilityChange: (value: Updater<VisibilityState>) => void;
