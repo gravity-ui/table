@@ -1,0 +1,15 @@
+@use '../variables';
+
+$block: '.#{variables.$ns}styled-sort-indicator';
+
+#{$block} {
+    display: inline-flex;
+    padding-block: 1px;
+
+    color: var(--g-color-text-hint);
+
+    &_order_asc,
+    &_order_desc {
+        color: var(--g-color-text-primary);
+    }
+}
