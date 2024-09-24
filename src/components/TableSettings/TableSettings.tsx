@@ -67,20 +67,18 @@ export const TableSettings = <TData extends unknown>({
             const lastInGroup = index === renderedColumns.length - 1;
 
             return (
-                <React.Fragment key={innerColumn.id}>
-                    <TableSettingsColumn
-                        key={innerColumn.id}
-                        column={innerColumn}
-                        header={header}
-                        visibilityState={visibilityState}
-                        sortable={sortable}
-                        filterable={filterable}
-                        onVisibilityToggle={setVisibilityState}
-                        showDivider={rootNode && !lastInGroup}
-                    >
-                        {children}
-                    </TableSettingsColumn>
-                </React.Fragment>
+                <TableSettingsColumn
+                    key={innerColumn.id}
+                    column={innerColumn}
+                    header={header}
+                    visibilityState={visibilityState}
+                    sortable={sortable}
+                    filterable={filterable}
+                    onVisibilityToggle={setVisibilityState}
+                    showDivider={rootNode && !lastInGroup}
+                >
+                    {children}
+                </TableSettingsColumn>
             );
         });
     };
