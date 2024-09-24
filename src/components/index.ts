@@ -13,5 +13,6 @@ export * from './DragHandle';
 export * from './SortableList';
 export * from './SortableListContext';
 export * from './SortableListDndContext';
+export * from './SortIndicator';
 export * from './BaseTable';
 export * from './Table';
