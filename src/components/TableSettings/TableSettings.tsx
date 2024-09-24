@@ -26,7 +26,7 @@ export interface TableSettingsOptions {
 
 interface Props<TData> extends TableSettingsOptions {
     table: Table<TData>;
-    column?: Column<TData, unknown>;
+    columnId?: string;
 }
 
 const POPUP_PLACEMENT: PopperPlacement = ['bottom-end', 'bottom', 'top-end', 'top', 'auto'];
@@ -35,14 +35,14 @@ export const TableSettings = <TData extends unknown>({
     table,
     sortable = true,
     filterable = true,
-    column,
+    columnId,
 }: Props<TData>) => {
     const anchorRef = React.useRef<HTMLButtonElement>(null);
     const [open, setOpen] = React.useState<boolean>(false);
     const columns = table.getAllColumns();
     const filteredColumns = React.useMemo(
-        () => (column ? columns.filter((otherColumn) => otherColumn.id !== column.id) : columns),
-        [column, columns],
+        () => (columnId ? columns.filter((otherColumn) => otherColumn.id !== columnId) : columns),
+        [columnId, columns],
     );
     const headers = table.getFlatHeaders();
     const headersById = React.useMemo(() => {
