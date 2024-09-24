@@ -5,7 +5,7 @@ import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import {Gear} from '@gravity-ui/icons';
 import {Button, Divider, Icon, Popup} from '@gravity-ui/uikit';
 import type {PopperPlacement} from '@gravity-ui/uikit/build/esm/hooks/private';
-import type {Column, Header, Table} from '@tanstack/react-table';
+import type {Column, Header, Table, VisibilityState} from '@tanstack/react-table';
 
 import {TableSettingsColumn} from '../TableSettingsColumn/TableSettingsColumn';
 
@@ -27,6 +27,13 @@ export interface TableSettingsOptions {
 interface Props<TData> extends TableSettingsOptions {
     table: Table<TData>;
     columnId?: string;
+    onSettingsApply?: ({
+        visibilityState,
+        columnOrder,
+    }: {
+        visibilityState: VisibilityState;
+        columnOrder: string[];
+    }) => void;
 }
 
 const POPUP_PLACEMENT: PopperPlacement = ['bottom-end', 'bottom', 'top-end', 'top', 'auto'];
@@ -36,6 +43,7 @@ export const TableSettings = <TData extends unknown>({
     sortable = true,
     filterable = true,
     columnId,
+    onSettingsApply,
 }: Props<TData>) => {
     const anchorRef = React.useRef<HTMLButtonElement>(null);
     const [open, setOpen] = React.useState<boolean>(false);
@@ -84,8 +92,13 @@ export const TableSettings = <TData extends unknown>({
     };
 
     const applyNewSettings = () => {
+        const columnOrder = orderStateToColumnOrder(orderState);
+
+        if (onSettingsApply) onSettingsApply({visibilityState, columnOrder});
+
         if (filterable) table.setColumnVisibility(visibilityState);
-        if (sortable) table.setColumnOrder(orderStateToColumnOrder(orderState));
+        if (sortable) table.setColumnOrder(columnOrder);
+
         setOpen(false);
     };
 
