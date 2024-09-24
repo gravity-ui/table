@@ -86,8 +86,8 @@ export const TableSettings = <TData extends unknown>({
     };
 
     const applyNewSettings = () => {
-        table.setColumnVisibility(visibilityState);
-        table.setColumnOrder(orderStateToColumnOrder(orderState));
+        if (filterable) table.setColumnVisibility(visibilityState);
+        if (sortable) table.setColumnOrder(orderStateToColumnOrder(orderState));
         setOpen(false);
     };
 
