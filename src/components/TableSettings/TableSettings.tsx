@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {DndContext, MouseSensor, useSensor, useSensors} from '@dnd-kit/core';
+import {DndContext, MouseSensor, TouchSensor, useSensor, useSensors} from '@dnd-kit/core';
 import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import {Gear} from '@gravity-ui/icons';
 import {Button, Divider, Icon, Popup} from '@gravity-ui/uikit';
@@ -101,7 +101,7 @@ export const TableSettings = <TData extends unknown>({
         setOpen(false);
     };
 
-    const sensors = useSensors(useSensor(MouseSensor));
+    const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
     const {orderedItems, handleDragEnd} = useOrderedItems(
         filteredColumns,
