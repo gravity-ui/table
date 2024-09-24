@@ -3,7 +3,7 @@ import React from 'react';
 import {SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 import {Grip} from '@gravity-ui/icons';
-import {Checkbox, Divider, Icon} from '@gravity-ui/uikit';
+import {Checkbox, Divider, Icon, Text} from '@gravity-ui/uikit';
 import type {Column, Header, Updater, VisibilityState} from '@tanstack/react-table';
 
 import type {TableSettingsOptions} from '../TableSettings/TableSettings';
@@ -50,8 +50,10 @@ export const TableSettingsColumn = <TData extends unknown>({
             ? column.columnDef.header(context)
             : column.columnDef.header;
 
+    const isParent = innerColumns.length > 1;
+
     const toggle = () => {
-        if (innerColumns.length > 1) {
+        if (isParent) {
             const newState = innerColumns.reduce(
                 (acc, innerColumn) => {
                     const result = {...acc};
@@ -108,7 +110,9 @@ export const TableSettingsColumn = <TData extends unknown>({
                         />
                     ) : null}
                     {renderSpacers()}
-                    {columnHeader}
+                    <Text variant="body-1" className={b('name', {parent: isParent})}>
+                        {columnHeader}
+                    </Text>
                 </div>
 
                 <SortableContext

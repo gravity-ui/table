@@ -36,4 +36,10 @@ $block: '.#{variables.$ns}table-settings-column';
     &__divider {
         padding: 4px 8px;
     }
+
+    &__name {
+        &_parent {
+            font-weight: 500;
+        }
+    }
 }
