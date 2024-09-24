@@ -12,6 +12,7 @@ $block: '.#{variables.$ns}table-settings-column';
 
     &__drag-handle {
         cursor: grab;
+        line-height: 16px;
 
         &_dragging {
             cursor: grabbing;
