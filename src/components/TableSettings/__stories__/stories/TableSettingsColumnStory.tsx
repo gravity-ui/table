@@ -1,11 +1,15 @@
 import React from 'react';
 
-import type {ColumnDef} from '@tanstack/react-table';
+import type {ColumnDef, ColumnPinningState} from '@tanstack/react-table';
 
-import {getSettingsColumn} from '../../../../constants';
+import {SETTINGS_COLUMN_ID, getSettingsColumn} from '../../../../constants';
 import {useTable} from '../../../../hooks';
 import {Table} from '../../../Table/Table';
 import type {TableSettingsOptions} from '../../TableSettings';
+
+import {cnTableSettingsColumnStory} from './TableSettingsColumnStory.classname';
+
+import './TableSettingsColumnStory.scss';
 
 type Item = {
     id: string;
@@ -56,13 +60,13 @@ const columns: ColumnDef<Item>[] = [
                 id: 'contact_group_name',
                 accessorKey: 'contactGroupName',
                 header: 'Name',
-                size: 150,
+                minSize: 250,
             },
             {
                 id: 'contact_group_type',
                 accessorKey: 'contactGroupType',
                 header: 'Type',
-                size: 130,
+                minSize: 230,
             },
         ],
     },
@@ -74,30 +78,45 @@ const columns: ColumnDef<Item>[] = [
                 id: 'contacts_group_name',
                 accessorKey: 'contactName',
                 header: 'Name',
-                size: 100,
+                minSize: 200,
             },
             {
                 id: 'contacts_group_phone',
                 accessorKey: 'contactPhone',
                 header: 'Phone',
-                size: 130,
+                minSize: 230,
             },
             {
                 id: 'contacts_group_priority',
                 accessorKey: 'contactPriority',
                 header: 'Priority',
-                size: 100,
+                minSize: 200,
             },
         ],
     },
 ];
 
 export const TableSettingsColumnStory = (options: TableSettingsOptions) => {
-    const settingsColumn = getSettingsColumn<Item>(options);
+    const settingsColumn = getSettingsColumn<Item>(SETTINGS_COLUMN_ID, options);
+    const [columnPinning, setColumnPinning] = React.useState<ColumnPinningState>({
+        left: [],
+        right: [SETTINGS_COLUMN_ID],
+    });
     const table = useTable({
         columns: [...columns, settingsColumn],
         data,
+        enableColumnPinning: true,
+        state: {columnPinning},
+        onColumnPinningChange: setColumnPinning,
     });
 
-    return <Table table={table} />;
+    return (
+        <div className={cnTableSettingsColumnStory()}>
+            <Table
+                table={table}
+                cellClassName={cnTableSettingsColumnStory('cell')}
+                headerCellClassName={cnTableSettingsColumnStory('header-cell')}
+            />
+        </div>
+    );
 };
