@@ -1,11 +1,20 @@
 import React from 'react';
 
 import {Text} from '@gravity-ui/uikit';
-import type {ColumnDef} from '@tanstack/react-table';
+import type {ColumnDef, VisibilityState} from '@tanstack/react-table';
 
 import {useTable, useTableSettings} from '../../../../hooks';
 import {TableSettings} from '../../TableSettings';
 import type {TableSettingsOptions} from '../../TableSettings';
+
+const displayOrderingModel = (order: string[]) => {
+    return `Ordering model: [${order.join(', ')}]`;
+};
+
+const displayVisibilityModel = (visibility: VisibilityState) => {
+    const values = Object.entries(visibility).map(([key, value]) => `${key}: ${value}`);
+    return `Visible model: {${values.join(', ')}}`;
+};
 
 const flatColumns: ColumnDef<unknown>[] = [
     {
@@ -67,12 +76,16 @@ const columns: ColumnDef<unknown>[] = [
 ];
 
 export const TableSettingsStory = (options: TableSettingsOptions) => {
+    const onSortingChangeCallback = (newOrdering: string[]) =>
+        alert(`Ordering changed.\n${displayOrderingModel(newOrdering)}`);
+
     const flatTableSettings = useTableSettings({
         initialVisibility: {
             third: false,
             fourth: false,
         },
         initialOrdering: ['first', 'second', 'third', 'fourth', 'fifth'],
+        onOrderingChange: onSortingChangeCallback,
     });
 
     const flatTable = useTable({
@@ -89,6 +102,7 @@ export const TableSettingsStory = (options: TableSettingsOptions) => {
             'first-1': false,
             'first-2': false,
         },
+        onOrderingChange: onSortingChangeCallback,
     });
 
     const table = useTable({
@@ -97,15 +111,6 @@ export const TableSettingsStory = (options: TableSettingsOptions) => {
         state: settingsState,
         ...settingsCallbacks,
     });
-
-    const displayOrderingModel = (order: string[]) => {
-        return `Ordering model: [${order.join(', ')}]`;
-    };
-
-    const displayVisibilityModel = (visibility: Record<string, boolean>) => {
-        const values = Object.entries(visibility).map(([key, value]) => `${key}: ${value}`);
-        return `Visible model: {${values.join(', ')}}`;
-    };
 
     return (
         <div>

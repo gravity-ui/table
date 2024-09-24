@@ -7,8 +7,8 @@ import type {TableSettingsOptions} from '../components';
 interface TableSettingsHookProps extends TableSettingsOptions {
     initialOrdering?: string[];
     initialVisibility?: VisibilityState;
-    onOrderingChange?: (ordering: Updater<string[]>) => void;
-    onVisibilityChange?: (visibility: Updater<VisibilityState>) => void;
+    onOrderingChange?: (ordering: string[]) => void;
+    onVisibilityChange?: (visibility: VisibilityState) => void;
 }
 
 export const useTableSettings: (options?: TableSettingsHookProps) => {
@@ -30,7 +30,7 @@ export const useTableSettings: (options?: TableSettingsHookProps) => {
     const onColumnVisibilityChange = React.useCallback(
         (value: Updater<VisibilityState>) => {
             setVisibilityState(value);
-            if (onVisibilityChange) onVisibilityChange(value);
+            if (onVisibilityChange) onVisibilityChange(value as VisibilityState);
         },
         [onVisibilityChange],
     );
@@ -38,7 +38,7 @@ export const useTableSettings: (options?: TableSettingsHookProps) => {
     const onColumnOrderChange = React.useCallback(
         (value: Updater<string[]>) => {
             setOrderState(value);
-            if (onOrderingChange) onOrderingChange(value);
+            if (onOrderingChange) onOrderingChange(value as string[]);
         },
         [onOrderingChange],
     );
