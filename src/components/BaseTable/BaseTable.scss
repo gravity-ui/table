@@ -41,13 +41,6 @@ $block: '.#{variables.$ns}table';
         font-weight: 500;
     }
 
-    &__header-cell {
-        &_sortable {
-            cursor: pointer;
-            user-select: none;
-        }
-    }
-
     &__cell,
     &__header-cell,
     &__footer-cell {
@@ -61,6 +54,11 @@ $block: '.#{variables.$ns}table';
             position: sticky;
             z-index: 1;
         }
+    }
+
+    &__sort {
+        cursor: pointer;
+        user-select: none;
     }
 
     &_with-row-virtualization {

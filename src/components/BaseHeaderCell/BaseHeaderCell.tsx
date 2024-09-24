@@ -11,6 +11,7 @@ import {
 } from '../../utils';
 import type {BaseResizeHandleProps} from '../BaseResizeHandle';
 import {BaseResizeHandle} from '../BaseResizeHandle';
+import {BaseSort} from '../BaseSort';
 import type {BaseSortIndicatorProps} from '../BaseSortIndicator';
 import {BaseSortIndicator} from '../BaseSortIndicator';
 import {b} from '../BaseTable/BaseTable.classname';
@@ -58,25 +59,29 @@ export const BaseHeaderCell = <TData, TValue>({
             className={b('header-cell', getHeaderCellClassModes(header), className)}
             colSpan={header.colSpan > 1 ? header.colSpan : undefined}
             rowSpan={rowSpan > 1 ? rowSpan : undefined}
-            onClick={header.column.getToggleSortingHandler()}
             aria-sort={getAriaSort(header.column.getIsSorted())}
             aria-colindex={getHeaderCellAriaColIndex(header)}
             {...attributes}
             style={getCellStyles(header, attributes?.style)}
         >
-            {flexRender(header.column.columnDef.header, header.getContext())}{' '}
-            {header.column.getCanSort() &&
-                (renderSortIndicator ? (
-                    renderSortIndicator({
-                        className: b('sort-indicator', sortIndicatorClassName),
-                        header,
-                    })
-                ) : (
-                    <BaseSortIndicator
-                        className={b('sort-indicator', sortIndicatorClassName)}
-                        header={header}
-                    />
-                ))}
+            {header.column.getCanSort() ? (
+                <BaseSort header={header}>
+                    {flexRender(header.column.columnDef.header, header.getContext())}{' '}
+                    {renderSortIndicator ? (
+                        renderSortIndicator({
+                            className: b('sort-indicator', sortIndicatorClassName),
+                            header,
+                        })
+                    ) : (
+                        <BaseSortIndicator
+                            className={b('sort-indicator', sortIndicatorClassName)}
+                            header={header}
+                        />
+                    )}
+                </BaseSort>
+            ) : (
+                flexRender(header.column.columnDef.header, header.getContext())
+            )}
             {header.column.getCanResize() &&
                 (renderResizeHandle ? (
                     renderResizeHandle({
