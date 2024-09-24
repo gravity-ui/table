@@ -61,8 +61,10 @@ export const TableSettings = <TData extends unknown>({
         }, {});
     }, [headers]);
 
-    const [visibilityState, setVisibilityState] = React.useState(table.getState().columnVisibility);
-    const [orderState, setOrderState] = React.useState(getInitialOrderItems(filteredColumns));
+    const [visibilityState, setVisibilityState] = React.useState(
+        () => table.getState().columnVisibility,
+    );
+    const [orderState, setOrderState] = React.useState(() => getInitialOrderItems(filteredColumns));
 
     const renderColumns = (renderedColumns: Column<TData, unknown>[]) => {
         return renderedColumns.map((innerColumn, index) => {
