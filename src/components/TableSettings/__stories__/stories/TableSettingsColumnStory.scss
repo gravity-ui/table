@@ -1,9 +1,4 @@
 .table-settings-column-story {
-    width: 600px;
+    width: 100%;
     overflow: auto;
-
-    &__cell,
-    &__header-cell {
-        border-inline-start: 1px solid var(--g-color-line-generic);
-    }
 }
