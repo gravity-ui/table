@@ -92,7 +92,6 @@ export const TableSettingsColumn = <TData extends unknown>({
                 key={column.id}
                 className={b({'with-divider': showDivider && !isDragging})}
                 {...attributes}
-                ref={setNodeRef}
                 data-role="drag-handle"
             >
                 <div className={b('content')}>
