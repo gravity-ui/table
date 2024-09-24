@@ -54,14 +54,11 @@ export const TableSettings = <TData extends unknown>({
     );
     const headers = table.getFlatHeaders();
     const headersById = React.useMemo(() => {
-        return headers.reduce(
-            (acc, header) => {
-                const result = {...acc};
-                result[header.column.id] = header;
-                return acc;
-            },
-            {} as Record<string, Header<TData, unknown>>,
-        );
+        return headers.reduce<Record<string, Header<TData, unknown>>>((acc, header) => {
+            const result = {...acc};
+            result[header.column.id] = header;
+            return acc;
+        }, {});
     }, [headers]);
 
     const [visibilityState, setVisibilityState] = React.useState(table.getState().columnVisibility);

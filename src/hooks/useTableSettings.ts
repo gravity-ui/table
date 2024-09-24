@@ -30,17 +30,23 @@ export const useTableSettings: (options?: TableSettingsHookProps) => {
     const onColumnVisibilityChange = React.useCallback(
         (value: Updater<VisibilityState>) => {
             setVisibilityState(value);
-            if (onVisibilityChange) onVisibilityChange(value as VisibilityState);
+            if (onVisibilityChange) {
+                const newValue = typeof value === 'function' ? value(visibilityState) : value;
+                onVisibilityChange(newValue);
+            }
         },
-        [onVisibilityChange],
+        [onVisibilityChange, visibilityState],
     );
 
     const onColumnOrderChange = React.useCallback(
         (value: Updater<string[]>) => {
             setOrderState(value);
-            if (onOrderingChange) onOrderingChange(value as string[]);
+            if (onOrderingChange) {
+                const newValue = typeof value === 'function' ? value(orderingState) : value;
+                onOrderingChange(newValue);
+            }
         },
-        [onOrderingChange],
+        [onOrderingChange, orderingState],
     );
 
     return {
