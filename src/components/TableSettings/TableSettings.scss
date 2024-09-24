@@ -4,10 +4,10 @@ $block: '.#{variables.$ns}table-settings';
 
 #{$block} {
     &__popover-content {
-        padding: 4px;
+        padding: var(--g-spacing-1);
     }
 
     &__popover-actions {
-        padding: 8px;
+        padding: var(--g-spacing-2);
     }
 }

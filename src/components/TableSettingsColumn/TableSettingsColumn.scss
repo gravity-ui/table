@@ -3,7 +3,7 @@
 $block: '.#{variables.$ns}table-settings-column';
 
 #{$block} {
-    border-radius: 4px;
+    border-radius: var(--g-spacing-1);
     overflow: hidden;
 
     &:hover:not(:has(#{$block}:hover)) {
@@ -12,7 +12,7 @@ $block: '.#{variables.$ns}table-settings-column';
 
     &__drag-handle {
         cursor: grab;
-        line-height: 16px;
+        line-height: var(--g-text-body-short-line-height);
 
         &_dragging {
             cursor: grabbing;
@@ -20,11 +20,11 @@ $block: '.#{variables.$ns}table-settings-column';
     }
 
     &__content {
-        padding-inline: 12px;
+        padding-inline: var(--g-spacing-3);
         height: 30px;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: var(--g-spacing-2);
     }
 
     &__vertical-spacer {
@@ -35,7 +35,7 @@ $block: '.#{variables.$ns}table-settings-column';
     }
 
     &__divider {
-        padding: 4px 8px;
+        padding: var(--g-spacing-1) var(--g-spacing-2);
     }
 
     &__name {
