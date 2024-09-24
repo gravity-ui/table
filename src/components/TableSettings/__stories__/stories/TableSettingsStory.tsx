@@ -1,9 +1,9 @@
 import React from 'react';
 
 import {Text} from '@gravity-ui/uikit';
-import type {ColumnDef, VisibilityState} from '@tanstack/react-table';
+import type {ColumnDef} from '@tanstack/react-table';
 
-import {useTable} from '../../../../hooks';
+import {useTable, useTableSettings} from '../../../../hooks';
 import {TableSettings} from '../../TableSettings';
 import type {TableSettingsOptions} from '../../TableSettings';
 
@@ -67,44 +67,35 @@ const columns: ColumnDef<unknown>[] = [
 ];
 
 export const TableSettingsStory = (options: TableSettingsOptions) => {
-    const [flatColumnVisibility, onFlatColumnVisibilityChange] = React.useState<VisibilityState>({
-        third: false,
-        fourth: false,
+    const flatTableSettings = useTableSettings({
+        initialVisibility: {
+            third: false,
+            fourth: false,
+        },
+        initialOrdering: ['first', 'second', 'third', 'fourth', 'fifth'],
     });
-    const [flatColumnOrder, onFlatColumnOrderChange] = React.useState<string[]>([
-        'first',
-        'second',
-        'third',
-        'fourth',
-        'fifth',
-    ]);
 
     const flatTable = useTable({
         columns: flatColumns,
         data: [],
         state: {
-            columnVisibility: flatColumnVisibility,
-            columnOrder: flatColumnOrder,
+            ...flatTableSettings.settingsState,
         },
-        onColumnVisibilityChange: onFlatColumnVisibilityChange,
-        onColumnOrderChange: onFlatColumnOrderChange,
+        ...flatTableSettings.settingsCallbacks,
     });
 
-    const [columnVisibility, onColumnVisibilityChange] = React.useState<VisibilityState>({
-        'first-1': false,
-        'first-2': false,
+    const {settingsState, settingsCallbacks} = useTableSettings({
+        initialVisibility: {
+            'first-1': false,
+            'first-2': false,
+        },
     });
-    const [columnOrder, onColumnOrderChange] = React.useState<string[]>([]);
 
     const table = useTable({
         columns: columns,
         data: [],
-        state: {
-            columnVisibility,
-            columnOrder,
-        },
-        onColumnVisibilityChange,
-        onColumnOrderChange,
+        state: settingsState,
+        ...settingsCallbacks,
     });
 
     const displayOrderingModel = (order: string[]) => {
@@ -123,8 +114,10 @@ export const TableSettingsStory = (options: TableSettingsOptions) => {
                     <Text variant="header-2">Flat table</Text>
                 </div>
                 <TableSettings table={flatTable} {...options} />
-                <div>{displayOrderingModel(flatColumnOrder)}</div>
-                <div>{displayVisibilityModel(flatColumnVisibility)}</div>
+                <div>{displayOrderingModel(flatTableSettings.settingsState.columnOrder)}</div>
+                <div>
+                    {displayVisibilityModel(flatTableSettings.settingsState.columnVisibility)}
+                </div>
             </div>
 
             <div style={{marginBlockStart: '16px'}}>
@@ -133,8 +126,8 @@ export const TableSettingsStory = (options: TableSettingsOptions) => {
                 </div>
                 <TableSettings table={table} {...options} />
 
-                <div>{displayOrderingModel(columnOrder)}</div>
-                <div>{displayVisibilityModel(columnVisibility)}</div>
+                <div>{displayOrderingModel(settingsState.columnOrder)}</div>
+                <div>{displayVisibilityModel(settingsState.columnVisibility)}</div>
             </div>
         </div>
     );

@@ -1,5 +1,3 @@
-import React from 'react';
-
 import type {Meta, StoryObj} from '@storybook/react';
 
 import type {TableSettingsOptions} from '../TableSettings';
@@ -21,10 +19,10 @@ const meta: Meta<TableSettingsOptions> = {
 
 export default meta;
 
-export const TableSettings = {
-    render: (args) => <TableSettingsStory {...args} />,
-} as StoryObj<typeof TableSettingsStory>;
+export const TableSettings: StoryObj<typeof TableSettingsStory> = {
+    render: TableSettingsStory,
+};
 
-export const TableSettingsColumn = {
-    render: (args) => <TableSettingsColumnStory {...args} />,
-} as StoryObj<typeof TableSettingsColumnStory>;
+export const TableSettingsColumn: StoryObj<typeof TableSettingsColumnStory> = {
+    render: TableSettingsColumnStory,
+};

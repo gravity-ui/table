@@ -14,7 +14,7 @@ export const settingsColumn: ColumnDef<unknown> = {
 };
 
 export const getSettingsColumn = <TData extends unknown>(
-    options: TableSettingsOptions,
+    options?: TableSettingsOptions,
 ): ColumnDef<TData> => {
     return {
         id: '_settings',
