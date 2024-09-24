@@ -2,9 +2,10 @@ import React from 'react';
 
 import type {ColumnDef} from '@tanstack/react-table';
 
-import {settingsColumn} from '../../../../constants';
+import {getSettingsColumn} from '../../../../constants';
 import {useTable} from '../../../../hooks';
 import {Table} from '../../../Table/Table';
+import type {TableSettingsOptions} from '../../TableSettings';
 
 type Item = {
     id: string;
@@ -89,12 +90,12 @@ const columns: ColumnDef<Item>[] = [
             },
         ],
     },
-    settingsColumn as ColumnDef<Item>,
 ];
 
-export const TableSettingsColumnStory = () => {
+export const TableSettingsColumnStory = (options: TableSettingsOptions) => {
+    const settingsColumn = getSettingsColumn<Item>(options);
     const table = useTable({
-        columns: columns,
+        columns: [...columns, settingsColumn],
         data,
     });
 

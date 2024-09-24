@@ -19,14 +19,24 @@ import i18n from './i18n';
 
 import './TableSettings.scss';
 
-interface Props<TData> {
+export interface TableSettingsOptions {
+    sortable?: boolean;
+    filterable?: boolean;
+}
+
+interface Props<TData> extends TableSettingsOptions {
     table: Table<TData>;
     column?: Column<TData, unknown>;
 }
 
 const POPUP_PLACEMENT: PopperPlacement = ['bottom-end', 'bottom', 'top-end', 'top', 'auto'];
 
-export const TableSettings = <TData extends unknown>({table, column}: Props<TData>) => {
+export const TableSettings = <TData extends unknown>({
+    table,
+    sortable = true,
+    filterable = true,
+    column,
+}: Props<TData>) => {
     const anchorRef = React.useRef<HTMLButtonElement>(null);
     const [open, setOpen] = React.useState<boolean>(false);
     const columns = table.getAllColumns();
@@ -63,6 +73,8 @@ export const TableSettings = <TData extends unknown>({table, column}: Props<TDat
                         column={innerColumn}
                         header={header}
                         visibilityState={visibilityState}
+                        sortable={sortable}
+                        filterable={filterable}
                         onVisibilityToggle={setVisibilityState}
                         showDivider={rootNode && !lastInGroup}
                     >

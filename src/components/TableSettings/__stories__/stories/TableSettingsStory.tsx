@@ -5,6 +5,7 @@ import type {ColumnDef, VisibilityState} from '@tanstack/react-table';
 
 import {useTable} from '../../../../hooks';
 import {TableSettings} from '../../TableSettings';
+import type {TableSettingsOptions} from '../../TableSettings';
 
 const flatColumns: ColumnDef<unknown>[] = [
     {
@@ -65,7 +66,7 @@ const columns: ColumnDef<unknown>[] = [
     },
 ];
 
-export const TableSettingsStory = () => {
+export const TableSettingsStory = (options: TableSettingsOptions) => {
     const [flatColumnVisibility, onFlatColumnVisibilityChange] = React.useState<VisibilityState>({
         third: false,
         fourth: false,
@@ -121,7 +122,7 @@ export const TableSettingsStory = () => {
                 <div>
                     <Text variant="header-2">Flat table</Text>
                 </div>
-                <TableSettings table={flatTable} />
+                <TableSettings table={flatTable} {...options} />
                 <div>{displayOrderingModel(flatColumnOrder)}</div>
                 <div>{displayVisibilityModel(flatColumnVisibility)}</div>
             </div>
@@ -130,7 +131,7 @@ export const TableSettingsStory = () => {
                 <div>
                     <Text variant="header-2">Grouped table</Text>
                 </div>
-                <TableSettings table={table} />
+                <TableSettings table={table} {...options} />
 
                 <div>{displayOrderingModel(columnOrder)}</div>
                 <div>{displayVisibilityModel(columnVisibility)}</div>

@@ -6,10 +6,20 @@ import {Grip} from '@gravity-ui/icons';
 import {Checkbox, Divider, Icon} from '@gravity-ui/uikit';
 import type {Column, Header, Updater, VisibilityState} from '@tanstack/react-table';
 
+import type {TableSettingsOptions} from '../TableSettings/TableSettings';
+
 import {b} from './TableSettingsColumn.classname';
 import {getIsVisible, isEnabledHidding} from './TableSettingsColumn.utils';
 
 import './TableSettingsColumn.scss';
+
+interface Props<TData> extends TableSettingsOptions {
+    column: Column<TData, unknown>;
+    header: Header<TData, unknown>;
+    visibilityState: VisibilityState;
+    showDivider: boolean;
+    onVisibilityToggle: (updater: Updater<VisibilityState>) => void;
+}
 
 export const TableSettingsColumn = <TData extends unknown>({
     column,
@@ -17,14 +27,10 @@ export const TableSettingsColumn = <TData extends unknown>({
     children,
     visibilityState,
     showDivider,
+    filterable,
+    sortable,
     onVisibilityToggle,
-}: React.PropsWithChildren<{
-    column: Column<TData, unknown>;
-    header: Header<TData, unknown>;
-    visibilityState: VisibilityState;
-    showDivider: boolean;
-    onVisibilityToggle: (updater: Updater<VisibilityState>) => void;
-}>) => {
+}: React.PropsWithChildren<Props<TData>>) => {
     const innerColumns = column.getLeafColumns();
     const isVisible = React.useMemo(
         () => innerColumns.some((innerColumn) => getIsVisible(innerColumn, visibilityState)),
@@ -88,15 +94,19 @@ export const TableSettingsColumn = <TData extends unknown>({
                 data-role="drag-handle"
             >
                 <div className={b('content')}>
-                    <span className={b('drag-handle', {dragging: isDragging})} {...listeners}>
-                        <Icon data={Grip} size={16} />
-                    </span>
-                    <Checkbox
-                        checked={isVisible}
-                        disabled={!isEnabledHidding(column)}
-                        onChange={toggle}
-                        indeterminate={isIndeterminate}
-                    />
+                    {sortable ? (
+                        <span className={b('drag-handle', {dragging: isDragging})} {...listeners}>
+                            <Icon data={Grip} size={16} />
+                        </span>
+                    ) : null}
+                    {filterable ? (
+                        <Checkbox
+                            checked={isVisible}
+                            disabled={!isEnabledHidding(column)}
+                            onChange={toggle}
+                            indeterminate={isIndeterminate}
+                        />
+                    ) : null}
                     {renderSpacers()}
                     {columnHeader}
                 </div>
