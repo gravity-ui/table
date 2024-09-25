@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.0](https://github.com/gravity-ui/table/compare/v1.0.0...v1.1.0) (2024-09-25)
+
+
+### Features
+
+* **Table:** styled SortIndicator added ([#49](https://github.com/gravity-ui/table/issues/49)) ([d4e7d82](https://github.com/gravity-ui/table/commit/d4e7d823f102c9e77e8520b502495a80a1db37c0))
+* **Table:** styled SortIndicator export added ([#53](https://github.com/gravity-ui/table/issues/53)) ([39b5709](https://github.com/gravity-ui/table/commit/39b5709b19263cbe3af17a98072abb5ea201cd4d))
+* **Table:** table size supported ([#50](https://github.com/gravity-ui/table/issues/50)) ([50e7778](https://github.com/gravity-ui/table/commit/50e7778ce7be93360ba9cff69651844f6f0308f6))
+
+
+### Bug Fixes
+
+* **BaseHeaderCell:** sorting on resize fixed ([#55](https://github.com/gravity-ui/table/issues/55)) ([716a45b](https://github.com/gravity-ui/table/commit/716a45bf52c80175d77fcbc16bbdc29a1b93a086))
+
 ## [1.0.0](https://github.com/gravity-ui/table/compare/v0.9.0...v1.0.0) (2024-09-12)
 
 
