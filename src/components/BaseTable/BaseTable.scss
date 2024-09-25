@@ -57,6 +57,8 @@ $block: '.#{variables.$ns}table';
     }
 
     &__sort {
+        display: inline-block;
+
         cursor: pointer;
         user-select: none;
     }
