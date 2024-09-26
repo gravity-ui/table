@@ -373,6 +373,9 @@ const TableSettingsDemo = () => {
     /* leaf columns ids */
   ]); // for outside control and initial state
 
+  // Alternative variant to get state, callbacks, and set on setting apply callbacks - using useTableSettings hook:
+  // const {state, callbacks} = useTableSettings({initialVisibility: {}, initialOrder: []})
+
   const table = useTable({
     columns,
     data,

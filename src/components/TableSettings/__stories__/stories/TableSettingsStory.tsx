@@ -92,12 +92,12 @@ export const TableSettingsStory = (options: TableSettingsOptions) => {
         columns: flatColumns,
         data: [],
         state: {
-            ...flatTableSettings.settingsState,
+            ...flatTableSettings.state,
         },
-        ...flatTableSettings.settingsCallbacks,
+        ...flatTableSettings.callbacks,
     });
 
-    const {settingsState, settingsCallbacks} = useTableSettings({
+    const {state, callbacks} = useTableSettings({
         initialVisibility: {
             'first-1': false,
             'first-2': false,
@@ -108,8 +108,8 @@ export const TableSettingsStory = (options: TableSettingsOptions) => {
     const table = useTable({
         columns: columns,
         data: [],
-        state: settingsState,
-        ...settingsCallbacks,
+        state,
+        ...callbacks,
     });
 
     return (
@@ -119,10 +119,8 @@ export const TableSettingsStory = (options: TableSettingsOptions) => {
                     <Text variant="header-2">Flat table</Text>
                 </div>
                 <TableSettings table={flatTable} {...options} />
-                <div>{displayOrderingModel(flatTableSettings.settingsState.columnOrder)}</div>
-                <div>
-                    {displayVisibilityModel(flatTableSettings.settingsState.columnVisibility)}
-                </div>
+                <div>{displayOrderingModel(flatTableSettings.state.columnOrder)}</div>
+                <div>{displayVisibilityModel(flatTableSettings.state.columnVisibility)}</div>
             </div>
 
             <div style={{marginBlockStart: '16px'}}>
@@ -131,8 +129,8 @@ export const TableSettingsStory = (options: TableSettingsOptions) => {
                 </div>
                 <TableSettings table={table} {...options} />
 
-                <div>{displayOrderingModel(settingsState.columnOrder)}</div>
-                <div>{displayVisibilityModel(settingsState.columnVisibility)}</div>
+                <div>{displayOrderingModel(state.columnOrder)}</div>
+                <div>{displayVisibilityModel(state.columnVisibility)}</div>
             </div>
         </div>
     );

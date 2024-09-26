@@ -12,8 +12,8 @@ export interface UseTableSettingsOptions extends TableSettingsOptions {
 }
 
 export const useTableSettings: (options?: UseTableSettingsOptions) => {
-    settingsState: {columnVisibility: VisibilityState; columnOrder: string[]};
-    settingsCallbacks: {
+    state: {columnVisibility: VisibilityState; columnOrder: string[]};
+    callbacks: {
         onColumnVisibilityChange: (value: Updater<VisibilityState>) => void;
         onColumnOrderChange: (value: Updater<string[]>) => void;
     };
@@ -50,11 +50,11 @@ export const useTableSettings: (options?: UseTableSettingsOptions) => {
     );
 
     return {
-        settingsState: {
+        state: {
             columnVisibility: visibilityState,
             columnOrder: orderingState,
         },
-        settingsCallbacks: {
+        callbacks: {
             onColumnVisibilityChange,
             onColumnOrderChange,
         },
