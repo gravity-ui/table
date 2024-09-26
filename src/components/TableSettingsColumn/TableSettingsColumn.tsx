@@ -14,7 +14,7 @@ import {getIsVisible, isEnabledHidding} from './TableSettingsColumn.utils';
 import './TableSettingsColumn.scss';
 
 interface Props<TData> extends TableSettingsOptions {
-    column: Column<TData, unknown>;
+    column: Column<TData>;
     header: Header<TData, unknown>;
     visibilityState: VisibilityState;
     showDivider: boolean;

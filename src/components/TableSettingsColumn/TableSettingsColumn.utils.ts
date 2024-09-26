@@ -1,7 +1,7 @@
 import type {Column, VisibilityState} from '@tanstack/react-table';
 
 export const getIsVisible = <TData extends unknown>(
-    column: Column<TData, unknown>,
+    column: Column<TData>,
     visibilityState: VisibilityState,
 ): boolean => {
     if (column.columns.length)
@@ -9,5 +9,5 @@ export const getIsVisible = <TData extends unknown>(
     return visibilityState[column.id] ?? true;
 };
 
-export const isEnabledHidding = <TData extends unknown>(column: Column<TData, unknown>): boolean =>
+export const isEnabledHidding = <TData extends unknown>(column: Column<TData>): boolean =>
     column.columnDef.enableHiding ?? true;

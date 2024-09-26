@@ -5,13 +5,13 @@ import {arrayMove} from '@dnd-kit/sortable';
 import type {Column} from '@tanstack/react-table';
 
 const filterColumns = <TData extends unknown>(
-    column: Column<TData, unknown> | undefined,
-): column is Column<TData, unknown> => Boolean(column);
+    column: Column<TData> | undefined,
+): column is Column<TData> => Boolean(column);
 
 const orderItem = <TData extends unknown>(
-    item: Column<TData, unknown>,
+    item: Column<TData>,
     state: Record<string, string[]>,
-): Column<TData, unknown> => {
+): Column<TData> => {
     const childrenOrder = state[item.id] ?? [];
     const orderedChildren = childrenOrder
         .map((orderId) => item.columns?.find(({id}) => id === orderId))
@@ -28,7 +28,7 @@ export const findContainer = (itemsMap: Record<string, string[]>, id?: UniqueIde
 };
 
 export const useOrderedItems = <TData extends unknown>(
-    items: Column<TData, unknown>[],
+    items: Column<TData>[],
     orderState: Record<string, string[]>,
     setOrderState: React.Dispatch<React.SetStateAction<Record<string, string[]>>>,
 ) => {
@@ -75,9 +75,7 @@ export const orderStateToColumnOrder = (state: Record<string, string[]>) => {
     return result;
 };
 
-export const getInitialOrderItems = <TData extends unknown>(
-    treeItems: Column<TData, unknown>[],
-) => {
+export const getInitialOrderItems = <TData extends unknown>(treeItems: Column<TData>[]) => {
     const stack = [...treeItems];
     const result: Record<string, string[]> = {root: treeItems.map(({id}) => id)};
 

@@ -66,7 +66,7 @@ export const TableSettings = <TData extends unknown>({
     );
     const [orderState, setOrderState] = React.useState(() => getInitialOrderItems(filteredColumns));
 
-    const renderColumns = (renderedColumns: Column<TData, unknown>[]) => {
+    const renderColumns = (renderedColumns: Column<TData>[]) => {
         return renderedColumns.map((innerColumn, index) => {
             const children = renderColumns(innerColumn.columns);
             const header = headersById[innerColumn.id];
