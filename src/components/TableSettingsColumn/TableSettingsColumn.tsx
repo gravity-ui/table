@@ -17,7 +17,7 @@ interface Props<TData> extends TableSettingsOptions {
     column: Column<TData>;
     header: Header<TData, unknown>;
     visibilityState: VisibilityState;
-    showDivider: boolean;
+    activeDepth?: number;
     onVisibilityToggle: (updater: Updater<VisibilityState>) => void;
 }
 
@@ -26,9 +26,9 @@ export const TableSettingsColumn = <TData extends unknown>({
     header,
     children,
     visibilityState,
-    showDivider,
     filterable,
     sortable,
+    activeDepth,
     onVisibilityToggle,
 }: React.PropsWithChildren<Props<TData>>) => {
     const innerColumns = column.getLeafColumns();
@@ -73,8 +73,16 @@ export const TableSettingsColumn = <TData extends unknown>({
         return spacers;
     };
 
+    const isDisabledContext =
+        typeof activeDepth === 'number' ? activeDepth !== column.depth : false;
+    const isRoot = column.depth === 0;
+
     const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({
         id: column.id,
+        disabled: {
+            draggable: isDisabledContext,
+            droppable: isDisabledContext,
+        },
     });
 
     if (transform) transform.scaleY = 1;
@@ -84,44 +92,47 @@ export const TableSettingsColumn = <TData extends unknown>({
     };
 
     return (
-        <div style={style} ref={setNodeRef}>
-            <div
-                key={column.id}
-                className={b({'with-divider': showDivider && !isDragging})}
-                {...attributes}
-                data-role="drag-handle"
-            >
-                <div className={b('content')}>
-                    {sortable ? (
-                        <span className={b('drag-handle', {dragging: isDragging})} {...listeners}>
-                            <Icon data={Grip} size={16} />
-                        </span>
-                    ) : null}
-                    {filterable ? (
-                        <Checkbox
-                            checked={isVisible}
-                            disabled={!isEnabledHidding(column)}
-                            onChange={toggle}
-                            indeterminate={isIndeterminate}
-                        />
-                    ) : null}
-                    {renderSpacers()}
-                    <Text variant="body-1" className={b('name', {parent: isParent})}>
-                        {columnHeader}
-                    </Text>
-                </div>
-
-                <SortableContext
-                    id={column.id}
-                    items={column.columns?.map(({id}) => id)}
-                    strategy={verticalListSortingStrategy}
+        <div style={style} ref={setNodeRef} className={b({dragging: isDragging, root: isRoot})}>
+            <div className={b('background')}>
+                <div
+                    {...attributes}
+                    className={b('layout', {'hide-divider': isRoot && !isDragging})}
                 >
-                    {children}
-                </SortableContext>
+                    <div className={b('content')}>
+                        {sortable ? (
+                            <span
+                                className={b('drag-handle', {dragging: isDragging})}
+                                {...listeners}
+                            >
+                                <Icon data={Grip} size={16} />
+                            </span>
+                        ) : null}
+                        {filterable ? (
+                            <Checkbox
+                                checked={isVisible}
+                                disabled={!isEnabledHidding(column)}
+                                onChange={toggle}
+                                indeterminate={isIndeterminate}
+                            />
+                        ) : null}
+                        {renderSpacers()}
+                        <Text variant="body-1" className={b('name', {parent: isParent})}>
+                            {columnHeader}
+                        </Text>
+                    </div>
+
+                    <SortableContext
+                        id={column.id}
+                        items={column.columns?.map(({id}) => id)}
+                        strategy={verticalListSortingStrategy}
+                    >
+                        {children}
+                    </SortableContext>
+                </div>
             </div>
-            {showDivider ? (
-                <div className={b('divider', {hidden: isDragging})}>
-                    {isDragging ? null : <Divider />}
+            {isRoot && !isDragging ? (
+                <div className={b('divider')}>
+                    <Divider />
                 </div>
             ) : null}
         </div>

@@ -3,11 +3,15 @@
 $block: '.#{variables.$ns}table-settings-column';
 
 #{$block} {
-    border-radius: var(--g-spacing-1);
-    overflow: hidden;
+    position: relative;
 
-    &:hover:not(:has(#{$block}:hover)) {
-        background-color: var(--g-color-base-simple-hover);
+    &__layout {
+        border-radius: var(--g-spacing-1);
+
+        &:hover:not(:has(#{$block}__layout:hover)) {
+            overflow: hidden;
+            background-color: var(--g-color-base-simple-hover);
+        }
     }
 
     &__drag-handle {
@@ -36,10 +40,6 @@ $block: '.#{variables.$ns}table-settings-column';
 
     &__divider {
         padding: var(--g-spacing-1) var(--g-spacing-2);
-
-        &_hidden {
-            height: 1px;
-        }
     }
 
     &__name {
@@ -47,4 +47,16 @@ $block: '.#{variables.$ns}table-settings-column';
             font-weight: 500;
         }
     }
+}
+
+#{$block}_dragging {
+    z-index: 2;
+
+    > #{$block}__background {
+        background-color: var(--g-color-base-background);
+    }
+}
+
+#{$block}_root#{$block}_dragging {
+    padding-bottom: 9px;
 }

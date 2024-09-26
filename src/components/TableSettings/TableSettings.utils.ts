@@ -1,6 +1,6 @@
 import React from 'react';
 
-import type {DragEndEvent, UniqueIdentifier} from '@dnd-kit/core';
+import type {DragEndEvent, DragStartEvent, UniqueIdentifier} from '@dnd-kit/core';
 import {arrayMove} from '@dnd-kit/sortable';
 import type {Column} from '@tanstack/react-table';
 
@@ -32,6 +32,22 @@ export const useOrderedItems = <TData extends unknown>(
     orderState: Record<string, string[]>,
     setOrderState: React.Dispatch<React.SetStateAction<Record<string, string[]>>>,
 ) => {
+    const [activeDepth, setActiveDepth] = React.useState<number | undefined>();
+
+    const dephMap = React.useMemo(() => {
+        const stack = [...items];
+        const result: Record<string, number> = {};
+
+        while (stack.length) {
+            const item = stack.pop();
+            if (!item) continue;
+            result[item.id] = item.depth;
+            if (item.columns) stack.push(...item.columns);
+        }
+
+        return result;
+    }, [items]);
+
     const orderedItems = React.useMemo(() => {
         return (
             orderState['root']
@@ -42,13 +58,12 @@ export const useOrderedItems = <TData extends unknown>(
     }, [orderState, items]);
 
     const handleDragEnd = ({active, over}: DragEndEvent) => {
+        setActiveDepth(undefined);
         const activeContainer = findContainer(orderState, active.id);
         const overContainer = findContainer(orderState, over?.id);
         if (!activeContainer || !overContainer || activeContainer !== overContainer) return;
-
         const activeIndex = orderState[activeContainer].indexOf(active.id.toString());
         const overIndex = over ? orderState[overContainer].indexOf(over?.id.toString()) : -1;
-
         if (activeIndex !== overIndex) {
             setOrderState((prevState) => ({
                 ...prevState,
@@ -57,7 +72,15 @@ export const useOrderedItems = <TData extends unknown>(
         }
     };
 
-    return {orderedItems, handleDragEnd};
+    const handleDragStart = ({active}: DragStartEvent) => {
+        setActiveDepth(dephMap[active.id]);
+    };
+
+    const handleDragCancel = () => {
+        setActiveDepth(undefined);
+    };
+
+    return {orderedItems, activeDepth, handleDragEnd, handleDragStart, handleDragCancel};
 };
 
 export const orderStateToColumnOrder = (state: Record<string, string[]>) => {

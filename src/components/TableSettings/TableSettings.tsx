@@ -66,30 +66,6 @@ export const TableSettings = <TData extends unknown>({
     );
     const [orderState, setOrderState] = React.useState(() => getInitialOrderItems(filteredColumns));
 
-    const renderColumns = (renderedColumns: Column<TData>[]) => {
-        return renderedColumns.map((innerColumn, index) => {
-            const children = renderColumns(innerColumn.columns);
-            const header = headersById[innerColumn.id];
-            const rootNode = innerColumn.depth === 0;
-            const lastInGroup = index === renderedColumns.length - 1;
-
-            return (
-                <TableSettingsColumn
-                    key={innerColumn.id}
-                    column={innerColumn}
-                    header={header}
-                    visibilityState={visibilityState}
-                    sortable={sortable}
-                    filterable={filterable}
-                    onVisibilityToggle={setVisibilityState}
-                    showDivider={rootNode && !lastInGroup}
-                >
-                    {children}
-                </TableSettingsColumn>
-            );
-        });
-    };
-
     const applyNewSettings = () => {
         const columnOrder = orderStateToColumnOrder(orderState);
 
@@ -103,11 +79,30 @@ export const TableSettings = <TData extends unknown>({
 
     const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
-    const {orderedItems, handleDragEnd} = useOrderedItems(
-        filteredColumns,
-        orderState,
-        setOrderState,
-    );
+    const {orderedItems, activeDepth, handleDragEnd, handleDragStart, handleDragCancel} =
+        useOrderedItems(filteredColumns, orderState, setOrderState);
+
+    const renderColumns = (renderedColumns: Column<TData>[]) => {
+        return renderedColumns.map((innerColumn) => {
+            const children = renderColumns(innerColumn.columns);
+            const header = headersById[innerColumn.id];
+
+            return (
+                <TableSettingsColumn
+                    key={innerColumn.id}
+                    column={innerColumn}
+                    header={header}
+                    visibilityState={visibilityState}
+                    sortable={sortable}
+                    filterable={filterable}
+                    activeDepth={activeDepth}
+                    onVisibilityToggle={setVisibilityState}
+                >
+                    {children}
+                </TableSettingsColumn>
+            );
+        });
+    };
 
     return (
         <React.Fragment>
@@ -118,7 +113,12 @@ export const TableSettings = <TData extends unknown>({
                 placement={POPUP_PLACEMENT}
             >
                 <div className={b('popover-content')}>
-                    <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
+                    <DndContext
+                        onDragEnd={handleDragEnd}
+                        onDragStart={handleDragStart}
+                        onDragCancel={handleDragCancel}
+                        sensors={sensors}
+                    >
                         <SortableContext
                             items={orderedItems.map(({id}) => id)}
                             strategy={verticalListSortingStrategy}

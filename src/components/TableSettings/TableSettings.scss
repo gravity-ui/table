@@ -5,9 +5,12 @@ $block: '.#{variables.$ns}table-settings';
 #{$block} {
     &__popover-content {
         padding: var(--g-spacing-1);
+        margin-block: -10px;
     }
 
     &__popover-actions {
+        position: relative;
         padding: var(--g-spacing-2);
+        background-color: var(--g-color-base-background);
     }
 }
