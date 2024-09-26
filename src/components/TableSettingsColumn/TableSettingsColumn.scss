@@ -36,6 +36,10 @@ $block: '.#{variables.$ns}table-settings-column';
 
     &__divider {
         padding: var(--g-spacing-1) var(--g-spacing-2);
+
+        &_hidden {
+            height: 1px;
+        }
     }
 
     &__name {

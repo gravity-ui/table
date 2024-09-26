@@ -119,9 +119,9 @@ export const TableSettingsColumn = <TData extends unknown>({
                     {children}
                 </SortableContext>
             </div>
-            {showDivider && !isDragging ? (
-                <div className={b('divider')}>
-                    <Divider />
+            {showDivider ? (
+                <div className={b('divider', {hidden: isDragging})}>
+                    {isDragging ? null : <Divider />}
                 </div>
             ) : null}
         </div>
