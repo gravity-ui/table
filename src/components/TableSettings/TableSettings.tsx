@@ -111,6 +111,7 @@ export const TableSettings = <TData extends unknown>({
                 onClose={() => setOpen(false)}
                 anchorRef={anchorRef}
                 placement={POPUP_PLACEMENT}
+                contentClassName={b()}
             >
                 <div className={b('popover-content')}>
                     <DndContext

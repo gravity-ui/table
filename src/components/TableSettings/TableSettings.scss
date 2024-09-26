@@ -3,9 +3,14 @@
 $block: '.#{variables.$ns}table-settings';
 
 #{$block} {
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+
     &__popover-content {
         padding: var(--g-spacing-1);
-        margin-block: -10px;
+        margin-block-end: -10px;
+        overflow: auto;
     }
 
     &__popover-actions {
