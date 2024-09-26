@@ -9,7 +9,7 @@ import type {Column, Header, Updater, VisibilityState} from '@tanstack/react-tab
 import type {TableSettingsOptions} from '../TableSettings/TableSettings';
 
 import {b} from './TableSettingsColumn.classname';
-import {getIsVisible, isEnabledHidding} from './TableSettingsColumn.utils';
+import {getIsVisible, isEnabledHiding} from './TableSettingsColumn.utils';
 
 import './TableSettingsColumn.scss';
 
@@ -56,7 +56,7 @@ export const TableSettingsColumn = <TData extends unknown>({
         if (isParent) {
             const newState = innerColumns.reduce<Record<string, boolean>>((acc, innerColumn) => {
                 const result = {...acc};
-                if (isEnabledHidding(innerColumn))
+                if (isEnabledHiding(innerColumn))
                     result[innerColumn.id] = !(isVisible && !isIndeterminate);
                 return result;
             }, {});
@@ -111,7 +111,7 @@ export const TableSettingsColumn = <TData extends unknown>({
                         {filterable ? (
                             <Checkbox
                                 checked={isVisible}
-                                disabled={!isEnabledHidding(column)}
+                                disabled={!isEnabledHiding(column)}
                                 onChange={toggle}
                                 indeterminate={isIndeterminate}
                             />

@@ -34,7 +34,7 @@ export const useOrderedItems = <TData extends unknown>(
 ) => {
     const [activeDepth, setActiveDepth] = React.useState<number | undefined>();
 
-    const dephMap = React.useMemo(() => {
+    const depthMap = React.useMemo(() => {
         const stack = [...items];
         const result: Record<string, number> = {};
 
@@ -73,7 +73,7 @@ export const useOrderedItems = <TData extends unknown>(
     };
 
     const handleDragStart = ({active}: DragStartEvent) => {
-        setActiveDepth(dephMap[active.id]);
+        setActiveDepth(depthMap[active.id]);
     };
 
     const handleDragCancel = () => {

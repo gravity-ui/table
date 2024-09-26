@@ -9,5 +9,5 @@ export const getIsVisible = <TData extends unknown>(
     return visibilityState[column.id] ?? true;
 };
 
-export const isEnabledHidding = <TData extends unknown>(column: Column<TData>): boolean =>
+export const isEnabledHiding = <TData extends unknown>(column: Column<TData>): boolean =>
     column.columnDef.enableHiding ?? true;
