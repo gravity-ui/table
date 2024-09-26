@@ -14,7 +14,7 @@ export const getSettingsColumn = <TData extends unknown>(
 ): ColumnDef<TData> => {
     return {
         id: columnId,
-        header: (context) => <TableSettings {...context} {...options} columnId={columnId} />,
+        header: ({table}) => <TableSettings table={table} {...options} columnId={columnId} />,
         size: SETTINGS_COLUMN_SIZE,
         minSize: SETTINGS_COLUMN_SIZE,
     };
