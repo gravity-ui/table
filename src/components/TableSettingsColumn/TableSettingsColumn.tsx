@@ -56,7 +56,8 @@ export const TableSettingsColumn = <TData extends unknown>({
         if (isParent) {
             const newState = innerColumns.reduce<Record<string, boolean>>((acc, innerColumn) => {
                 const result = {...acc};
-                if (isEnabledHidding(innerColumn)) result[innerColumn.id] = !isVisible;
+                if (isEnabledHidding(innerColumn))
+                    result[innerColumn.id] = !(isVisible && !isIndeterminate);
                 return result;
             }, {});
             onVisibilityToggle((prevState) => ({...prevState, ...newState}));
