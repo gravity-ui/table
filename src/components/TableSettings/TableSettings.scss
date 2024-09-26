@@ -1,0 +1,21 @@
+@use '../variables';
+
+$block: '.#{variables.$ns}table-settings';
+
+#{$block} {
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+
+    &__popover-content {
+        padding: var(--g-spacing-1);
+        margin-block-end: calc(-1 * calc(var(--g-spacing-2) + var(--g-spacing-half)));
+        overflow: auto;
+    }
+
+    &__popover-actions {
+        position: relative;
+        padding: var(--g-spacing-2);
+        background-color: var(--g-color-base-background);
+    }
+}

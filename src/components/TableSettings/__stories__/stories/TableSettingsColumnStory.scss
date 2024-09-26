@@ -1,0 +1,9 @@
+.table-settings-column-story {
+    width: 100%;
+    overflow: auto;
+
+    &__cell,
+    &__header-cell {
+        background: var(--g-color-base-background);
+    }
+}
