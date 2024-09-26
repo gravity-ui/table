@@ -8,7 +8,8 @@ $block: '.#{variables.$ns}table-settings-column';
     &__layout {
         border-radius: var(--g-spacing-1);
 
-        &:hover:not(:has(#{$block}__layout:hover)) {
+        &:hover:not(:has(#{$block}__layout:hover)),
+        &_dragging {
             overflow: hidden;
             background-color: var(--g-color-base-simple-hover);
         }
@@ -18,8 +19,8 @@ $block: '.#{variables.$ns}table-settings-column';
         cursor: grab;
         line-height: var(--g-text-body-short-line-height);
 
-        &_dragging {
-            cursor: grabbing;
+        &_unset-coursor {
+            cursor: unset;
         }
     }
 
@@ -47,10 +48,17 @@ $block: '.#{variables.$ns}table-settings-column';
             font-weight: 500;
         }
     }
+
+    &__checkbox {
+        &_unset-coursor {
+            cursor: unset;
+        }
+    }
 }
 
 #{$block}_dragging {
     z-index: 2;
+    cursor: grabbing;
 
     > #{$block}__background {
         background-color: var(--g-color-base-background);

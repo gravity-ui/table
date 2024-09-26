@@ -1,7 +1,6 @@
 import React from 'react';
 
 import {SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
-import {CSS} from '@dnd-kit/utilities';
 import {Grip} from '@gravity-ui/icons';
 import {Checkbox, Divider, Icon, Text} from '@gravity-ui/uikit';
 import type {Column, Header, Updater, VisibilityState} from '@tanstack/react-table';
@@ -86,23 +85,19 @@ export const TableSettingsColumn = <TData extends unknown>({
         },
     });
 
-    if (transform) transform.scaleY = 1;
     const style = {
-        transform: CSS.Transform.toString(transform),
+        transform: `translate3d(0px, ${transform?.y ?? 0}px, 0)`,
         transition,
     };
 
     return (
         <div style={style} ref={setNodeRef} className={b({dragging: isDragging, root: isRoot})}>
             <div className={b('background')}>
-                <div
-                    {...attributes}
-                    className={b('layout', {'hide-divider': isRoot && !isDragging})}
-                >
+                <div {...attributes} className={b('layout', {dragging: isDragging})}>
                     <div className={b('content')}>
                         {sortable ? (
                             <span
-                                className={b('drag-handle', {dragging: isDragging})}
+                                className={b('drag-handle', {'unset-coursor': isDragging})}
                                 {...listeners}
                             >
                                 <Icon data={Grip} size={16} />
@@ -114,6 +109,7 @@ export const TableSettingsColumn = <TData extends unknown>({
                                 disabled={!isEnabledHiding(column)}
                                 onChange={toggle}
                                 indeterminate={isIndeterminate}
+                                className={b('checkbox', {'unset-coursor': isDragging})}
                             />
                         ) : null}
                         {renderSpacers()}
