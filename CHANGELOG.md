@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/gravity-ui/table/compare/v1.1.0...v1.2.0) (2024-09-26)
+
+
+### Features
+
+* **Table:** table settings component added ([#51](https://github.com/gravity-ui/table/issues/51)) ([8936fe1](https://github.com/gravity-ui/table/commit/8936fe1036379967264651984d814403c349b706))
+
 ## [1.1.0](https://github.com/gravity-ui/table/compare/v1.0.0...v1.1.0) (2024-09-25)
 
 
