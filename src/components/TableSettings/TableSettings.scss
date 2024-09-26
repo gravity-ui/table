@@ -9,7 +9,7 @@ $block: '.#{variables.$ns}table-settings';
 
     &__popover-content {
         padding: var(--g-spacing-1);
-        margin-block-end: -10px;
+        margin-block-end: calc(-1 * calc(var(--g-spacing-2) + var(--g-spacing-half)));
         overflow: auto;
     }
 

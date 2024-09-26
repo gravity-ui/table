@@ -58,5 +58,5 @@ $block: '.#{variables.$ns}table-settings-column';
 }
 
 #{$block}_root#{$block}_dragging {
-    padding-bottom: 9px;
+    padding-block-end: calc(var(--g-spacing-2) + 1px);
 }
