@@ -124,7 +124,7 @@ const table = useTable({
 ### Grouping
 
 ```tsx
-import type {ExpandedState, BaseRow} from '@tanstack/react-table';
+import type {ExpandedState, Row} from '@tanstack/react-table';
 
 interface Person {
   id: string;
@@ -164,7 +164,7 @@ const data: Item[] = [
   },
 ];
 
-const getGroupTitle = (row: BaseRow<Item>) => row.getValue<string>('name');
+const getGroupTitle = (row: Row<Item>) => row.getValue<string>('name');
 
 const GroupingExample = () => {
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
