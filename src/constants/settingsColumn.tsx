@@ -6,7 +6,7 @@ import {TableSettings} from '../components/TableSettings/TableSettings';
 import type {TableSettingsOptions} from '../components/TableSettings/TableSettings';
 
 export const SETTINGS_COLUMN_ID = '_settings';
-const SETTINGS_COLUMN_SIZE = 32;
+const SETTINGS_COLUMN_SIZE = 44;
 
 export const getSettingsColumn = <TData extends unknown>(
     columnId = SETTINGS_COLUMN_ID,
