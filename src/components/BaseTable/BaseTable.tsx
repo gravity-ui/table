@@ -142,6 +142,8 @@ export const BaseTable = React.forwardRef(
             stickyHeader = false,
             withFooter = false,
             withHeader = true,
+            getIsCustomRow,
+            renderCustomRowContent,
         }: BaseTableProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableElement>,
     ) => {
@@ -208,6 +210,8 @@ export const BaseTable = React.forwardRef(
                     'aria-selected': table.options.enableRowSelection
                         ? row.getIsSelected()
                         : undefined,
+                    getIsCustomRow,
+                    renderCustomRowContent,
                 };
 
                 if (draggableContext) {
