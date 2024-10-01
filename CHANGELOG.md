@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/gravity-ui/table/compare/v1.2.0...v1.2.1) (2024-09-30)
+
+
+### Bug Fixes
+
+* **Table:** fix settings column size ([#59](https://github.com/gravity-ui/table/issues/59)) ([8d506a9](https://github.com/gravity-ui/table/commit/8d506a9f7f7dfe124906b9548bdfbe9ed3d08d08))
+
 ## [1.2.0](https://github.com/gravity-ui/table/compare/v1.1.0...v1.2.0) (2024-09-26)
 
 
