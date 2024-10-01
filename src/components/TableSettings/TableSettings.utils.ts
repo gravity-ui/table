@@ -98,16 +98,39 @@ export const orderStateToColumnOrder = (state: Record<string, string[]>) => {
     return result;
 };
 
-export const getInitialOrderItems = <TData extends unknown>(treeItems: Column<TData>[]) => {
+export const getInitialOrderItems = <TData extends unknown>(
+    treeItems: Column<TData>[],
+    initialOrder: string[],
+) => {
+    const orderMap = initialOrder.reduce<Record<string, number>>(
+        (acc, id, index) => ({...acc, [id]: index}),
+        {},
+    );
+
     const stack = [...treeItems];
     const result: Record<string, string[]> = {root: treeItems.map(({id}) => id)};
+    const parentNodes: string[] = [];
 
     while (stack.length) {
         const item = stack.shift();
         if (!item) continue;
         result[item.id] = item?.columns?.map(({id}) => id) ?? [];
-        if (item.columns) stack.push(...item.columns);
+        if (item.columns.length) {
+            stack.push(...item.columns);
+            parentNodes.push(item.id);
+        }
     }
+
+    parentNodes.reverse().forEach((parent) => {
+        const childs = result[parent];
+        const childsOrders = childs.map((id) => orderMap[id] ?? -1);
+        const minIndex = Math.min(...childsOrders);
+        orderMap[parent] = minIndex;
+    });
+
+    Object.keys(result).forEach((key) => {
+        result[key] = result[key].sort((a, b) => orderMap[a] - orderMap[b]);
+    });
 
     return result;
 };

@@ -64,18 +64,9 @@ export const TableSettings = <TData extends unknown>({
     const [visibilityState, setVisibilityState] = React.useState(
         () => table.getState().columnVisibility,
     );
-    const [orderState, setOrderState] = React.useState(() => getInitialOrderItems(filteredColumns));
-
-    const applyNewSettings = () => {
-        const columnOrder = orderStateToColumnOrder(orderState);
-
-        if (onSettingsApply) onSettingsApply({visibilityState, columnOrder});
-
-        if (filterable) table.setColumnVisibility(visibilityState);
-        if (sortable) table.setColumnOrder(columnOrder);
-
-        setOpen(false);
-    };
+    const [orderState, setOrderState] = React.useState(() =>
+        getInitialOrderItems(filteredColumns, table.getState().columnOrder),
+    );
 
     const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
@@ -104,11 +95,37 @@ export const TableSettings = <TData extends unknown>({
         });
     };
 
+    const resetSettings = () => {
+        setVisibilityState(table.getState().columnVisibility);
+        setOrderState(getInitialOrderItems(filteredColumns, table.getState().columnOrder));
+    };
+
+    const cancelEditing = () => {
+        setOpen(false);
+        resetSettings();
+    };
+
+    const togglePopup = () => {
+        if (open) cancelEditing();
+        else setOpen(true);
+    };
+
+    const applyNewSettings = () => {
+        const columnOrder = orderStateToColumnOrder(orderState);
+
+        if (onSettingsApply) onSettingsApply({visibilityState, columnOrder});
+
+        if (filterable) table.setColumnVisibility(visibilityState);
+        if (sortable) table.setColumnOrder(columnOrder);
+
+        setOpen(false);
+    };
+
     return (
         <React.Fragment>
             <Popup
                 open={open}
-                onClose={() => setOpen(false)}
+                onClose={cancelEditing}
                 anchorRef={anchorRef}
                 placement={POPUP_PLACEMENT}
                 contentClassName={b()}
@@ -135,7 +152,7 @@ export const TableSettings = <TData extends unknown>({
                     </Button>
                 </div>
             </Popup>
-            <Button view="flat-secondary" size="m" ref={anchorRef} onClick={() => setOpen(!open)}>
+            <Button view="flat-secondary" size="m" ref={anchorRef} onClick={togglePopup}>
                 <Icon data={Gear} />
             </Button>
         </React.Fragment>
