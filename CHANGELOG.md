@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/gravity-ui/table/compare/v1.2.1...v1.2.2) (2024-10-02)
+
+
+### Bug Fixes
+
+* **TableSettings:** group ordering state initializing ([#63](https://github.com/gravity-ui/table/issues/63)) ([e9a6ec1](https://github.com/gravity-ui/table/commit/e9a6ec12e0df86169270c2087b19eded8e0fcb51))
+
 ## [1.2.1](https://github.com/gravity-ui/table/compare/v1.2.0...v1.2.1) (2024-09-30)
 
 
