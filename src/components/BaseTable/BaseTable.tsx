@@ -31,6 +31,8 @@ export interface BaseTableProps<TData, TScrollElement extends Element | Window =
     bodyAttributes?: React.HTMLAttributes<HTMLTableSectionElement>;
     /** CSS classes for the `<tbody>` element */
     bodyClassName?: string;
+    /** Ref for the `<tbody>` element */
+    bodyRef?: React.Ref<HTMLTableSectionElement>;
     /** HTML attributes for the `<td>` elements inside `<tbody>` */
     cellAttributes?: BaseRowProps<TData>['cellAttributes'];
     /** CSS classes for the `<td>` elements inside `<tbody>` */
@@ -110,6 +112,7 @@ export const BaseTable = React.forwardRef(
             attributes,
             bodyAttributes,
             bodyClassName,
+            bodyRef,
             cellAttributes,
             cellClassName,
             className,
@@ -252,6 +255,7 @@ export const BaseTable = React.forwardRef(
                     </thead>
                 )}
                 <tbody
+                    ref={bodyRef}
                     className={b('body', bodyClassName)}
                     {...bodyAttributes}
                     style={{

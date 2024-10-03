@@ -24,11 +24,14 @@ export const ReorderingWithVirtualizationStory = () => {
         getRowId: (item) => item.id,
     });
 
+    const bodyRef = React.useRef<HTMLTableSectionElement>(null);
+
     const rowVirtualizer = useWindowRowVirtualizer({
         count: table.getRowModel().rows.length,
         estimateSize: () => 20,
         overscan: 5,
         rangeExtractor: getVirtualRowRangeExtractor(tableRef.current),
+        scrollMargin: bodyRef.current?.offsetTop ?? 0,
     });
 
     const handleReorder = React.useCallback<
@@ -56,7 +59,13 @@ export const ReorderingWithVirtualizationStory = () => {
 
     return (
         <ReorderingProvider table={table} onReorder={handleReorder}>
-            <Table ref={tableRef} table={table} rowVirtualizer={rowVirtualizer} stickyHeader />
+            <Table
+                ref={tableRef}
+                bodyRef={bodyRef}
+                table={table}
+                rowVirtualizer={rowVirtualizer}
+                stickyHeader
+            />
         </ReorderingProvider>
     );
 };

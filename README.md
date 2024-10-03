@@ -316,13 +316,16 @@ const WindowVirtualizationExample = () => {
     getRowId: (item) => item.id,
   });
 
+  const bodyRef = React.useRef<HTMLTableSectionElement>(null);
+
   const rowVirtualizer = useWindowRowVirtualizer({
     count: table.getRowModel().rows.length,
     estimateSize: () => 20,
     overscan: 5,
+    scrollMargin: bodyRef.current?.offsetTop ?? 0,
   });
 
-  return <Table table={table} rowVirtualizer={rowVirtualizer} />;
+  return <Table table={table} rowVirtualizer={rowVirtualizer} bodyRef={bodyRef} />;
 };
 ```
 

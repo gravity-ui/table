@@ -146,7 +146,10 @@ export const BaseRow = React.forwardRef(
                 {...restProps}
                 {...attributes}
                 style={{
-                    top: virtualItem?.start,
+                    top:
+                        rowVirtualizer && virtualItem
+                            ? virtualItem.start - rowVirtualizer.options.scrollMargin
+                            : undefined,
                     ...style,
                     ...attributes?.style,
                 }}
