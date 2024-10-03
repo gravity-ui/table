@@ -3,6 +3,7 @@ import type {Meta, StoryObj} from '@storybook/react';
 import {BaseTable} from '../index';
 
 import {ColumnPinningStory} from './stories/ColumnPinningStory';
+import {CustomRowStory} from './stories/CustomRowStory';
 import {DefaultStory} from './stories/DefaultStory';
 import {EmptyContentStory} from './stories/EmptyContentStory';
 import {GroupingStory} from './stories/GroupingStory';
@@ -108,4 +109,8 @@ export const StickyHeader: StoryObj<typeof StickyHeaderStory> = {
 
 export const EmptyContent: StoryObj<typeof EmptyContentStory> = {
     render: EmptyContentStory,
+};
+
+export const CustomRow: StoryObj<typeof CustomRowStory> = {
+    render: CustomRowStory,
 };
