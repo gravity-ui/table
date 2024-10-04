@@ -14,11 +14,14 @@ export const WindowVirtualizationStory = () => {
         getRowId: (item) => item.id,
     });
 
+    const bodyRef = React.useRef<HTMLTableSectionElement>(null);
+
     const rowVirtualizer = useWindowRowVirtualizer({
         count: table.getRowModel().rows.length,
         estimateSize: () => 40,
         overscan: 5,
+        scrollMargin: bodyRef.current?.offsetTop ?? 0,
     });
 
-    return <Table table={table} rowVirtualizer={rowVirtualizer} stickyHeader />;
+    return <Table table={table} rowVirtualizer={rowVirtualizer} stickyHeader bodyRef={bodyRef} />;
 };

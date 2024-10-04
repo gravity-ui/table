@@ -34,10 +34,13 @@ export const GroupingWithVirtualizationStory = () => {
         },
     });
 
+    const bodyRef = React.useRef<HTMLTableSectionElement>(null);
+
     const rowVirtualizer = useWindowRowVirtualizer({
         count: table.getRowModel().rows.length,
         estimateSize: () => 20,
         overscan: 5,
+        scrollMargin: bodyRef.current?.offsetTop ?? 0,
     });
 
     return (
@@ -49,6 +52,7 @@ export const GroupingWithVirtualizationStory = () => {
             className={cnVirtualizationStory()}
             headerClassName={cnVirtualizationStory('header')}
             stickyHeader
+            bodyRef={bodyRef}
         />
     );
 };
