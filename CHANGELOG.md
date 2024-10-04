@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.3](https://github.com/gravity-ui/table/compare/v1.2.2...v1.2.3) (2024-10-04)
+
+
+### Bug Fixes
+
+* **BaseTable:** pass getIsCustomRow, groupHeaderClassName and renderCustomRowContent into BaseRow ([#66](https://github.com/gravity-ui/table/issues/66)) ([28bf6d2](https://github.com/gravity-ui/table/commit/28bf6d28d0e65980ed4a645b9fea2301d5b0baec))
+* **BaseTable:** take offset into account when virtualizing ([#65](https://github.com/gravity-ui/table/issues/65)) ([af52206](https://github.com/gravity-ui/table/commit/af522063b975428079d61e4a2fa1f260f49ddabd))
+
 ## [1.2.2](https://github.com/gravity-ui/table/compare/v1.2.1...v1.2.2) (2024-10-02)
 
 
