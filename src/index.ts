@@ -4,6 +4,7 @@ export type {
     ReorderingProviderProps,
     SortIndicatorProps,
     TableProps,
+    TableSettingsOptions,
     TableSettingsProps,
 } from './components';
 
