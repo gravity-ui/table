@@ -196,6 +196,9 @@ export const BaseTable = React.forwardRef(
                     ? rows[virtualItemOrRow.index]
                     : (virtualItemOrRow as Row<TData>);
 
+                const virtualItem = rowVirtualizer ? (virtualItemOrRow as VirtualItem) : undefined;
+                const key = virtualItem?.key ?? row.id;
+
                 const rowProps: BaseRowProps<TData, TScrollElement> = {
                     cellClassName,
                     className: rowClassName,
@@ -212,7 +215,7 @@ export const BaseTable = React.forwardRef(
                     row,
                     rowVirtualizer,
                     table,
-                    virtualItem: rowVirtualizer ? (virtualItemOrRow as VirtualItem) : undefined,
+                    virtualItem,
                     'aria-rowindex': headerRowCount + ariaRowIndexMap[row.id],
                     'aria-selected': table.options.enableRowSelection
                         ? row.getIsSelected()
@@ -220,10 +223,10 @@ export const BaseTable = React.forwardRef(
                 };
 
                 if (draggableContext) {
-                    return <BaseDraggableRow key={row.id} {...rowProps} />;
+                    return <BaseDraggableRow key={key} {...rowProps} />;
                 }
 
-                return <BaseRow key={row.id} {...rowProps} />;
+                return <BaseRow key={key} {...rowProps} />;
             });
         };
 
