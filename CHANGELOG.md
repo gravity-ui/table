@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.5](https://github.com/gravity-ui/table/compare/v1.2.4...v1.2.5) (2024-10-09)
+
+
+### Bug Fixes
+
+* **TableSettings:** export additional types ([#69](https://github.com/gravity-ui/table/issues/69)) ([ab84ec1](https://github.com/gravity-ui/table/commit/ab84ec1168fea3c19dce257f27911658d055d27f))
+
 ## [1.2.4](https://github.com/gravity-ui/table/compare/v1.2.3...v1.2.4) (2024-10-09)
 
 
