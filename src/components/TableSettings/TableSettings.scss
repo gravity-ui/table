@@ -16,6 +16,6 @@ $block: '.#{variables.$ns}table-settings';
     &__popover-actions {
         position: relative;
         padding: var(--g-spacing-2);
-        background-color: var(--g-color-base-background);
+        background-color: inherit;
     }
 }
