@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.4](https://github.com/gravity-ui/table/compare/v1.2.3...v1.2.4) (2024-10-09)
+
+
+### Bug Fixes
+
+* **BaseTable:** fix virtual rows positioning when reordering or sorting rows ([#71](https://github.com/gravity-ui/table/issues/71)) ([ab0f936](https://github.com/gravity-ui/table/commit/ab0f936025d75802ee768a5a562f25a62e392e63))
+* **TableSettings:** popover actions background in dark theme ([#68](https://github.com/gravity-ui/table/issues/68)) ([7b95f62](https://github.com/gravity-ui/table/commit/7b95f62eea7c780085373c20c130600bce354f32))
+
 ## [1.2.3](https://github.com/gravity-ui/table/compare/v1.2.2...v1.2.3) (2024-10-04)
 
 
