@@ -1,0 +1,15 @@
+@use '@gravity-ui/uikit/styles/mixins';
+@use '../variables';
+
+$block: '.#{variables.$ns}table';
+$popupBlock: '#{$block}-action-popup';
+
+#{$popupBlock} {
+    &__menu {
+        @include mixins.max-height(200px);
+
+        &-item {
+            @include mixins.max-text-width(250px);
+        }
+    }
+}
