@@ -4,8 +4,8 @@ import {Pencil} from '@gravity-ui/icons';
 import {Icon} from '@gravity-ui/uikit';
 
 export {columns as baseColumns} from '../../BaseTable/__stories__/constants/columns';
+import type {TableActionsSettings} from '../../../types/RowActions';
 import type {Item} from '../../BaseTable/__stories__/types';
-import type {TableActionsSettings} from '../types';
 
 export const actionsSettings: TableActionsSettings<Item> = {
     getRowActions: (item, index) => [

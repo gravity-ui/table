@@ -2,8 +2,8 @@ import React from 'react';
 
 import type {ColumnDef} from '@tanstack/react-table';
 
-import type {TableActionsSettings} from '../components';
 import {ActionsCell} from '../components';
+import type {TableActionsSettings} from '../types/RowActions';
 
 export const ACTIONS_COLUMN_ID = '_actions';
 const ACTIONS_COLUMN_SIZE = 44;
@@ -17,6 +17,6 @@ export const getActionsColumn = <TValue extends unknown>(
         header: '',
         size: ACTIONS_COLUMN_SIZE,
         minSize: ACTIONS_COLUMN_SIZE,
-        cell: (props) => <ActionsCell {...options} cellContext={props} />,
+        cell: (props) => <ActionsCell {...options} row={props.row} />,
     };
 };

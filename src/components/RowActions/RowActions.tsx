@@ -2,11 +2,13 @@ import React from 'react';
 
 import {Ellipsis} from '@gravity-ui/icons';
 import type {PopupPlacement} from '@gravity-ui/uikit';
-import {Button, Icon, Menu, Popup, useUniqId} from '@gravity-ui/uikit';
+import {Button, Icon, Popup, useUniqId} from '@gravity-ui/uikit';
+
+import type {TableActionsSettings} from '../../types/RowActions';
+import {RowActionsMenu} from '../RowActionsMenu';
 
 import {b} from './RowActions.classname';
 import i18n from './i18n';
-import type {TableActionConfig, TableActionGroup, TableActionsSettings} from './types';
 
 import './RowActions.scss';
 
@@ -19,65 +21,6 @@ type RowActionsProps<TValue> = Pick<
 };
 
 const DEFAULT_PLACEMENT: PopupPlacement = ['bottom-end', 'top-end', 'auto'];
-
-const isActionGroup = <TValue extends unknown>(
-    config: TableActionConfig<TValue>,
-): config is TableActionGroup<TValue> => {
-    return Array.isArray((config as TableActionGroup<TValue>).items);
-};
-
-interface RowActionsMenuProps<TValue extends unknown> {
-    size: TableActionsSettings<TValue>['rowActionsSize'];
-    item: TValue;
-    actions: TableActionConfig<TValue>[];
-    onMenuItemClick: () => unknown;
-}
-
-const RowActionsMenu = <TValue extends unknown>({
-    item,
-    actions,
-    size,
-    onMenuItemClick,
-}: RowActionsMenuProps<TValue>) => {
-    const renderPopupMenuItem = (action: TableActionConfig<TValue>, index: number) => {
-        if (isActionGroup(action)) {
-            return (
-                <Menu.Group key={index} label={action.title}>
-                    {action.items.map(renderPopupMenuItem)}
-                </Menu.Group>
-            );
-        }
-
-        const {text, icon, handler, href, ...restProps} = action;
-
-        const handleMenuItemClick = (
-            event: React.MouseEvent<HTMLDivElement | HTMLAnchorElement, MouseEvent>,
-        ) => {
-            event.stopPropagation();
-            handler(item, index, event);
-            onMenuItemClick();
-        };
-
-        return (
-            <Menu.Item
-                key={index}
-                onClick={handleMenuItemClick}
-                href={typeof href === 'function' ? href(item, index) : href}
-                iconStart={icon}
-                className={b('popup-menu-item')}
-                {...restProps}
-            >
-                {text}
-            </Menu.Item>
-        );
-    };
-
-    return (
-        <Menu className={b('popup-menu')} size={size}>
-            {actions.map(renderPopupMenuItem)}
-        </Menu>
-    );
-};
 
 export const RowActions = <TValue extends unknown>({
     index: rowIndex,
@@ -135,6 +78,8 @@ export const RowActions = <TValue extends unknown>({
                         actions={actions}
                         size={rowActionsSize}
                         onMenuItemClick={() => setIsPopupOpen(false)}
+                        className={b('popup-menu')}
+                        itemClassName={b('popup-menu-item')}
                     />
                 </div>
             </Popup>

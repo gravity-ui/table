@@ -1,6 +1,7 @@
 import type {ColumnDef} from '@tanstack/react-table';
 
-import type {TableActionsSettings, TableSettingsOptions} from '../components';
+import type {TableSettingsOptions} from '../components';
+import type {TableActionsSettings} from '../types/RowActions';
 
 import {getActionsColumn} from './actionsColumn';
 import {getSettingsColumn} from './settingsColumn';
@@ -15,7 +16,7 @@ export const getSettingsWithActionsColumn = <TData extends unknown>(
         settings?: TableSettingsOptions;
     },
 ): ColumnDef<TData> => {
-    const {cell} = getActionsColumn(columnId, options.actions);
+    const {cell} = getActionsColumn<TData>(columnId, options.actions);
     const {header} = getSettingsColumn<TData>(columnId, options.settings);
     return {
         id: columnId,
