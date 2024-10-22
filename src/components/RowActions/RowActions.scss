@@ -8,13 +8,11 @@ $block: '.#{variables.$ns}row-actions';
     display: flex;
     align-items: center;
 
-    &-popup {
-        &__menu {
-            @include mixins.max-height(200px);
+    &__popup-menu {
+        @include mixins.max-height(200px);
+    }
 
-            &-item {
-                @include mixins.max-text-width(250px);
-            }
-        }
+    &__popup-menu-item {
+        @include mixins.max-text-width(250px);
     }
 }
