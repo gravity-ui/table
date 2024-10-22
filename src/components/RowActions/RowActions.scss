@@ -1,0 +1,18 @@
+@use '@gravity-ui/uikit/styles/mixins';
+@use '../variables';
+
+$block: '.#{variables.$ns}row-actions';
+
+#{$block} {
+    height: 18px;
+    display: flex;
+    align-items: center;
+
+    &__popup-menu {
+        @include mixins.max-height(200px);
+    }
+
+    &__popup-menu-item {
+        @include mixins.max-text-width(250px);
+    }
+}
