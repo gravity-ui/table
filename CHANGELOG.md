@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/gravity-ui/table/compare/v1.2.5...v1.3.0) (2024-10-22)
+
+
+### Features
+
+* **Table:** table actions column added ([#61](https://github.com/gravity-ui/table/issues/61)) ([9ff4a42](https://github.com/gravity-ui/table/commit/9ff4a426b745e1e21afe472fb47d611936f60db0))
+
 ## [1.2.5](https://github.com/gravity-ui/table/compare/v1.2.4...v1.2.5) (2024-10-09)
 
 
