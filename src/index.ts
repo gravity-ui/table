@@ -8,7 +8,15 @@ export type {
     TableSettingsProps,
 } from './components';
 
-export {dragHandleColumn, selectionColumn, getSettingsColumn} from './constants';
+export {
+    dragHandleColumn,
+    selectionColumn,
+    getSettingsColumn,
+    ACTIONS_COLUMN_ID,
+    getActionsColumn,
+    SETTINGS_WITH_ACTIONS_COLUMN_ID,
+    getSettingsWithActionsColumn,
+} from './constants';
 
 export {
     useDraggableRowDepth,
@@ -27,3 +35,12 @@ export type {
 } from './hooks';
 
 export {getVirtualRowRangeExtractor} from './utils';
+
+export type {
+    TableAction,
+    TableActionGroup,
+    TableActionConfig,
+    TableRowActionsSize,
+    RenderRowActionsProps,
+    TableActionsSettings,
+} from './types/RowActions';
