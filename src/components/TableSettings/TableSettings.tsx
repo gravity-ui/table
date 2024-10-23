@@ -53,7 +53,7 @@ export const TableSettings = <TData extends unknown>({
         return headers.reduce<Record<string, Header<TData, unknown>>>((acc, header) => {
             const result = {...acc};
             result[header.column.id] = header;
-            return acc;
+            return result;
         }, {});
     }, [headers]);
 
