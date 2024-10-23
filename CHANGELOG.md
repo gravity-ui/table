@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/gravity-ui/table/compare/v1.3.0...v1.3.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **Table:** export actions types ([#75](https://github.com/gravity-ui/table/issues/75)) ([88ec66d](https://github.com/gravity-ui/table/commit/88ec66d9e0c4c27b0df598556be8243a6185b9a0))
+
 ## [1.3.0](https://github.com/gravity-ui/table/compare/v1.2.5...v1.3.0) (2024-10-22)
 
 
