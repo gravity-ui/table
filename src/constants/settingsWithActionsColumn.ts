@@ -17,12 +17,13 @@ export const getSettingsWithActionsColumn = <TData extends unknown>(
     },
 ): ColumnDef<TData> => {
     const {cell} = getActionsColumn<TData>(columnId, options.actions);
-    const {header} = getSettingsColumn<TData>(columnId, options.settings);
+    const {header, meta} = getSettingsColumn<TData>(columnId, options.settings);
     return {
         id: columnId,
         size: SETTINGS_WITH_ACTIONS_COLUMN_SIZE,
         minSize: SETTINGS_WITH_ACTIONS_COLUMN_SIZE,
         cell,
         header,
+        meta,
     };
 };

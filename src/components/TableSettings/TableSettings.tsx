@@ -12,6 +12,7 @@ import {TableSettingsColumn} from '../TableSettingsColumn/TableSettingsColumn';
 import {b} from './TableSettings.classname';
 import {
     getInitialOrderItems,
+    isDisplayedColumn,
     orderStateToColumnOrder,
     useOrderedItems,
 } from './TableSettings.utils';
@@ -26,7 +27,6 @@ export interface TableSettingsOptions {
 
 export interface TableSettingsProps<TData> extends TableSettingsOptions {
     table: Table<TData>;
-    columnId?: string;
     onSettingsApply?: ({
         visibilityState,
         columnOrder,
@@ -42,22 +42,18 @@ export const TableSettings = <TData extends unknown>({
     table,
     sortable = true,
     filterable = true,
-    columnId,
     onSettingsApply,
 }: TableSettingsProps<TData>) => {
     const anchorRef = React.useRef<HTMLButtonElement>(null);
     const [open, setOpen] = React.useState<boolean>(false);
     const columns = table.getAllColumns();
-    const filteredColumns = React.useMemo(
-        () => (columnId ? columns.filter((otherColumn) => otherColumn.id !== columnId) : columns),
-        [columnId, columns],
-    );
+    const filteredColumns = React.useMemo(() => columns.filter(isDisplayedColumn), [columns]);
     const headers = table.getFlatHeaders();
     const headersById = React.useMemo(() => {
         return headers.reduce<Record<string, Header<TData, unknown>>>((acc, header) => {
             const result = {...acc};
             result[header.column.id] = header;
-            return acc;
+            return result;
         }, {});
     }, [headers]);
 
@@ -75,7 +71,7 @@ export const TableSettings = <TData extends unknown>({
 
     const renderColumns = (renderedColumns: Column<TData>[]) => {
         return renderedColumns.map((innerColumn) => {
-            const children = renderColumns(innerColumn.columns);
+            const children = renderColumns(innerColumn.columns.filter(isDisplayedColumn));
             const header = headersById[innerColumn.id];
 
             return (

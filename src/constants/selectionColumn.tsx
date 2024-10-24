@@ -22,6 +22,9 @@ export const selectionColumn: ColumnDef<unknown> = {
             onChange={row.getToggleSelectedHandler()}
         />
     ),
+    meta: {
+        hideInSettings: true,
+    },
     size: 32,
     minSize: 32,
 };
