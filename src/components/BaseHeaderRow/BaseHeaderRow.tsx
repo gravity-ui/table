@@ -16,6 +16,7 @@ export interface BaseHeaderRowProps<TData, TValue = unknown>
         | ((headerGroup: HeaderGroup<TData>, parentHeaderGroup?: HeaderGroup<TData>) => string);
     headerGroup: HeaderGroup<TData>;
     parentHeaderGroup?: HeaderGroup<TData>;
+    renderHeaderCellContent?: BaseHeaderCellProps<TData, TValue>['renderHeaderCellContent'];
     renderResizeHandle?: (props: BaseResizeHandleProps<TData, TValue>) => React.ReactNode;
     renderSortIndicator: BaseHeaderCellProps<TData, TValue>['renderSortIndicator'];
     resizeHandleClassName?: BaseHeaderCellProps<TData, TValue>['resizeHandleClassName'];
@@ -34,6 +35,7 @@ export const BaseHeaderRow = <TData, TValue = unknown>({
     className: classNameProp,
     headerGroup,
     parentHeaderGroup,
+    renderHeaderCellContent,
     renderResizeHandle,
     renderSortIndicator,
     resizeHandleClassName,
@@ -65,6 +67,7 @@ export const BaseHeaderRow = <TData, TValue = unknown>({
                         className={cellClassName}
                         header={header as Header<TData, TValue>}
                         parentHeader={parentHeader}
+                        renderHeaderCellContent={renderHeaderCellContent}
                         renderResizeHandle={renderResizeHandle}
                         renderSortIndicator={renderSortIndicator}
                         resizeHandleClassName={resizeHandleClassName}
