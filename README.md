@@ -362,7 +362,7 @@ const columns: ColumnDef<Person>[] = [
     header: ({table}) => <TableSettings table={table} />,
     meta: {
       hideInSettings: false, // Optional. Allows to hide this column from settings popover
-      inSettings: 'some string or any html', // Optional. Overrides header field for settings popover (if you need different content for header and settings popover)
+      titleInSettings: 'ReactNode', // Optional. Overrides header field for settings popover (if you need different content for header and settings popover)
     },
   }, // or you can use function getSettingsColumn
 ];

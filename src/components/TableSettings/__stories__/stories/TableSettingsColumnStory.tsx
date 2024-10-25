@@ -51,7 +51,7 @@ const data: Item[] = [
     },
 ];
 
-const columns: ColumnDef<Item>[] = [
+const tableColumns: ColumnDef<Item>[] = [
     {
         id: 'contact_group_group',
         header: 'Contact Group',
@@ -103,8 +103,14 @@ export const TableSettingsColumnStory = (options: TableSettingsOptions) => {
         left: ['_select'],
         right: [SETTINGS_COLUMN_ID],
     });
+
+    const columns = React.useMemo(
+        () => [selectionColumn as ColumnDef<Item>, ...tableColumns, settingsColumn],
+        [settingsColumn],
+    );
+
     const table = useTable({
-        columns: [selectionColumn as ColumnDef<Item>, ...columns, settingsColumn],
+        columns,
         data,
         enableColumnPinning: true,
         state: {rowSelection, columnPinning},

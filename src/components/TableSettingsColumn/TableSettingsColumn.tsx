@@ -46,9 +46,11 @@ export const TableSettingsColumn = <TData extends unknown>({
     const context = header?.getContext();
 
     const renderColumn = (columnDef: ColumnDef<TData, unknown>) => {
-        if (columnDef.meta?.inSettings) {
-            const inSettings = columnDef.meta?.inSettings;
-            return typeof inSettings === 'function' ? inSettings(column) : inSettings;
+        if (columnDef.meta?.titleInSettings) {
+            const titleInSettings = columnDef.meta?.titleInSettings;
+            return typeof titleInSettings === 'function'
+                ? titleInSettings(column)
+                : titleInSettings;
         }
 
         const columnHeader = columnDef.header;
