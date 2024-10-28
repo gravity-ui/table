@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.0](https://github.com/gravity-ui/table/compare/v1.3.1...v1.4.0) (2024-10-28)
+
+
+### Features
+
+* **BaseTable:** add renderHeaderCellContent prop ([#77](https://github.com/gravity-ui/table/issues/77)) ([2ce2bce](https://github.com/gravity-ui/table/commit/2ce2bced878dd57c751a4affbf6947bca04fd6d4))
+* **TableSettings:** add options for compatibility with other features ([#74](https://github.com/gravity-ui/table/issues/74)) ([2d2f4d0](https://github.com/gravity-ui/table/commit/2d2f4d092dcdb1051367b47bfaeb0c14e3a45b31))
+
 ## [1.3.1](https://github.com/gravity-ui/table/compare/v1.3.0...v1.3.1) (2024-10-23)
 
 
