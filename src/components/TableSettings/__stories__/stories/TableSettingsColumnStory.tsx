@@ -1,8 +1,8 @@
 import React from 'react';
 
-import type {ColumnDef, ColumnPinningState} from '@tanstack/react-table';
+import type {ColumnDef, ColumnPinningState, RowSelectionState} from '@tanstack/react-table';
 
-import {SETTINGS_COLUMN_ID, getSettingsColumn} from '../../../../constants';
+import {SETTINGS_COLUMN_ID, getSettingsColumn, selectionColumn} from '../../../../constants';
 import {useTable} from '../../../../hooks';
 import {Table} from '../../../Table/Table';
 import type {TableSettingsOptions} from '../../TableSettings';
@@ -51,7 +51,7 @@ const data: Item[] = [
     },
 ];
 
-const columns: ColumnDef<Item>[] = [
+const tableColumns: ColumnDef<Item>[] = [
     {
         id: 'contact_group_group',
         header: 'Contact Group',
@@ -96,18 +96,31 @@ const columns: ColumnDef<Item>[] = [
     },
 ];
 
-export const TableSettingsColumnStory = (options: TableSettingsOptions) => {
-    const settingsColumn = getSettingsColumn<Item>(SETTINGS_COLUMN_ID, options);
+export const TableSettingsColumnStory = ({sortable, filterable}: TableSettingsOptions) => {
+    const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
     const [columnPinning, setColumnPinning] = React.useState<ColumnPinningState>({
-        left: [],
+        left: ['_select'],
         right: [SETTINGS_COLUMN_ID],
     });
+
+    const columns = React.useMemo(
+        () => [
+            selectionColumn as ColumnDef<Item>,
+            ...tableColumns,
+            getSettingsColumn<Item>(SETTINGS_COLUMN_ID, {sortable, filterable}),
+        ],
+        [sortable, filterable],
+    );
+
     const table = useTable({
-        columns: [...columns, settingsColumn],
+        columns,
         data,
         enableColumnPinning: true,
-        state: {columnPinning},
+        state: {rowSelection, columnPinning},
         onColumnPinningChange: setColumnPinning,
+        enableRowSelection: true,
+        enableMultiRowSelection: true,
+        onRowSelectionChange: setRowSelection,
     });
 
     return (

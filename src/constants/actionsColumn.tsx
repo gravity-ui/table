@@ -18,5 +18,8 @@ export const getActionsColumn = <TValue extends unknown>(
         size: ACTIONS_COLUMN_SIZE,
         minSize: ACTIONS_COLUMN_SIZE,
         cell: (props) => <ActionsCell {...options} row={props.row} />,
+        meta: {
+            hideInSettings: true,
+        },
     };
 };

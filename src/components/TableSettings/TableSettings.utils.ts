@@ -134,3 +134,6 @@ export const getInitialOrderItems = <TData extends unknown>(
 
     return result;
 };
+
+export const isDisplayedColumn = <TData extends unknown>(column: Column<TData, unknown>) =>
+    !column.columnDef.meta?.hideInSettings;

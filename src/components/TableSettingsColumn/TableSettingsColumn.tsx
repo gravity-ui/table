@@ -3,7 +3,7 @@ import React from 'react';
 import {SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import {Grip} from '@gravity-ui/icons';
 import {Checkbox, Divider, Icon, Text} from '@gravity-ui/uikit';
-import type {Column, Header, Updater, VisibilityState} from '@tanstack/react-table';
+import type {Column, ColumnDef, Header, Updater, VisibilityState} from '@tanstack/react-table';
 
 import type {TableSettingsOptions} from '../TableSettings/TableSettings';
 
@@ -44,10 +44,18 @@ export const TableSettingsColumn = <TData extends unknown>({
     );
 
     const context = header?.getContext();
-    const columnHeader =
-        typeof column.columnDef.header === 'function'
-            ? column.columnDef.header(context)
-            : column.columnDef.header;
+
+    const renderColumn = (columnDef: ColumnDef<TData, unknown>) => {
+        if (columnDef.meta?.titleInSettings) {
+            const titleInSettings = columnDef.meta?.titleInSettings;
+            return typeof titleInSettings === 'function'
+                ? titleInSettings(column)
+                : titleInSettings;
+        }
+
+        const columnHeader = columnDef.header;
+        return typeof columnHeader === 'function' ? columnHeader(context) : columnHeader;
+    };
 
     const isParent = innerColumns.length > 1;
 
@@ -114,7 +122,7 @@ export const TableSettingsColumn = <TData extends unknown>({
                         ) : null}
                         {renderSpacers()}
                         <Text variant="body-1" className={b('name', {parent: isParent})}>
-                            {columnHeader}
+                            {renderColumn(column.columnDef)}
                         </Text>
                     </div>
 
