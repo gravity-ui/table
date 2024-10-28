@@ -96,17 +96,20 @@ const tableColumns: ColumnDef<Item>[] = [
     },
 ];
 
-export const TableSettingsColumnStory = (options: TableSettingsOptions) => {
+export const TableSettingsColumnStory = ({sortable, filterable}: TableSettingsOptions) => {
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
-    const settingsColumn = getSettingsColumn<Item>(SETTINGS_COLUMN_ID, options);
     const [columnPinning, setColumnPinning] = React.useState<ColumnPinningState>({
         left: ['_select'],
         right: [SETTINGS_COLUMN_ID],
     });
 
     const columns = React.useMemo(
-        () => [selectionColumn as ColumnDef<Item>, ...tableColumns, settingsColumn],
-        [settingsColumn],
+        () => [
+            selectionColumn as ColumnDef<Item>,
+            ...tableColumns,
+            getSettingsColumn<Item>(SETTINGS_COLUMN_ID, {sortable, filterable}),
+        ],
+        [sortable, filterable],
     );
 
     const table = useTable({
