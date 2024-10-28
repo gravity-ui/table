@@ -22,6 +22,7 @@ export interface BaseHeaderCellProps<TData, TValue> {
         | ((header: Header<TData, TValue>, parentHeader?: Header<TData, unknown>) => string);
     header: Header<TData, TValue>;
     parentHeader?: Header<TData, unknown>;
+    renderHeaderCellContent?: (props: {header: Header<TData, TValue>}) => React.ReactNode;
     renderResizeHandle?: (props: BaseResizeHandleProps<TData, TValue>) => React.ReactNode;
     renderSortIndicator?: (props: BaseSortIndicatorProps<TData, TValue>) => React.ReactNode;
     resizeHandleClassName?: string;
@@ -38,6 +39,7 @@ export const BaseHeaderCell = <TData, TValue>({
     className: classNameProp,
     header,
     parentHeader,
+    renderHeaderCellContent,
     renderResizeHandle,
     renderSortIndicator,
     resizeHandleClassName,
@@ -54,6 +56,49 @@ export const BaseHeaderCell = <TData, TValue>({
 
     const rowSpan = header.isPlaceholder ? header.getLeafHeaders().length : 1;
 
+    const renderContent = () => {
+        if (renderHeaderCellContent) {
+            return renderHeaderCellContent({
+                header,
+            });
+        }
+
+        return (
+            <React.Fragment>
+                {header.column.getCanSort() ? (
+                    <BaseSort header={header}>
+                        {flexRender(header.column.columnDef.header, header.getContext())}{' '}
+                        {renderSortIndicator ? (
+                            renderSortIndicator({
+                                className: b('sort-indicator', sortIndicatorClassName),
+                                header,
+                            })
+                        ) : (
+                            <BaseSortIndicator
+                                className={b('sort-indicator', sortIndicatorClassName)}
+                                header={header}
+                            />
+                        )}
+                    </BaseSort>
+                ) : (
+                    flexRender(header.column.columnDef.header, header.getContext())
+                )}
+                {header.column.getCanResize() &&
+                    (renderResizeHandle ? (
+                        renderResizeHandle({
+                            className: b('resize-handle', resizeHandleClassName),
+                            header,
+                        })
+                    ) : (
+                        <BaseResizeHandle
+                            className={b('resize-handle', resizeHandleClassName)}
+                            header={header}
+                        />
+                    ))}
+            </React.Fragment>
+        );
+    };
+
     return (
         <th
             className={b('header-cell', getHeaderCellClassModes(header), className)}
@@ -64,36 +109,7 @@ export const BaseHeaderCell = <TData, TValue>({
             {...attributes}
             style={getCellStyles(header, attributes?.style)}
         >
-            {header.column.getCanSort() ? (
-                <BaseSort header={header}>
-                    {flexRender(header.column.columnDef.header, header.getContext())}{' '}
-                    {renderSortIndicator ? (
-                        renderSortIndicator({
-                            className: b('sort-indicator', sortIndicatorClassName),
-                            header,
-                        })
-                    ) : (
-                        <BaseSortIndicator
-                            className={b('sort-indicator', sortIndicatorClassName)}
-                            header={header}
-                        />
-                    )}
-                </BaseSort>
-            ) : (
-                flexRender(header.column.columnDef.header, header.getContext())
-            )}
-            {header.column.getCanResize() &&
-                (renderResizeHandle ? (
-                    renderResizeHandle({
-                        className: b('resize-handle', resizeHandleClassName),
-                        header,
-                    })
-                ) : (
-                    <BaseResizeHandle
-                        className={b('resize-handle', resizeHandleClassName)}
-                        header={header}
-                    />
-                ))}
+            {renderContent()}
         </th>
     );
 };

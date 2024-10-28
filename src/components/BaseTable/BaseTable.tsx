@@ -81,6 +81,8 @@ export interface BaseTableProps<TData, TScrollElement extends Element | Window =
     renderGroupHeader?: BaseRowProps<TData>['renderGroupHeader'];
     /** Function to override the default rendering of the entire group header row */
     renderGroupHeaderRowContent?: BaseRowProps<TData>['renderGroupHeaderRowContent'];
+    /** Function to override the default rendering of header cell content */
+    renderHeaderCellContent?: BaseHeaderRowProps<TData>['renderHeaderCellContent'];
     /** Function to override the default rendering of resize handles */
     renderResizeHandle?: BaseHeaderRowProps<TData>['renderResizeHandle'];
     /** Function to override the default rendering of sort indicators */
@@ -137,6 +139,7 @@ export const BaseTable = React.forwardRef(
             renderCustomRowContent,
             renderGroupHeader,
             renderGroupHeaderRowContent,
+            renderHeaderCellContent,
             renderResizeHandle,
             renderSortIndicator,
             resizeHandleClassName,
@@ -252,6 +255,7 @@ export const BaseTable = React.forwardRef(
                                 className={headerRowClassName}
                                 headerGroup={headerGroup}
                                 parentHeaderGroup={headerGroups[index - 1]}
+                                renderHeaderCellContent={renderHeaderCellContent}
                                 renderResizeHandle={renderResizeHandle}
                                 renderSortIndicator={renderSortIndicator}
                                 resizeHandleClassName={resizeHandleClassName}
