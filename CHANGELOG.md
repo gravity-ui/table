@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/gravity-ui/table/compare/v1.4.0...v1.5.0) (2024-10-31)
+
+
+### Features
+
+* **BaseTable:** add footer rendering customization and stop rendering emptyContent if not passed ([#79](https://github.com/gravity-ui/table/issues/79)) ([b787387](https://github.com/gravity-ui/table/commit/b7873870596ce9069987a91b76591ae744d12c89))
+
 ## [1.4.0](https://github.com/gravity-ui/table/compare/v1.3.1...v1.4.0) (2024-10-28)
 
 
