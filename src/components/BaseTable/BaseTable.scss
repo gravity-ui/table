@@ -92,6 +92,10 @@ $block: '.#{variables.$ns}table';
             position: absolute;
 
             height: auto;
+
+            &_empty {
+                position: relative;
+            }
         }
     }
 }

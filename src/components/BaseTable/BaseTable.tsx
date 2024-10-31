@@ -1,14 +1,9 @@
 import React from 'react';
 
-import type {Row, Table} from '@tanstack/react-table';
+import type {HeaderGroup, Row, Table} from '@tanstack/react-table';
 import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 
-import {
-    getAriaMultiselectable,
-    getAriaRowIndexMap,
-    getCellClassModes,
-    shouldRenderFooterRow,
-} from '../../utils';
+import {getAriaMultiselectable, getAriaRowIndexMap, shouldRenderFooterRow} from '../../utils';
 import {BaseDraggableRow} from '../BaseDraggableRow';
 import type {BaseFooterRowProps} from '../BaseFooterRow';
 import {BaseFooterRow} from '../BaseFooterRow';
@@ -39,6 +34,8 @@ export interface BaseTableProps<TData, TScrollElement extends Element | Window =
     cellClassName?: BaseRowProps<TData>['cellClassName'];
     /** CSS classes for the `<table>` element */
     className?: string;
+    /** Should be used together with `renderCustomFooterContent` to set the correct `aria-rowcount` */
+    customFooterRowCount?: number;
     /** Content displayed when the table has no data rows */
     emptyContent?: React.ReactNode | (() => React.ReactNode);
     /** HTML attributes for the `<tfoot>` element */
@@ -75,6 +72,13 @@ export interface BaseTableProps<TData, TScrollElement extends Element | Window =
     headerRowClassName?: BaseHeaderRowProps<TData>['className'];
     /** Click handler for rows inside `<tbody>` */
     onRowClick?: BaseRowProps<TData>['onClick'];
+    /** Function to render custom footer content */
+    renderCustomFooterContent?: (props: {
+        cellClassName: string;
+        footerGroups: HeaderGroup<TData>[];
+        rowClassName: string;
+        rowIndex: number;
+    }) => React.ReactNode;
     /** Function to render custom rows */
     renderCustomRowContent?: BaseRowProps<TData>['renderCustomRowContent'];
     /** Function to override the default rendering of group headers */
@@ -118,6 +122,7 @@ export const BaseTable = React.forwardRef(
             cellAttributes,
             cellClassName,
             className,
+            customFooterRowCount,
             emptyContent,
             footerAttributes,
             footerCellAttributes,
@@ -136,6 +141,7 @@ export const BaseTable = React.forwardRef(
             headerRowAttributes,
             headerRowClassName,
             onRowClick,
+            renderCustomFooterContent,
             renderCustomRowContent,
             renderGroupHeader,
             renderGroupHeaderRowContent,
@@ -163,37 +169,48 @@ export const BaseTable = React.forwardRef(
             return getAriaRowIndexMap(rows);
         }, [rows]);
 
-        const headerGroups = withHeader && table.getHeaderGroups();
-        const footerGroups = withFooter && table.getFooterGroups();
+        const headerGroups = withHeader ? table.getHeaderGroups() : [];
+        const footerGroups = withFooter ? table.getFooterGroups() : [];
 
         const colCount = table.getVisibleLeafColumns().length;
-        const headerRowCount = headerGroups ? headerGroups.length : 0;
+        const headerRowCount = headerGroups.length;
         const bodyRowCount = Object.keys(rowsById).length;
-        const footerRowCount = footerGroups ? footerGroups.length : 0;
+
+        const footerRowCount =
+            (withFooter &&
+                ((renderCustomFooterContent && customFooterRowCount) || footerGroups.length)) ||
+            0;
+
         const rowCount = bodyRowCount + headerRowCount + footerRowCount;
+        const bodyRows = rowVirtualizer?.getVirtualItems() || rows;
 
-        const renderBodyRows = () => {
-            const bodyRows = rowVirtualizer?.getVirtualItems() || rows;
-
-            if (bodyRows.length === 0) {
-                const emptyRowClassName =
-                    typeof rowClassName === 'function' ? rowClassName() : rowClassName;
-
-                const emptyCellClassName =
-                    typeof cellClassName === 'function' ? cellClassName() : cellClassName;
-
-                return (
-                    <tr className={b('row', {}, emptyRowClassName)}>
-                        <td
-                            className={b('cell', getCellClassModes(), emptyCellClassName)}
-                            colSpan={colCount}
-                        >
-                            {typeof emptyContent === 'function' ? emptyContent() : emptyContent}
-                        </td>
-                    </tr>
-                );
+        const renderEmptyContent = () => {
+            if (!emptyContent) {
+                return null;
             }
 
+            const emptyRowClassName =
+                typeof rowClassName === 'function' ? rowClassName() : rowClassName;
+
+            const emptyCellClassName =
+                typeof cellClassName === 'function' ? cellClassName() : cellClassName;
+
+            return (
+                <tr className={b('row', {empty: true}, emptyRowClassName)}>
+                    <td
+                        className={b('cell', {}, emptyCellClassName)}
+                        colSpan={colCount}
+                        style={{
+                            width: rowVirtualizer ? table.getTotalSize() : undefined,
+                        }}
+                    >
+                        {typeof emptyContent === 'function' ? emptyContent() : emptyContent}
+                    </td>
+                </tr>
+            );
+        };
+
+        const renderBodyRows = () => {
             return bodyRows.map((virtualItemOrRow) => {
                 const row = rowVirtualizer
                     ? rows[virtualItemOrRow.index]
@@ -243,7 +260,7 @@ export const BaseTable = React.forwardRef(
                 aria-multiselectable={getAriaMultiselectable(table)}
                 {...attributes}
             >
-                {headerGroups && (
+                {withHeader && (
                     <thead
                         className={b('header', {sticky: stickyHeader}, headerClassName)}
                         {...headerAttributes}
@@ -272,30 +289,37 @@ export const BaseTable = React.forwardRef(
                     className={b('body', bodyClassName)}
                     {...bodyAttributes}
                     style={{
-                        height: rowVirtualizer?.getTotalSize(),
+                        height: bodyRows.length ? rowVirtualizer?.getTotalSize() : undefined,
                         ...bodyAttributes?.style,
                     }}
                 >
-                    {renderBodyRows()}
+                    {bodyRows.length ? renderBodyRows() : renderEmptyContent()}
                 </tbody>
-                {footerGroups && (
+                {withFooter && (
                     <tfoot
                         className={b('footer', {sticky: stickyFooter}, footerClassName)}
                         {...footerAttributes}
                     >
-                        {footerGroups.map((footerGroup, index) =>
-                            shouldRenderFooterRow(footerGroup) ? (
-                                <BaseFooterRow
-                                    key={footerGroup.id}
-                                    footerGroup={footerGroup}
-                                    attributes={footerRowAttributes}
-                                    cellAttributes={footerCellAttributes}
-                                    cellClassName={footerCellClassName}
-                                    className={footerRowClassName}
-                                    aria-rowindex={headerRowCount + bodyRowCount + index + 1}
-                                />
-                            ) : null,
-                        )}
+                        {renderCustomFooterContent
+                            ? renderCustomFooterContent({
+                                  cellClassName: b('footer-cell'),
+                                  footerGroups,
+                                  rowClassName: b('footer-row'),
+                                  rowIndex: headerRowCount + bodyRowCount + 1,
+                              })
+                            : footerGroups.map((footerGroup, index) =>
+                                  shouldRenderFooterRow(footerGroup) ? (
+                                      <BaseFooterRow
+                                          key={footerGroup.id}
+                                          footerGroup={footerGroup}
+                                          attributes={footerRowAttributes}
+                                          cellAttributes={footerCellAttributes}
+                                          cellClassName={footerCellClassName}
+                                          className={footerRowClassName}
+                                          aria-rowindex={headerRowCount + bodyRowCount + index + 1}
+                                      />
+                                  ) : null,
+                              )}
                     </tfoot>
                 )}
             </table>
