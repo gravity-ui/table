@@ -13,6 +13,24 @@
   "files": [
     "build"
   ],
+  "exports": {
+    ".": "./build/esm/index.js",
+    "./tanstack": "./build/esm/tanstack.js",
+    "./tanstack-virtual": "./build/esm/tanstack-virtual.js"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./build/esm/*"
+      ],
+      "./tanstack": [
+        "./build/esm/tanstack.d.ts"
+      ],
+      "./tanstack-virtual": [
+        "./build/esm/tanstack-virtual.d.ts"
+      ]
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/gravity-ui/table"
