@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/gravity-ui/table/compare/v1.5.0...v1.6.0) (2024-11-06)
+
+
+### Features
+
+* reexport tanstack ([#81](https://github.com/gravity-ui/table/issues/81)) ([e458d63](https://github.com/gravity-ui/table/commit/e458d637bfd22ce9c9cd6d5de142a131d625213a))
+
 ## [1.5.0](https://github.com/gravity-ui/table/compare/v1.4.0...v1.5.0) (2024-10-31)
 
 
