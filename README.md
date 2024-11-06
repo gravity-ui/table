@@ -11,7 +11,7 @@ npm install --save @gravity-ui/table
 ```tsx
 import React from 'react';
 import {Table, useTable} from '@gravity-ui/table';
-import type {ColumnDef} from '@tanstack/react-table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
 
 interface Person {
   id: string;
@@ -50,7 +50,7 @@ There are two Table components that you can use:
 
 ```tsx
 import {selectionColumn} from '@gravity-ui/table';
-import type {RowSelectionState} from '@tanstack/react-table';
+import type {RowSelectionState} from '@gravity-ui/table/tanstack';
 
 const columns: ColumnDef<Person>[] = [
   selectionColumn as ColumnDef<Person>,
@@ -84,7 +84,7 @@ const RowSelectionExample = () => {
 Learn about the column properties in the react-table [docs](https://tanstack.com/table/v8/docs/guide/sorting)
 
 ```tsx
-import type {SortingState} from '@tanstack/react-table';
+import type {SortingState} from '@gravity-ui/table/tanstack';
 
 const columns: ColumnDef<Person>[] = [
   /* ... */
@@ -124,7 +124,7 @@ const table = useTable({
 ### Grouping
 
 ```tsx
-import type {ExpandedState, Row} from '@tanstack/react-table';
+import type {ExpandedState, Row} from '@gravity-ui/table/tanstack';
 
 interface Person {
   id: string;
