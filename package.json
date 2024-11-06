@@ -14,19 +14,31 @@
     "build"
   ],
   "exports": {
-    ".": "./build/esm/index.js",
-    "./tanstack": "./build/esm/tanstack.js",
-    "./tanstack-virtual": "./build/esm/tanstack-virtual.js"
+    ".": {
+      "types": "./build/esm/index.d.ts",
+      "require": "./build/cjs/index.js",
+      "import": "./build/esm/index.js"
+    },
+    "./tanstack": {
+      "types": "./build/esm/tanstack.d.ts",
+      "require": "./build/cjs/tanstack.js",
+      "import": "./build/esm/tanstack.js"
+    },
+    "./tanstack-virtual": {
+      "types": "./build/esm/tanstack-virtual.d.ts",
+      "require": "./build/cjs/tanstack-virtual.js",
+      "import": "./build/esm/tanstack-virtual.js"
+    }
   },
   "typesVersions": {
     "*": {
-      "*": [
-        "./build/esm/*"
+      "index.d.ts": [
+        "./build/esm/index.d.ts"
       ],
-      "./tanstack": [
+      "tanstack": [
         "./build/esm/tanstack.d.ts"
       ],
-      "./tanstack-virtual": [
+      "tanstack-virtual": [
         "./build/esm/tanstack-virtual.d.ts"
       ]
     }
