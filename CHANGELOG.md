@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/gravity-ui/table/compare/v1.6.0...v1.6.1) (2024-11-06)
+
+
+### Bug Fixes
+
+* update exported types from package.json ([#84](https://github.com/gravity-ui/table/issues/84)) ([9415601](https://github.com/gravity-ui/table/commit/9415601deb5524ff301e0d9ed69fcec980566696))
+
 ## [1.6.0](https://github.com/gravity-ui/table/compare/v1.5.0...v1.6.0) (2024-11-06)
 
 
