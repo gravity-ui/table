@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.2](https://github.com/gravity-ui/table/compare/v1.6.1...v1.6.2) (2024-11-14)
+
+
+### Bug Fixes
+
+* **Table:** export sortable list ([#86](https://github.com/gravity-ui/table/issues/86)) ([96622be](https://github.com/gravity-ui/table/commit/96622be71734be7a8f85f62548a6affe750dd547))
+
 ## [1.6.1](https://github.com/gravity-ui/table/compare/v1.6.0...v1.6.1) (2024-11-06)
 
 
