@@ -1,4 +1,11 @@
-export {BaseTable, ReorderingProvider, SortIndicator, Table, TableSettings} from './components';
+export {
+    BaseTable,
+    ReorderingProvider,
+    SortIndicator,
+    Table,
+    TableSettings,
+    SortableListContext,
+} from './components';
 export type {
     BaseTableProps,
     ReorderingProviderProps,
@@ -6,6 +13,7 @@ export type {
     TableProps,
     TableSettingsOptions,
     TableSettingsProps,
+    BaseGroupHeaderProps,
 } from './components';
 
 export {
