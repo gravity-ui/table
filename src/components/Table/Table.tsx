@@ -21,6 +21,7 @@ export const Table = React.forwardRef(
             cellClassName: cellClassNameProp,
             footerCellClassName: footerCellClassNameProp,
             headerCellClassName: headerCellClassNameProp,
+            rowClassName: rowClassNameProp,
             headerClassName,
             size = 'm',
             ...props
@@ -51,6 +52,14 @@ export const Table = React.forwardRef(
             return b('footer-cell', footerCellClassNameProp);
         }, [footerCellClassNameProp]);
 
+        const rowClassName: TableProps<TData>['rowClassName'] = React.useMemo(() => {
+            if (typeof rowClassNameProp === 'function') {
+                return (...args) => b('row', rowClassNameProp(...args));
+            }
+
+            return b('row', rowClassNameProp);
+        }, [rowClassNameProp]);
+
         return (
             <BaseTable
                 ref={ref}
@@ -59,6 +68,7 @@ export const Table = React.forwardRef(
                 footerCellClassName={footerCellClassName}
                 headerCellClassName={headerCellClassName}
                 headerClassName={b('header', headerClassName)}
+                rowClassName={rowClassName}
                 {...props}
             />
         );
