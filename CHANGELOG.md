@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/gravity-ui/table/compare/v1.6.2...v1.7.0) (2024-11-15)
+
+
+### Features
+
+* **Table:** remove bottom border from last row ([#88](https://github.com/gravity-ui/table/issues/88)) ([30e73b5](https://github.com/gravity-ui/table/commit/30e73b576c176d6c26c3ab99b31783f1a137ac50))
+
 ## [1.6.2](https://github.com/gravity-ui/table/compare/v1.6.1...v1.6.2) (2024-11-14)
 
 
