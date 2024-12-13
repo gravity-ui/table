@@ -33,9 +33,25 @@ $block: '.#{variables.$ns}styled-table';
         border-block-end: 1px solid var(--g-color-line-generic);
     }
 
-    &__row:last-of-type {
-        #{$block}__cell {
-            border-block-end: none;
+    &__row {
+        &:last-of-type {
+            #{$block}__cell {
+                border-block-end: none;
+            }
+        }
+
+        &_vertical-align {
+            &_top {
+                vertical-align: top;
+            }
+
+            &_center {
+                vertical-align: middle;
+            }
+
+            &_bottom {
+                vertical-align: bottom;
+            }
         }
     }
 }

@@ -12,6 +12,8 @@ export interface TableProps<TData, TScrollElement extends Element | Window = HTM
     extends BaseTableProps<TData, TScrollElement> {
     /** Table size */
     size?: TableSize;
+    /** Row vertical align */
+    verticalAlign?: 'top' | 'center' | 'bottom';
 }
 
 export const Table = React.forwardRef(
@@ -24,6 +26,7 @@ export const Table = React.forwardRef(
             rowClassName: rowClassNameProp,
             headerClassName,
             size = 'm',
+            verticalAlign = 'center',
             ...props
         }: TableProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableElement>,
@@ -53,12 +56,15 @@ export const Table = React.forwardRef(
         }, [footerCellClassNameProp]);
 
         const rowClassName: TableProps<TData>['rowClassName'] = React.useMemo(() => {
+            const mod = {
+                'vertical-align': verticalAlign,
+            };
             if (typeof rowClassNameProp === 'function') {
-                return (...args) => b('row', rowClassNameProp(...args));
+                return (...args) => b('row', mod, rowClassNameProp(...args));
             }
 
-            return b('row', rowClassNameProp);
-        }, [rowClassNameProp]);
+            return b('row', mod, rowClassNameProp);
+        }, [rowClassNameProp, verticalAlign]);
 
         return (
             <BaseTable
