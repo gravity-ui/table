@@ -45,5 +45,19 @@ $block: '.#{variables.$ns}styled-table';
                 border-block-end: none;
             }
         }
+
+        &_vertical-align {
+            &_top {
+                vertical-align: top;
+            }
+
+            &_center {
+                vertical-align: middle;
+            }
+
+            &_bottom {
+                vertical-align: bottom;
+            }
+        }
     }
 }

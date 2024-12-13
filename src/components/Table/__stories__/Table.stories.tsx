@@ -2,6 +2,7 @@ import type {Meta, StoryObj} from '@storybook/react';
 
 import {Table} from '../index';
 
+import {AlignmentStory} from './stories/AlignmentStory';
 import {DefaultStory} from './stories/DefaultStory';
 import {ReorderingStory} from './stories/ReorderingStory';
 import {ReorderingWithVirtualizationStory} from './stories/ReorderingWithVirtualizationStory';
@@ -15,12 +16,30 @@ import {WithSelectionStory} from './stories/WithSelectionStory';
 const meta: Meta<typeof Table> = {
     title: 'Table',
     component: Table,
+    argTypes: {
+        verticalAlign: {
+            control: {
+                type: 'radio',
+                options: ['top', 'center', 'bottom'],
+            },
+        },
+    },
 };
 
 export default meta;
 
 export const Default: StoryObj<typeof DefaultStory> = {
     render: DefaultStory,
+    args: {
+        verticalAlign: 'center',
+    },
+};
+
+export const Alignment: StoryObj<typeof AlignmentStory> = {
+    render: AlignmentStory,
+    args: {
+        verticalAlign: 'center',
+    },
 };
 
 export const WithInteractiveRows: StoryObj<typeof DefaultStory> = {
