@@ -31,6 +31,20 @@ $block: '.#{variables.$ns}styled-table';
     &__footer-cell {
         padding: var(--_--cell-padding);
         border-block-end: 1px solid var(--g-color-line-generic);
+
+        &_vertical-align {
+            &_top {
+                align-content: start;
+            }
+
+            &_center {
+                align-content: center;
+            }
+
+            &_bottom {
+                align-content: end;
+            }
+        }
     }
 
     &__row {
@@ -43,20 +57,6 @@ $block: '.#{variables.$ns}styled-table';
         &:last-of-type {
             #{$block}__cell {
                 border-block-end: none;
-            }
-        }
-
-        &_vertical-align {
-            &_top {
-                vertical-align: top;
-            }
-
-            &_center {
-                vertical-align: middle;
-            }
-
-            &_bottom {
-                vertical-align: bottom;
             }
         }
     }
