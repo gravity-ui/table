@@ -23,6 +23,16 @@ export const Default: StoryObj<typeof DefaultStory> = {
     render: DefaultStory,
 };
 
+export const WithInteractiveRows: StoryObj<typeof DefaultStory> = {
+    render: DefaultStory,
+};
+
+WithInteractiveRows.args = {
+    onRowClick: (row) => {
+        alert(`Row "${row.original.name}" clicked`);
+    },
+};
+
 export const SizeS: StoryObj<typeof SizeSStory> = {
     render: SizeSStory,
 };
