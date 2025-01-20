@@ -24,6 +24,7 @@ export const Table = React.forwardRef(
             rowClassName: rowClassNameProp,
             headerClassName,
             size = 'm',
+            onRowClick,
             ...props
         }: TableProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableElement>,
@@ -53,12 +54,14 @@ export const Table = React.forwardRef(
         }, [footerCellClassNameProp]);
 
         const rowClassName: TableProps<TData>['rowClassName'] = React.useMemo(() => {
+            const modifiers = {interactive: Boolean(onRowClick)};
+
             if (typeof rowClassNameProp === 'function') {
-                return (...args) => b('row', rowClassNameProp(...args));
+                return (...args) => b('row', modifiers, rowClassNameProp(...args));
             }
 
-            return b('row', rowClassNameProp);
-        }, [rowClassNameProp]);
+            return b('row', modifiers, rowClassNameProp);
+        }, [onRowClick, rowClassNameProp]);
 
         return (
             <BaseTable
@@ -69,6 +72,7 @@ export const Table = React.forwardRef(
                 headerCellClassName={headerCellClassName}
                 headerClassName={b('header', headerClassName)}
                 rowClassName={rowClassName}
+                onRowClick={onRowClick}
                 {...props}
             />
         );
