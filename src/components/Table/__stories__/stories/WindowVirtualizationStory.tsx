@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 import {useTable, useWindowRowVirtualizer} from '../../../../hooks';
 import {columns} from '../../../BaseTable/__stories__/constants/columns';

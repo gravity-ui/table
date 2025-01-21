@@ -2,7 +2,17 @@ import type {StorybookConfig} from '@storybook/react-webpack5';
 
 const config: StorybookConfig = {
     addons: [
-        '@storybook/preset-scss',
+        {
+            name: '@storybook/addon-styling-webpack',
+            options: {
+                rules: [
+                    {
+                        test: /\.s?css$/i,
+                        use: ['style-loader', 'css-loader', 'sass-loader'],
+                    },
+                ],
+            },
+        },
         {
             name: '@storybook/addon-essentials',
             options: {

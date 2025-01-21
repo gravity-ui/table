@@ -1,10 +1,10 @@
-import React from 'react';
+import * as React from 'react';
 
 import {DndContext, MouseSensor, TouchSensor, useSensor, useSensors} from '@dnd-kit/core';
 import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import {Gear} from '@gravity-ui/icons';
 import {Button, Divider, Icon, Popup} from '@gravity-ui/uikit';
-import type {PopperPlacement} from '@gravity-ui/uikit/build/esm/hooks/private';
+import type {PopupPlacement} from '@gravity-ui/uikit';
 import type {Column, Header, Table, VisibilityState} from '@tanstack/react-table';
 
 import {TableSettingsColumn} from '../TableSettingsColumn/TableSettingsColumn';
@@ -36,7 +36,7 @@ export interface TableSettingsProps<TData> extends TableSettingsOptions {
     }) => void;
 }
 
-const POPUP_PLACEMENT: PopperPlacement = ['bottom-end', 'bottom', 'top-end', 'top', 'auto'];
+const POPUP_PLACEMENT: PopupPlacement = ['bottom-end', 'bottom', 'top-end', 'top', 'left', 'right'];
 
 export const TableSettings = <TData extends unknown>({
     table,
@@ -124,6 +124,8 @@ export const TableSettings = <TData extends unknown>({
                 onClose={cancelEditing}
                 anchorRef={anchorRef}
                 placement={POPUP_PLACEMENT}
+                className={b()}
+                // @ts-ignore
                 contentClassName={b()}
             >
                 <div className={b('popover-content')}>

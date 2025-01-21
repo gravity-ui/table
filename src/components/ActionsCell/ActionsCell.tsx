@@ -1,5 +1,3 @@
-import React from 'react';
-
 import type {Row} from '@tanstack/react-table';
 
 import type {TableActionsSettings} from '../../types/RowActions';

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 import type {Updater, VisibilityState} from '@tanstack/react-table';
 

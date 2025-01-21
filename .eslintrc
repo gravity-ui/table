@@ -4,17 +4,11 @@
         "@gravity-ui/eslint-config/client",
         "@gravity-ui/eslint-config/prettier",
         "@gravity-ui/eslint-config/import-order",
-        "@gravity-ui/eslint-config/a11y"
+        "@gravity-ui/eslint-config/a11y",
+        "plugin:react/jsx-runtime"
     ],
     "root": true,
     "rules": {
-        "@typescript-eslint/consistent-type-imports": [
-            "warn",
-            {
-                "prefer": "type-imports",
-                "disallowTypeAnnotations": false
-            }
-        ],
         "@typescript-eslint/no-non-null-assertion": "warn",
         "@typescript-eslint/no-shadow": "warn",
         "import/consistent-type-specifier-style": [
@@ -27,8 +21,8 @@
         "no-restricted-syntax": [
             "error",
             {
-                "selector": "ImportDeclaration[source.value='react'] :matches(ImportNamespaceSpecifier, ImportSpecifier)",
-                "message": "Please use import React from 'react' instead."
+                "selector": "ImportDeclaration[source.value='react'] :matches(ImportDefaultSpecifier, ImportSpecifier)",
+                "message": "Please use `import * as React from 'react'` instead."
             },
             {
                 "selector": "TSTypeReference>TSQualifiedName[left.name='React'][right.name='FC']",

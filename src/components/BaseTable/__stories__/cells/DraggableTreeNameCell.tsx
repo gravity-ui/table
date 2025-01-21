@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {useSortable} from '@dnd-kit/sortable';
 import type {Row, Table} from '@tanstack/react-table';
 

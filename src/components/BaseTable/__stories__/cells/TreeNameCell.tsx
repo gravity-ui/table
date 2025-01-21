@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {ArrowToggle, Button} from '@gravity-ui/uikit';
 import type {Row} from '@tanstack/react-table';
 

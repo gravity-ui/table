@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {useSortable} from '@dnd-kit/sortable';
 import {Grip as GripIcon} from '@gravity-ui/icons';
 import {Icon} from '@gravity-ui/uikit';

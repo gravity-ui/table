@@ -1,5 +1,3 @@
-import React from 'react';
-
 import type {Header} from '@tanstack/react-table';
 
 import {b} from './BaseResizeHandle.classname';
