@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.0](https://github.com/gravity-ui/table/compare/v1.7.0...v1.8.0) (2025-01-21)
+
+
+### Features
+
+* **Table:** add hover styles for interactive rows ([#93](https://github.com/gravity-ui/table/issues/93)) ([371d444](https://github.com/gravity-ui/table/commit/371d44449091dc786fd249c53c05b81d6dda0ae8))
+* **Table:** add vertical alignment ([#91](https://github.com/gravity-ui/table/issues/91)) ([c301252](https://github.com/gravity-ui/table/commit/c3012522405c9b595a92d7dc966c9addd7bf275c))
+
 ## [1.7.0](https://github.com/gravity-ui/table/compare/v1.6.2...v1.7.0) (2024-11-15)
 
 
