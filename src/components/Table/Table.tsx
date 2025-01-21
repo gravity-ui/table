@@ -8,7 +8,7 @@ import type {TableSize} from './types';
 
 import './Table.scss';
 
-type VerticalAlignment = 'top' | 'center' | 'bottom';
+type VerticalAlignment = 'top' | 'middle' | 'bottom';
 
 export interface TableProps<TData, TScrollElement extends Element | Window = HTMLDivElement>
     extends BaseTableProps<TData, TScrollElement> {

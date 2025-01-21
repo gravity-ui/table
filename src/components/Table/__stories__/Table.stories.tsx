@@ -19,7 +19,7 @@ const meta: Meta<typeof Table> = {
         verticalAlign: {
             control: {
                 type: 'radio',
-                options: ['top', 'center', 'bottom'],
+                options: ['top', 'middle', 'bottom'],
             },
         },
     },
