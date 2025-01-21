@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import type {Cell} from '../../tanstack';
 import {BaseTable} from '../BaseTable';
 import type {BaseTableProps} from '../BaseTable';
 
@@ -38,16 +39,36 @@ export const Table = React.forwardRef(
         }: TableProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableElement>,
     ) => {
-        const cellClassName: TableProps<TData>['cellClassName'] = React.useMemo(() => {
-            const modifiers = {
-                'vertical-align': verticalAlign,
-            };
-            if (typeof cellClassNameProp === 'function') {
-                return (...args) => b('cell', modifiers, cellClassNameProp(...args));
-            }
+        const cellClassName: (cell?: Cell<TData, unknown>) => string = React.useCallback(
+            (cell) => {
+                if (!cell) {
+                    return b('cell');
+                }
 
-            return b('cell', modifiers, cellClassNameProp);
-        }, [cellClassNameProp, verticalAlign]);
+                const hasSubRows = cell.row.subRows?.length > 0;
+                const expanded = cell.row.getIsExpanded();
+                const isSubRow = cell.row.parentId !== undefined;
+                const isLastInGroup =
+                    cell.row.index === (cell.row.getParentRow()?.subRows?.length ?? 1) - 1;
+                const isLastLeaf = cell.row.getLeafRows().at(-1)?.id === cell.row.id;
+
+                let modifiers: Record<string, string | boolean> = {
+                    'vertical-align': verticalAlign,
+                };
+                let additionalClassName;
+
+                if ((hasSubRows && expanded) || (isSubRow && !isLastInGroup && !isLastLeaf)) {
+                    modifiers = {'no-border': true};
+                }
+
+                if (typeof cellClassNameProp === 'function') {
+                    additionalClassName = cellClassNameProp(cell);
+                }
+
+                return b('cell', modifiers, additionalClassName);
+            },
+            [cellClassNameProp, verticalAlign],
+        );
 
         const headerCellClassName: TableProps<TData>['headerCellClassName'] = React.useMemo(() => {
             const modifiers = {

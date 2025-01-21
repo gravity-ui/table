@@ -65,11 +65,6 @@ export const data: TreeItem[] = [
         age: 92,
     },
     {
-        id: 'john',
-        name: 'John',
-        age: 88,
-    },
-    {
         id: 'ann',
         name: 'Ann',
         age: 99,
@@ -104,6 +99,11 @@ export const data: TreeItem[] = [
                 ],
             },
         ],
+    },
+    {
+        id: 'john',
+        name: 'John',
+        age: 88,
     },
 ];
 
