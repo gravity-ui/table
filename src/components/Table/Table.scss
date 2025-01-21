@@ -53,11 +53,18 @@ $block: '.#{variables.$ns}styled-table';
                 background-color: var(--g-color-base-generic);
             }
         }
+        --grid-cell-width: 28px;
 
         &:last-of-type {
             #{$block}__cell {
                 border-block-end: none;
             }
+        }
+    }
+
+    &__cell {
+        &_no-border {
+            border-block-end: none;
         }
     }
 }

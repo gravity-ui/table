@@ -8,6 +8,7 @@ import {ReorderingWithVirtualizationStory} from './stories/ReorderingWithVirtual
 import {SizeSStory} from './stories/SizeSStory';
 import {SortingStory} from './stories/SortingStory';
 import {StickyHeaderStory} from './stories/StickyHeaderStory';
+import {TreeStory} from './stories/TreeStory';
 import {VirtualizationStory} from './stories/VirtualizationStory';
 import {WindowVirtualizationStory} from './stories/WindowVirtualizationStory';
 import {WithSelectionStory} from './stories/WithSelectionStory';
@@ -71,4 +72,8 @@ export const ReorderingWithVirtualization: StoryObj<typeof ReorderingWithVirtual
 
 export const StickyHeader: StoryObj<typeof StickyHeaderStory> = {
     render: StickyHeaderStory,
+};
+
+export const Tree: StoryObj<typeof TreeStory> = {
+    render: TreeStory,
 };

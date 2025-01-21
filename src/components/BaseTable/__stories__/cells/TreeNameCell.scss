@@ -1,0 +1,26 @@
+@use '@gravity-ui/uikit/styles/mixins';
+@use '../../../variables';
+
+$block: '.#{variables.$ns}expandable-cell';
+
+#{$block} {
+    &::before {
+        position: absolute;
+
+        display: inline-block;
+
+        width: calc(var(--grid-cell-width) * var(--row-depth, 0));
+        height: 28px;
+        margin-inline-start: 12px;
+
+        content: '';
+
+        background-image: repeating-linear-gradient(
+            90deg,
+            transparent 1px var(--grid-cell-width),
+            var(--g-color-line-generic) var(--grid-cell-width) calc(var(--grid-cell-width) + 1px)
+        );
+    }
+
+    margin-inline-start: calc(var(--grid-cell-width) * var(--row-depth, 0));
+}

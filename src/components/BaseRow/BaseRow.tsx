@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import {useForkRef} from '@gravity-ui/uikit';
-import type {Row, Table} from '@tanstack/react-table';
+import type {Cell, Row, Table} from '@tanstack/react-table';
 import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 
 import type {BaseCellProps} from '../BaseCell';
@@ -40,6 +40,7 @@ export interface BaseRowProps<TData, TScrollElement extends Element | Window = H
         | React.HTMLAttributes<HTMLTableRowElement>
         | ((row: Row<TData>) => React.HTMLAttributes<HTMLTableRowElement>);
     cellAttributes?: BaseCellProps<TData>['attributes'];
+    getCellStyles?: (cell: Cell<TData, unknown>) => React.CSSProperties;
 }
 
 export const BaseRow = React.forwardRef(
@@ -61,6 +62,7 @@ export const BaseRow = React.forwardRef(
             virtualItem,
             attributes: attributesProp,
             cellAttributes,
+            getCellStyles,
             table: _,
             ...restProps
         }: BaseRowProps<TData, TScrollElement>,
@@ -126,6 +128,7 @@ export const BaseRow = React.forwardRef(
                         className={cellClassName}
                         attributes={cellAttributes}
                         aria-colindex={cell.column.getIndex() + 1}
+                        style={getCellStyles?.(cell)}
                     />
                 ));
         };

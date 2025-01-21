@@ -32,6 +32,8 @@ export interface BaseTableProps<TData, TScrollElement extends Element | Window =
     cellAttributes?: BaseRowProps<TData>['cellAttributes'];
     /** CSS classes for the `<td>` elements inside `<tbody>` */
     cellClassName?: BaseRowProps<TData>['cellClassName'];
+    /** CSS styles for the `<td>` elements inside `<tbody>` */
+    getCellStyles?: (row: Row<TData>) => React.CSSProperties;
     /** CSS classes for the `<table>` element */
     className?: string;
     /** Should be used together with `renderCustomFooterContent` to set the correct `aria-rowcount` */
@@ -121,6 +123,7 @@ export const BaseTable = React.forwardRef(
             bodyRef,
             cellAttributes,
             cellClassName,
+            getCellStyles,
             className,
             customFooterRowCount,
             emptyContent,
@@ -228,6 +231,8 @@ export const BaseTable = React.forwardRef(
                     groupHeaderClassName,
                     attributes: rowAttributes,
                     cellAttributes,
+                    // getCellStyles,
+                    style: getCellStyles?.(row),
                     onClick: onRowClick,
                     renderCustomRowContent,
                     renderGroupHeader,
