@@ -31,6 +31,20 @@ $block: '.#{variables.$ns}styled-table';
     &__footer-cell {
         padding: var(--_--cell-padding);
         border-block-end: 1px solid var(--g-color-line-generic);
+
+        &_vertical-align {
+            &_top {
+                align-content: start;
+            }
+
+            &_middle {
+                align-content: center;
+            }
+
+            &_bottom {
+                align-content: end;
+            }
+        }
     }
 
     &__row {

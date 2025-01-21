@@ -15,6 +15,14 @@ import {WithSelectionStory} from './stories/WithSelectionStory';
 const meta: Meta<typeof Table> = {
     title: 'Table',
     component: Table,
+    argTypes: {
+        verticalAlign: {
+            control: {
+                type: 'radio',
+                options: ['top', 'middle', 'bottom'],
+            },
+        },
+    },
 };
 
 export default meta;

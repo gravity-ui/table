@@ -8,10 +8,16 @@ import type {TableSize} from './types';
 
 import './Table.scss';
 
+type VerticalAlignment = 'top' | 'middle' | 'bottom';
+
 export interface TableProps<TData, TScrollElement extends Element | Window = HTMLDivElement>
     extends BaseTableProps<TData, TScrollElement> {
     /** Table size */
     size?: TableSize;
+    /** Row vertical align */
+    verticalAlign?: VerticalAlignment;
+    headerVerticalAlign?: VerticalAlignment;
+    footerVerticalAlign?: VerticalAlignment;
 }
 
 export const Table = React.forwardRef(
@@ -25,33 +31,45 @@ export const Table = React.forwardRef(
             headerClassName,
             size = 'm',
             onRowClick,
+            verticalAlign = 'top',
+            headerVerticalAlign = 'top',
+            footerVerticalAlign = 'top',
             ...props
         }: TableProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableElement>,
     ) => {
         const cellClassName: TableProps<TData>['cellClassName'] = React.useMemo(() => {
+            const modifiers = {
+                'vertical-align': verticalAlign,
+            };
             if (typeof cellClassNameProp === 'function') {
-                return (...args) => b('cell', cellClassNameProp(...args));
+                return (...args) => b('cell', modifiers, cellClassNameProp(...args));
             }
 
-            return b('cell', cellClassNameProp);
-        }, [cellClassNameProp]);
+            return b('cell', modifiers, cellClassNameProp);
+        }, [cellClassNameProp, verticalAlign]);
 
         const headerCellClassName: TableProps<TData>['headerCellClassName'] = React.useMemo(() => {
+            const modifiers = {
+                'vertical-align': headerVerticalAlign,
+            };
             if (typeof headerCellClassNameProp === 'function') {
-                return (...args) => b('header-cell', headerCellClassNameProp(...args));
+                return (...args) => b('header-cell', modifiers, headerCellClassNameProp(...args));
             }
 
-            return b('header-cell', headerCellClassNameProp);
-        }, [headerCellClassNameProp]);
+            return b('header-cell', modifiers, headerCellClassNameProp);
+        }, [headerCellClassNameProp, headerVerticalAlign]);
 
         const footerCellClassName: TableProps<TData>['footerCellClassName'] = React.useMemo(() => {
+            const modifiers = {
+                'vertical-align': footerVerticalAlign,
+            };
             if (typeof footerCellClassNameProp === 'function') {
-                return (...args) => b('footer-cell', footerCellClassNameProp(...args));
+                return (...args) => b('footer-cell', modifiers, footerCellClassNameProp(...args));
             }
 
-            return b('footer-cell', footerCellClassNameProp);
-        }, [footerCellClassNameProp]);
+            return b('footer-cell', modifiers, footerCellClassNameProp);
+        }, [footerCellClassNameProp, footerVerticalAlign]);
 
         const rowClassName: TableProps<TData>['rowClassName'] = React.useMemo(() => {
             const modifiers = {interactive: Boolean(onRowClick)};
