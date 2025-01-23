@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 import {Ellipsis} from '@gravity-ui/icons';
 import type {PopupPlacement} from '@gravity-ui/uikit';
@@ -20,7 +20,7 @@ type RowActionsProps<TValue> = Pick<
     index: number;
 };
 
-const DEFAULT_PLACEMENT: PopupPlacement = ['bottom-end', 'top-end', 'auto'];
+const POPUP_PLACEMENT: PopupPlacement = ['bottom-end', 'top-end', 'left', 'right'];
 
 export const RowActions = <TValue extends unknown>({
     index: rowIndex,
@@ -63,7 +63,7 @@ export const RowActions = <TValue extends unknown>({
             <Popup
                 open={isPopupOpen}
                 anchorRef={anchorRef}
-                placement={DEFAULT_PLACEMENT}
+                placement={POPUP_PLACEMENT}
                 onOutsideClick={() => setIsPopupOpen(false)}
                 id={rowId}
             >

@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {useTable} from '../../../../hooks';
 import {columns} from '../../../BaseTable/__stories__/constants/columns';
 import {data} from '../../../BaseTable/__stories__/constants/data';

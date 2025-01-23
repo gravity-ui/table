@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 import type {HeaderGroup, Row, Table} from '@tanstack/react-table';
 import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';

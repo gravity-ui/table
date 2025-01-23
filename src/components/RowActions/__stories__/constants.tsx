@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {Pencil} from '@gravity-ui/icons';
 import {Icon} from '@gravity-ui/uikit';
 

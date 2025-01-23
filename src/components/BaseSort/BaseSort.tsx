@@ -1,4 +1,4 @@
-import React from 'react';
+import type * as React from 'react';
 
 import {useActionHandlers} from '@gravity-ui/uikit';
 import type {Header} from '@tanstack/react-table';

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 import type {DragEndEvent, DragStartEvent, UniqueIdentifier} from '@dnd-kit/core';
 import {arrayMove} from '@dnd-kit/sortable';

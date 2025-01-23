@@ -1,5 +1,3 @@
-import React from 'react';
-
 import type {ColumnDef, Row} from '@tanstack/react-table';
 
 import {useTable} from '../../../../hooks';

@@ -1,4 +1,4 @@
-import React from 'react';
+import type * as React from 'react';
 
 import {ThemeContext} from '@gravity-ui/uikit';
 import type {ThemeContextProps} from '@gravity-ui/uikit';

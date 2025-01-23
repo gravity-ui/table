@@ -1,4 +1,4 @@
-import React from 'react';
+import type * as React from 'react';
 
 import type {Cell} from '@tanstack/react-table';
 import {flexRender} from '@tanstack/react-table';

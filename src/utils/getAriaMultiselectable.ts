@@ -1,4 +1,4 @@
-import type {Table} from '@tanstack/table-core/build/lib/types';
+import type {Table} from '@tanstack/table-core';
 
 export const getAriaMultiselectable = <TData>(table: Table<TData>) => {
     if (table.options.enableRowSelection) {

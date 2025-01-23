@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 import type {CheckboxProps} from '@gravity-ui/uikit';
 import {Checkbox} from '@gravity-ui/uikit';

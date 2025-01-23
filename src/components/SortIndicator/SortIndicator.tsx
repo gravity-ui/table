@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {Icon} from '@gravity-ui/uikit';
 
 import {getSortIndicatorIcon} from '../../utils';

@@ -1,5 +1,3 @@
-import React from 'react';
-
 import type {HeaderContext} from '@tanstack/react-table';
 
 import {cnColumnPinningStory} from '../stories/ColumnPinningStory.classname';
