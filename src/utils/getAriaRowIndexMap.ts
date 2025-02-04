@@ -11,8 +11,7 @@ export const getAriaRowIndexMap = <TData>(rows: Row<TData>[]) => {
         map[row.id] = rowIndex;
 
         if (nextRow?.parentId !== row.id) {
-            const leafRows = row.getLeafRows();
-            rowIndex += leafRows.length;
+            rowIndex += row.getLeafRows().length;
         }
         rowIndex++;
     }
