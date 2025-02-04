@@ -1,20 +1,21 @@
 import type {Row} from '@tanstack/react-table';
 
 export const getAriaRowIndexMap = <TData>(rows: Row<TData>[]) => {
+    const map: Record<string, number> = {};
     let rowIndex = 1;
 
-    return rows.reduce<Record<string, number>>((acc, row, index, arr) => {
-        const newMap = {
-            ...acc,
-            [row.id]: rowIndex,
-        };
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const nextRow = rows[i + 1];
 
-        const nextRow = arr[index + 1];
+        map[row.id] = rowIndex;
+
         if (nextRow?.parentId !== row.id) {
-            rowIndex += row.getLeafRows().length;
+            const leafRows = row.getLeafRows();
+            rowIndex += leafRows.length;
         }
         rowIndex++;
+    }
 
-        return newMap;
-    }, {});
+    return map;
 };
