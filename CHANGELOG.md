@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.9.0](https://github.com/gravity-ui/table/compare/v1.8.0...v1.9.0) (2025-02-05)
+
+
+### Features
+
+* prepare for uikit 7 and update dependencies ([#95](https://github.com/gravity-ui/table/issues/95)) ([fefd3b0](https://github.com/gravity-ui/table/commit/fefd3b08907c8e6dea998196ecfe6323d66ae972))
+* update uikit ([#99](https://github.com/gravity-ui/table/issues/99)) ([bb92df6](https://github.com/gravity-ui/table/commit/bb92df6b6ef3ea723df12549801e46759a42f16f))
+
+
+### Bug Fixes
+
+* optimize getAriaRowIndexMap performance ([#98](https://github.com/gravity-ui/table/issues/98)) ([80212a1](https://github.com/gravity-ui/table/commit/80212a1c9f3d71efe8b537da8c9ea6ecfd768604))
+
 ## [1.8.0](https://github.com/gravity-ui/table/compare/v1.7.0...v1.8.0) (2025-01-21)
 
 
