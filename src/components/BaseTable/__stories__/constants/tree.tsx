@@ -1,5 +1,5 @@
-import type {ColumnDef} from '@tanstack/react-table';
-
+import type {ColumnDef} from '../../../Table/types';
+import {TreeExpandableCell} from '../../../TreeExpandableCell';
 import {DraggableTreeNameCell} from '../cells/DraggableTreeNameCell';
 import {TreeNameCell} from '../cells/TreeNameCell';
 import type {Item} from '../types';
@@ -8,17 +8,19 @@ export interface TreeItem extends Item {
     children?: TreeItem[];
 }
 
-export const columns: ColumnDef<TreeItem>[] = [
-    {
-        accessorKey: 'name',
-        header: 'Name',
-        size: 200,
-        cell: (info) => (
-            <TreeNameCell row={info.row} depth={info.row.depth} value={info.getValue<string>()} />
-        ),
-    },
-    {accessorKey: 'age', header: 'Age', size: 100},
-];
+export function getColumns(styled = false): ColumnDef<TreeItem>[] {
+    const NameCell = styled ? TreeExpandableCell : TreeNameCell;
+    return [
+        {
+            accessorKey: 'name',
+            header: 'Name',
+            size: 200,
+            isTreeNode: true,
+            cell: (info) => <NameCell row={info.row}>{info.getValue<string>()}</NameCell>,
+        },
+        {accessorKey: 'age', header: 'Age', size: 100},
+    ];
+}
 
 export const draggableTreeColumns: ColumnDef<TreeItem>[] = [
     {
@@ -40,7 +42,7 @@ export const data: TreeItem[] = [
         children: [
             {
                 id: 'mike',
-                name: 'Mike',
+                name: 'Mike WithVery LongSurname',
                 age: 55,
                 children: [
                     {
@@ -98,6 +100,11 @@ export const data: TreeItem[] = [
                     },
                 ],
             },
+            {
+                id: 'yanny',
+                name: 'Yanny',
+                age: 30,
+            },
         ],
     },
     {
@@ -123,4 +130,4 @@ export const groupsData = [
     },
 ];
 
-export const groupsColumns = columns as ColumnDef<TreeGroupItem>[];
+export const groupsColumns = getColumns() as ColumnDef<TreeGroupItem>[];

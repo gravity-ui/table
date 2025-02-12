@@ -184,6 +184,39 @@ const GroupingExample = () => {
 };
 ```
 
+Для добавления стилей вложенности в стиле дерева используйте свойство `isTreeNode` у колонки, также можно отключить индикаторы вложенности, передав `showTreeDepthIndicators = false`:
+
+```tsx
+const columns: ColumnDef<Item>[] = [
+  {
+    accessorKey: 'name',
+    header: 'Name',
+    size: 200,
+    showTreeDepthIndicators: false,
+    isTreeNode: (item) => 'items' in item,
+  },
+  // ...other columns
+];
+```
+
+Для добавления контрола разворачивания необходимо обернуть контент ячейки с помощью свойства `cell`. Можно использовать поставляемый компонент `TreeExpandableCell` или написать свой, если по каким-то причинам он вам не подходит.
+
+```tsx
+import {TreeExpandableCell} from '@gravity-ui/table';
+
+const columns: ColumnDef<Item>[] = [
+  {
+    accessorKey: 'name',
+    header: 'Name',
+    size: 200,
+    cell: ({row, info}) => (
+      <TreeExpandableCell row={row}>{info.getValue<string>()}</TreeExpandableCell>
+    ),
+  },
+  // ...other columns
+];
+```
+
 ### Переупорядочивание
 
 ```tsx

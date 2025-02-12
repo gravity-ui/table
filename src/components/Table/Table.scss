@@ -18,19 +18,29 @@ $block: '.#{variables.$ns}styled-table';
 
     &_size {
         &_s {
-            --_--cell-padding: 7px var(--g-spacing-2) 6px;
+            --_--cell-padding-bottom: 6px;
+            --_--cell-padding: 7px var(--g-spacing-2) var(--_--cell-padding-bottom);
         }
 
         &_m {
-            --_--cell-padding: 11px var(--g-spacing-2) 10px;
+            --_--cell-padding-bottom: 10px;
+            --_--cell-padding: 11px var(--g-spacing-2) var(--_--cell-padding-bottom);
         }
+    }
+
+    &__cell,
+    &__footer-cell {
+        border-block-start: 1px solid var(--g-color-line-generic);
+    }
+
+    &__header-cell {
+        border-block-end: 1px solid var(--g-color-line-generic);
     }
 
     &__cell,
     &__header-cell,
     &__footer-cell {
         padding: var(--_--cell-padding);
-        border-block-end: 1px solid var(--g-color-line-generic);
 
         &_vertical-align {
             &_top {
@@ -48,12 +58,19 @@ $block: '.#{variables.$ns}styled-table';
     }
 
     &__row {
+        --_--depth-indicator-width: 16px;
+
         &_interactive {
             &:hover {
                 background-color: var(--g-color-base-generic);
             }
         }
-        --grid-cell-width: 28px;
+
+        &:first-of-type {
+            #{$block}__cell {
+                border-block-start: none;
+            }
+        }
 
         &:last-of-type {
             #{$block}__cell {
@@ -63,8 +80,48 @@ $block: '.#{variables.$ns}styled-table';
     }
 
     &__cell {
+        --_--inset: calc(var(--_--depth-indicator-width) * var(--_--tree-depth, 0));
+
+        &_tree-node {
+            position: relative;
+            padding-inline-start: var(--_--inset);
+        }
+
+        &_with-depth-indicators {
+            &::before {
+                position: absolute;
+                inset-inline-start: 0;
+                inset-block-start: 0;
+
+                display: inline-block;
+
+                width: var(--_--inset);
+                height: calc(100% - var(--_--cell-padding-bottom) * var(--_--last-nested, 0));
+
+                content: '';
+
+                background-image: repeating-linear-gradient(
+                    90deg,
+                    transparent 0 11px,
+                    var(--g-color-line-generic) 11px 12px,
+                    transparent 1px var(--_--depth-indicator-width)
+                );
+            }
+        }
+
         &_no-border {
-            border-block-end: none;
+            border-block-start: none;
+        }
+    }
+
+    &__expanding-control {
+        margin-block: -3px;
+        margin-inline-end: var(--g-spacing-1);
+
+        visibility: hidden;
+
+        &_visible {
+            visibility: visible;
         }
     }
 }

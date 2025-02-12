@@ -32,8 +32,6 @@ export interface BaseTableProps<TData, TScrollElement extends Element | Window =
     cellAttributes?: BaseRowProps<TData>['cellAttributes'];
     /** CSS classes for the `<td>` elements inside `<tbody>` */
     cellClassName?: BaseRowProps<TData>['cellClassName'];
-    /** CSS styles for the `<td>` elements inside `<tbody>` */
-    getCellStyles?: (row: Row<TData>) => React.CSSProperties;
     /** CSS classes for the `<table>` element */
     className?: string;
     /** Should be used together with `renderCustomFooterContent` to set the correct `aria-rowcount` */
@@ -123,7 +121,6 @@ export const BaseTable = React.forwardRef(
             bodyRef,
             cellAttributes,
             cellClassName,
-            getCellStyles,
             className,
             customFooterRowCount,
             emptyContent,
@@ -214,10 +211,12 @@ export const BaseTable = React.forwardRef(
         };
 
         const renderBodyRows = () => {
-            return bodyRows.map((virtualItemOrRow) => {
+            return bodyRows.map((virtualItemOrRow, index) => {
                 const row = rowVirtualizer
                     ? rows[virtualItemOrRow.index]
                     : (virtualItemOrRow as Row<TData>);
+
+                const rowIndex = rowVirtualizer ? virtualItemOrRow.index : index;
 
                 const virtualItem = rowVirtualizer ? (virtualItemOrRow as VirtualItem) : undefined;
                 const key = virtualItem?.key ?? row.id;
@@ -231,8 +230,6 @@ export const BaseTable = React.forwardRef(
                     groupHeaderClassName,
                     attributes: rowAttributes,
                     cellAttributes,
-                    // getCellStyles,
-                    style: getCellStyles?.(row),
                     onClick: onRowClick,
                     renderCustomRowContent,
                     renderGroupHeader,
@@ -241,6 +238,10 @@ export const BaseTable = React.forwardRef(
                     rowVirtualizer,
                     table,
                     virtualItem,
+                    style: {
+                        '--_--tree-depth': row.depth,
+                        '--_--last-nested': rows[rowIndex + 1]?.depth === 0 ? 1 : 0,
+                    },
                     'aria-rowindex': headerRowCount + ariaRowIndexMap[row.id],
                     'aria-selected': table.options.enableRowSelection
                         ? row.getIsSelected()

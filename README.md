@@ -184,6 +184,39 @@ const GroupingExample = () => {
 };
 ```
 
+In order to add tree styles for grouped rows, add `isTreeNode` property to the column, also you can disable depth indicators by providing `showTreeDepthIndicators = false`:
+
+```tsx
+const columns: ColumnDef<Item>[] = [
+  {
+    accessorKey: 'name',
+    header: 'Name',
+    size: 200,
+    showTreeDepthIndicators: false,
+    isTreeNode: (item) => 'items' in item,
+  },
+  // ...other columns
+];
+```
+
+To add a control for expanding/collapsing rows, wrap the cell content with the `TreeExpandableCell` component or with your similar custom component:
+
+```tsx
+import {TreeExpandableCell} from '@gravity-ui/table';
+
+const columns: ColumnDef<Item>[] = [
+  {
+    accessorKey: 'name',
+    header: 'Name',
+    size: 200,
+    cell: ({row, info}) => (
+      <TreeExpandableCell row={row}>{info.getValue<string>()}</TreeExpandableCell>
+    ),
+  },
+  // ...other columns
+];
+```
+
 ### Reordering
 
 ```tsx

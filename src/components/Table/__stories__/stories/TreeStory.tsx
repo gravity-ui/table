@@ -1,12 +1,15 @@
-import React from 'react';
+import * as React from 'react';
 
 import type {ExpandedState} from '@tanstack/react-table';
 
 import {useTable} from '../../../../hooks';
-import {columns, data} from '../../../BaseTable/__stories__/constants/tree';
+import {data, getColumns} from '../../../BaseTable/__stories__/constants/tree';
 import {Table} from '../../Table';
+import type {TableProps} from '../../Table';
 
-export const TreeStory = () => {
+const columns = getColumns(true);
+
+export const TreeStory = (props: TableProps<(typeof data)[number]>) => {
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
 
     const table = useTable({
@@ -20,5 +23,5 @@ export const TreeStory = () => {
         },
     });
 
-    return <Table table={table} />;
+    return <Table {...props} table={table} />;
 };
