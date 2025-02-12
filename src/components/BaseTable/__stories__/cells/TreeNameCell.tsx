@@ -1,7 +1,5 @@
-import {ArrowToggle, Button} from '@gravity-ui/uikit';
+import {ArrowToggle, Button, Flex} from '@gravity-ui/uikit';
 import type {Row} from '@tanstack/react-table';
-
-import './TreeNameCell.scss';
 
 export interface TreeNameCellProps<TData> {
     row: Row<TData>;
@@ -9,26 +7,20 @@ export interface TreeNameCellProps<TData> {
     value: string;
 }
 
-export const TreeNameCell = <TData,>({row, depth = 0, value}: TreeNameCellProps<TData>) => {
+export const TreeNameCell = <TData,>({row, value}: TreeNameCellProps<TData>) => {
     return (
-        <div
-            className="gt-expandable-cell"
-            style={{
-                '--row-depth': depth,
-                display: 'inline-block',
-            }}
-        >
-            {row.getCanExpand() && (
-                <Button view="flat" size="s" onClick={row.getToggleExpandedHandler()}>
-                    <Button.Icon>
-                        <ArrowToggle
-                            direction={row.getIsExpanded() ? 'bottom' : 'right'}
-                            size={16}
-                        />
-                    </Button.Icon>
-                </Button>
-            )}
+        <Flex>
+            <Button
+                style={{marginBlock: -3, visibility: row.getCanExpand() ? 'visible' : 'hidden'}}
+                view="flat"
+                size="s"
+                onClick={row.getToggleExpandedHandler()}
+            >
+                <Button.Icon>
+                    <ArrowToggle direction={row.getIsExpanded() ? 'bottom' : 'right'} size={16} />
+                </Button.Icon>
+            </Button>
             {value}
-        </div>
+        </Flex>
     );
 };

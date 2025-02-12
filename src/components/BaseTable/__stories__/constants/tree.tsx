@@ -1,5 +1,4 @@
-import type {ColumnDef} from '@tanstack/react-table';
-
+import type {ColumnDef} from '../../../Table/types';
 import {DraggableTreeNameCell} from '../cells/DraggableTreeNameCell';
 import {TreeNameCell} from '../cells/TreeNameCell';
 import type {Item} from '../types';
@@ -10,9 +9,15 @@ export interface TreeItem extends Item {
 
 export const columns: ColumnDef<TreeItem>[] = [
     {
+        accessorKey: 'id',
+        header: 'ID',
+        size: 100,
+    },
+    {
         accessorKey: 'name',
         header: 'Name',
         size: 200,
+        expandable: true,
         cell: (info) => (
             <TreeNameCell row={info.row} depth={info.row.depth} value={info.getValue<string>()} />
         ),
@@ -40,7 +45,7 @@ export const data: TreeItem[] = [
         children: [
             {
                 id: 'mike',
-                name: 'Mike',
+                name: 'Mike WithVery LongSurname',
                 age: 55,
                 children: [
                     {
@@ -97,6 +102,11 @@ export const data: TreeItem[] = [
                         age: 30,
                     },
                 ],
+            },
+            {
+                id: 'yanny',
+                name: 'Yanny',
+                age: 30,
             },
         ],
     },

@@ -123,7 +123,6 @@ export const BaseTable = React.forwardRef(
             bodyRef,
             cellAttributes,
             cellClassName,
-            getCellStyles,
             className,
             customFooterRowCount,
             emptyContent,
@@ -214,10 +213,12 @@ export const BaseTable = React.forwardRef(
         };
 
         const renderBodyRows = () => {
-            return bodyRows.map((virtualItemOrRow) => {
+            return bodyRows.map((virtualItemOrRow, index) => {
                 const row = rowVirtualizer
                     ? rows[virtualItemOrRow.index]
                     : (virtualItemOrRow as Row<TData>);
+
+                const rowIndex = rowVirtualizer ? virtualItemOrRow.index : index;
 
                 const virtualItem = rowVirtualizer ? (virtualItemOrRow as VirtualItem) : undefined;
                 const key = virtualItem?.key ?? row.id;
@@ -231,8 +232,6 @@ export const BaseTable = React.forwardRef(
                     groupHeaderClassName,
                     attributes: rowAttributes,
                     cellAttributes,
-                    // getCellStyles,
-                    style: getCellStyles?.(row),
                     onClick: onRowClick,
                     renderCustomRowContent,
                     renderGroupHeader,
@@ -241,6 +240,10 @@ export const BaseTable = React.forwardRef(
                     rowVirtualizer,
                     table,
                     virtualItem,
+                    style: {
+                        '--_depth': row.depth,
+                        '--_last-grouped': rows[rowIndex + 1]?.depth === 0 ? 1 : 0,
+                    },
                     'aria-rowindex': headerRowCount + ariaRowIndexMap[row.id],
                     'aria-selected': table.options.enableRowSelection
                         ? row.getIsSelected()

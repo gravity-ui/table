@@ -10,6 +10,7 @@ import {SortingStory} from './stories/SortingStory';
 import {StickyHeaderStory} from './stories/StickyHeaderStory';
 import {TreeStory} from './stories/TreeStory';
 import {VirtualizationStory} from './stories/VirtualizationStory';
+import {VirtualizedTreeStory} from './stories/VirtualizedTreeStory';
 import {WindowVirtualizationStory} from './stories/WindowVirtualizationStory';
 import {WithSelectionStory} from './stories/WithSelectionStory';
 
@@ -75,5 +76,15 @@ export const StickyHeader: StoryObj<typeof StickyHeaderStory> = {
 };
 
 export const Tree: StoryObj<typeof TreeStory> = {
-    render: TreeStory,
+    render: (args) => <TreeStory {...args} />,
+    args: {
+        size: 'm',
+    },
+};
+
+export const TreeWithVirtualization: StoryObj<typeof TreeStory> = {
+    render: (args) => <VirtualizedTreeStory {...args} />,
+    args: {
+        size: 'm',
+    },
 };

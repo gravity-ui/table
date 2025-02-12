@@ -1,11 +1,10 @@
 import * as React from 'react';
 
-import type {Cell} from '../../tanstack';
 import {BaseTable} from '../BaseTable';
 import type {BaseTableProps} from '../BaseTable';
 
 import {b} from './Table.classname';
-import type {TableSize} from './types';
+import type {Cell, TableSize} from './types';
 
 import './Table.scss';
 
@@ -19,6 +18,7 @@ export interface TableProps<TData, TScrollElement extends Element | Window = HTM
     verticalAlign?: VerticalAlignment;
     headerVerticalAlign?: VerticalAlignment;
     footerVerticalAlign?: VerticalAlignment;
+    showDepthIndicators?: boolean;
 }
 
 export const Table = React.forwardRef(
@@ -35,6 +35,7 @@ export const Table = React.forwardRef(
             verticalAlign = 'top',
             headerVerticalAlign = 'top',
             footerVerticalAlign = 'top',
+            showDepthIndicators = true,
             ...props
         }: TableProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableElement>,
@@ -45,21 +46,14 @@ export const Table = React.forwardRef(
                     return b('cell');
                 }
 
-                const hasSubRows = cell.row.subRows?.length > 0;
-                const expanded = cell.row.getIsExpanded();
-                const isSubRow = cell.row.parentId !== undefined;
-                const isLastInGroup =
-                    cell.row.index === (cell.row.getParentRow()?.subRows?.length ?? 1) - 1;
-                const isLastLeaf = cell.row.getLeafRows().at(-1)?.id === cell.row.id;
-
-                let modifiers: Record<string, string | boolean> = {
+                const modifiers: Partial<Record<string, string | boolean>> = {
                     'vertical-align': verticalAlign,
+                    'no-border': cell.row.parentId !== undefined,
+                    'with-depth-indicators':
+                        showDepthIndicators && cell.column.columnDef.expandable,
+                    expandable: cell.column.columnDef.expandable,
                 };
                 let additionalClassName;
-
-                if ((hasSubRows && expanded) || (isSubRow && !isLastInGroup && !isLastLeaf)) {
-                    modifiers = {'no-border': true};
-                }
 
                 if (typeof cellClassNameProp === 'function') {
                     additionalClassName = cellClassNameProp(cell);
@@ -67,7 +61,7 @@ export const Table = React.forwardRef(
 
                 return b('cell', modifiers, additionalClassName);
             },
-            [cellClassNameProp, verticalAlign],
+            [cellClassNameProp, showDepthIndicators, verticalAlign],
         );
 
         const headerCellClassName: TableProps<TData>['headerCellClassName'] = React.useMemo(() => {

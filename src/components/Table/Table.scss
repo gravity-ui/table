@@ -18,19 +18,29 @@ $block: '.#{variables.$ns}styled-table';
 
     &_size {
         &_s {
-            --_--cell-padding: 7px var(--g-spacing-2) 6px;
+            --_--cell-padding-bottom: 6px;
+            --_--cell-padding: 7px var(--g-spacing-2) var(--_--cell-padding-bottom);
         }
 
         &_m {
-            --_--cell-padding: 11px var(--g-spacing-2) 10px;
+            --_--cell-padding-bottom: 10px;
+            --_--cell-padding: 11px var(--g-spacing-2) var(--_--cell-padding-bottom);
         }
+    }
+
+    &__cell,
+    &__footer-cell {
+        border-block-start: 1px solid var(--g-color-line-generic);
+    }
+
+    &__header-cell {
+        border-block-end: 1px solid var(--g-color-line-generic);
     }
 
     &__cell,
     &__header-cell,
     &__footer-cell {
         padding: var(--_--cell-padding);
-        border-block-end: 1px solid var(--g-color-line-generic);
 
         &_vertical-align {
             &_top {
@@ -53,7 +63,13 @@ $block: '.#{variables.$ns}styled-table';
                 background-color: var(--g-color-base-generic);
             }
         }
-        --grid-cell-width: 28px;
+        --_--grid-cell-width: 16px;
+
+        &:first-of-type {
+            #{$block}__cell {
+                border-block-start: none;
+            }
+        }
 
         &:last-of-type {
             #{$block}__cell {
@@ -63,8 +79,39 @@ $block: '.#{variables.$ns}styled-table';
     }
 
     &__cell {
-        &_no-border {
-            border-block-end: none;
+        --_inset: calc(var(--_--grid-cell-width) * var(--_depth, 0));
+
+        &_expandable {
+            position: relative;
+            padding-inline-start: var(--_inset);
+
+            &::before {
+                position: absolute;
+                inset-inline-start: 0;
+                inset-block-start: 0;
+
+                display: inline-block;
+
+                width: var(--_inset);
+                height: calc(100% - var(--_--cell-padding-bottom) * var(--_last-grouped, 0));
+
+                content: '';
+
+                background-image: repeating-linear-gradient(
+                    90deg,
+                    transparent 0 11px,
+                    var(--g-color-line-generic) 11px 12px,
+                    transparent 1px var(--_--grid-cell-width)
+                );
+            }
         }
+
+        &_no-border {
+            border-block-start: none;
+        }
+    }
+
+    &__expandable-cell-content {
+        display: flex;
     }
 }

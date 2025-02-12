@@ -1,1 +1,19 @@
+import type {
+    Cell as BaseCell,
+    Column as BaseColumn,
+    ColumnDef as BaseColumnDef,
+} from '@tanstack/react-table';
+
+export type ColumnDef<TData, TValue = unknown> = BaseColumnDef<TData, TValue> & {
+    expandable?: boolean;
+};
+
+export type Column<TData, TValue> = BaseColumn<TData, TValue> & {
+    columnDef: ColumnDef<TData, TValue>;
+};
+
+export type Cell<TData, TValue> = BaseCell<TData, TValue> & {
+    column: Column<TData, TValue>;
+};
+
 export type TableSize = 's' | 'm';
