@@ -210,6 +210,9 @@ export const BaseTable = React.forwardRef(
             );
         };
 
+        const MemoizedBaseRow = React.memo(BaseRow) as typeof BaseRow;
+        const MemoizedBaseDraggableRow = React.memo(BaseDraggableRow) as typeof BaseDraggableRow;
+
         const renderBodyRows = () => {
             return bodyRows.map((virtualItemOrRow) => {
                 const row = rowVirtualizer
@@ -240,13 +243,16 @@ export const BaseTable = React.forwardRef(
                     'aria-selected': table.options.enableRowSelection
                         ? row.getIsSelected()
                         : undefined,
+                    'aria-expanded': table.options.enableExpanding
+                        ? row.getIsExpanded()
+                        : undefined,
                 };
 
-                if (draggableContext) {
-                    return <BaseDraggableRow key={key} {...rowProps} />;
-                }
-
-                return <BaseRow key={key} {...rowProps} />;
+                return draggableContext ? (
+                    <MemoizedBaseDraggableRow key={key} {...rowProps} />
+                ) : (
+                    <MemoizedBaseRow key={key} {...rowProps} />
+                );
             });
         };
 
