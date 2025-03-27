@@ -44,14 +44,18 @@ export const Table = React.forwardRef(
                 if (!cell) {
                     return b('cell');
                 }
+
                 const modifiers = {
                     'vertical-align': verticalAlign,
                     ...getCellClassMods(cell),
                 };
+
                 let additionalClassName;
 
                 if (typeof cellClassNameProp === 'function') {
                     additionalClassName = cellClassNameProp(cell);
+                } else {
+                    additionalClassName = cellClassNameProp;
                 }
 
                 return b('cell', modifiers, additionalClassName);

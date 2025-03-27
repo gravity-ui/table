@@ -15,7 +15,7 @@ export function getColumns(styled = false): ColumnDef<TreeItem>[] {
             accessorKey: 'name',
             header: 'Name',
             size: 200,
-            isTreeNode: true,
+            withNestingStyles: true,
             cell: (info) => <NameCell row={info.row}>{info.getValue<string>()}</NameCell>,
         },
         {accessorKey: 'age', header: 'Age', size: 100},

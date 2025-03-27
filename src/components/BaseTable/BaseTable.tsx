@@ -218,6 +218,14 @@ export const BaseTable = React.forwardRef(
 
                 const rowIndex = rowVirtualizer ? virtualItemOrRow.index : index;
 
+                const style =
+                    row.depth > 0
+                        ? {
+                              '--_--tree-depth': row.depth,
+                              '--_--last-nested': rows[rowIndex + 1]?.depth === 0 ? 1 : 0,
+                          }
+                        : undefined;
+
                 const virtualItem = rowVirtualizer ? (virtualItemOrRow as VirtualItem) : undefined;
                 const key = virtualItem?.key ?? row.id;
 
@@ -238,10 +246,7 @@ export const BaseTable = React.forwardRef(
                     rowVirtualizer,
                     table,
                     virtualItem,
-                    style: {
-                        '--_--tree-depth': row.depth,
-                        '--_--last-nested': rows[rowIndex + 1]?.depth === 0 ? 1 : 0,
-                    },
+                    style,
                     'aria-rowindex': headerRowCount + ariaRowIndexMap[row.id],
                     'aria-selected': table.options.enableRowSelection
                         ? row.getIsSelected()

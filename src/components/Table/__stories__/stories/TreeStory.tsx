@@ -23,5 +23,16 @@ export const TreeStory = (props: TableProps<(typeof data)[number]>) => {
         },
     });
 
-    return <Table {...props} table={table} />;
+    return (
+        <Table
+            {...props}
+            table={table}
+            headerCellAttributes={(header) => {
+                if (header.column.id === 'name') {
+                    return {style: {paddingInlineStart: 36}};
+                }
+                return {};
+            }}
+        />
+    );
 };

@@ -1,10 +1,10 @@
 import {ArrowToggle, Button} from '@gravity-ui/uikit';
 import type {Row} from '@tanstack/react-table';
 
-export interface TreeNameCellProps<TData> extends React.PropsWithChildren {
+export type TreeNameCellProps<TData> = React.PropsWithChildren<{
     row: Row<TData>;
     depth?: number;
-}
+}>;
 
 export const TreeNameCell = <TData,>({row, children, depth}: TreeNameCellProps<TData>) => {
     return (

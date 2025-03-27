@@ -19,12 +19,14 @@ $block: '.#{variables.$ns}styled-table';
     &_size {
         &_s {
             --_--cell-padding-bottom: 6px;
-            --_--cell-padding: 7px var(--g-spacing-2) var(--_--cell-padding-bottom);
+            --_--cell-padding-inline: var(--g-spacing-2);
+            --_--cell-padding: 7px var(--_--cell-padding-inline) var(--_--cell-padding-bottom);
         }
 
         &_m {
             --_--cell-padding-bottom: 10px;
-            --_--cell-padding: 11px var(--g-spacing-2) var(--_--cell-padding-bottom);
+            --_--cell-padding-inline: var(--g-spacing-2);
+            --_--cell-padding: 11px var(--_--cell-padding-inline) var(--_--cell-padding-bottom);
         }
     }
 
@@ -80,9 +82,12 @@ $block: '.#{variables.$ns}styled-table';
     }
 
     &__cell {
-        --_--inset: calc(var(--_--depth-indicator-width) * var(--_--tree-depth, 0));
+        --_--inset: calc(
+            var(--_--cell-padding-inline) + var(--_--depth-indicator-width) *
+                var(--_--tree-depth, 0)
+        );
 
-        &_tree-node {
+        &_with-nesting {
             position: relative;
             padding-inline-start: var(--_--inset);
         }
@@ -90,7 +95,7 @@ $block: '.#{variables.$ns}styled-table';
         &_with-depth-indicators {
             &::before {
                 position: absolute;
-                inset-inline-start: 0;
+                inset-inline-start: var(--_--cell-padding-inline);
                 inset-block-start: 0;
 
                 display: inline-block;

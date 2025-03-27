@@ -3,6 +3,7 @@ import type {Meta, StoryObj} from '@storybook/react';
 import {Table} from '../index';
 
 import {DefaultStory} from './stories/DefaultStory';
+import {GroupingStory} from './stories/GroupingStory';
 import {ReorderingStory} from './stories/ReorderingStory';
 import {ReorderingWithVirtualizationStory} from './stories/ReorderingWithVirtualizationStory';
 import {SizeSStory} from './stories/SizeSStory';
@@ -87,4 +88,8 @@ export const TreeWithVirtualization: StoryObj<typeof TreeStory> = {
     args: {
         size: 'm',
     },
+};
+
+export const Grouping: StoryObj<typeof GroupingStory> = {
+    render: GroupingStory,
 };

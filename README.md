@@ -184,20 +184,9 @@ const GroupingExample = () => {
 };
 ```
 
-In order to add tree styles for grouped rows, add `isTreeNode` property to the column, also you can disable depth indicators by providing `showTreeDepthIndicators = false`:
+To enable nesting styles, pass `withNestingStyles = true` in the column configuration.
 
-```tsx
-const columns: ColumnDef<Item>[] = [
-  {
-    accessorKey: 'name',
-    header: 'Name',
-    size: 200,
-    showTreeDepthIndicators: false,
-    isTreeNode: (item) => 'items' in item,
-  },
-  // ...other columns
-];
-```
+Nesting indicators can be disabled by passing `showTreeDepthIndicators = false`.
 
 To add a control for expanding/collapsing rows, wrap the cell content with the `TreeExpandableCell` component or with your similar custom component:
 
@@ -209,6 +198,8 @@ const columns: ColumnDef<Item>[] = [
     accessorKey: 'name',
     header: 'Name',
     size: 200,
+    showTreeDepthIndicators: false,
+    withNestingStyles: true,
     cell: ({row, info}) => (
       <TreeExpandableCell row={row}>{info.getValue<string>()}</TreeExpandableCell>
     ),
