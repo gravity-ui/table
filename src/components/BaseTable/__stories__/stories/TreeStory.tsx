@@ -4,7 +4,9 @@ import type {ExpandedState} from '@tanstack/react-table';
 
 import {useTable} from '../../../../hooks';
 import {BaseTable} from '../../BaseTable';
-import {columns, data} from '../constants/tree';
+import {data, getColumns} from '../constants/tree';
+
+const columns = getColumns();
 
 export const TreeStory = () => {
     const [expanded, setExpanded] = React.useState<ExpandedState>({});

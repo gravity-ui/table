@@ -3,12 +3,15 @@ import type {Meta, StoryObj} from '@storybook/react';
 import {Table} from '../index';
 
 import {DefaultStory} from './stories/DefaultStory';
+import {GroupingStory} from './stories/GroupingStory';
 import {ReorderingStory} from './stories/ReorderingStory';
 import {ReorderingWithVirtualizationStory} from './stories/ReorderingWithVirtualizationStory';
 import {SizeSStory} from './stories/SizeSStory';
 import {SortingStory} from './stories/SortingStory';
 import {StickyHeaderStory} from './stories/StickyHeaderStory';
+import {TreeStory} from './stories/TreeStory';
 import {VirtualizationStory} from './stories/VirtualizationStory';
+import {VirtualizedTreeStory} from './stories/VirtualizedTreeStory';
 import {WindowVirtualizationStory} from './stories/WindowVirtualizationStory';
 import {WithSelectionStory} from './stories/WithSelectionStory';
 
@@ -71,4 +74,22 @@ export const ReorderingWithVirtualization: StoryObj<typeof ReorderingWithVirtual
 
 export const StickyHeader: StoryObj<typeof StickyHeaderStory> = {
     render: StickyHeaderStory,
+};
+
+export const Tree: StoryObj<typeof TreeStory> = {
+    render: (args) => <TreeStory {...args} />,
+    args: {
+        size: 'm',
+    },
+};
+
+export const TreeWithVirtualization: StoryObj<typeof TreeStory> = {
+    render: (args) => <VirtualizedTreeStory {...args} />,
+    args: {
+        size: 'm',
+    },
+};
+
+export const Grouping: StoryObj<typeof GroupingStory> = {
+    render: GroupingStory,
 };

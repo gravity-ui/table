@@ -22,5 +22,9 @@ export const DraggableTreeNameCell = <TData,>({
 
     const {depth} = useDraggableRowDepth({row, table, isDragging});
 
-    return <TreeNameCell row={row} depth={depth} value={value} />;
+    return (
+        <TreeNameCell row={row} depth={depth}>
+            {value}
+        </TreeNameCell>
+    );
 };

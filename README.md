@@ -184,6 +184,30 @@ const GroupingExample = () => {
 };
 ```
 
+To enable nesting styles, pass `withNestingStyles = true` in the column configuration.
+
+Nesting indicators can be disabled by passing `showTreeDepthIndicators = false`.
+
+To add a control for expanding/collapsing rows, wrap the cell content with the `TreeExpandableCell` component or with your similar custom component:
+
+```tsx
+import {TreeExpandableCell} from '@gravity-ui/table';
+
+const columns: ColumnDef<Item>[] = [
+  {
+    accessorKey: 'name',
+    header: 'Name',
+    size: 200,
+    showTreeDepthIndicators: false,
+    withNestingStyles: true,
+    cell: ({row, info}) => (
+      <TreeExpandableCell row={row}>{info.getValue<string>()}</TreeExpandableCell>
+    ),
+  },
+  // ...other columns
+];
+```
+
 ### Reordering
 
 ```tsx

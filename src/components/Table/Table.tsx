@@ -4,7 +4,8 @@ import {BaseTable} from '../BaseTable';
 import type {BaseTableProps} from '../BaseTable';
 
 import {b} from './Table.classname';
-import type {TableSize} from './types';
+import type {Cell, TableSize} from './types';
+import {getCellClassMods} from './utils/getCellClassMods';
 
 import './Table.scss';
 
@@ -38,16 +39,29 @@ export const Table = React.forwardRef(
         }: TableProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableElement>,
     ) => {
-        const cellClassName: TableProps<TData>['cellClassName'] = React.useMemo(() => {
-            const modifiers = {
-                'vertical-align': verticalAlign,
-            };
-            if (typeof cellClassNameProp === 'function') {
-                return (...args) => b('cell', modifiers, cellClassNameProp(...args));
-            }
+        const cellClassName: (cell?: Cell<TData, unknown>) => string = React.useCallback(
+            (cell) => {
+                if (!cell) {
+                    return b('cell');
+                }
 
-            return b('cell', modifiers, cellClassNameProp);
-        }, [cellClassNameProp, verticalAlign]);
+                const modifiers = {
+                    'vertical-align': verticalAlign,
+                    ...getCellClassMods(cell),
+                };
+
+                let additionalClassName;
+
+                if (typeof cellClassNameProp === 'function') {
+                    additionalClassName = cellClassNameProp(cell);
+                } else {
+                    additionalClassName = cellClassNameProp;
+                }
+
+                return b('cell', modifiers, additionalClassName);
+            },
+            [cellClassNameProp, verticalAlign],
+        );
 
         const headerCellClassName: TableProps<TData>['headerCellClassName'] = React.useMemo(() => {
             const modifiers = {
