@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://github.com/gravity-ui/table/compare/v1.9.0...v1.10.0) (2025-04-08)
+
+
+### Features
+
+* implement nesting styles ([bcc27c0](https://github.com/gravity-ui/table/commit/bcc27c08502a793f6b5b976a625ec8877e1494fd))
+
 ## [1.9.0](https://github.com/gravity-ui/table/compare/v1.8.0...v1.9.0) (2025-02-05)
 
 
