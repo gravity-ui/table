@@ -18,4 +18,13 @@ $block: '.#{variables.$ns}table-settings';
         padding: var(--g-spacing-2);
         background-color: inherit;
     }
+
+    &__search-input {
+        margin-block-end: var(--g-spacing-1);
+    }
+
+    &__empty-message {
+        padding: var(--g-spacing-2);
+        display: block;
+    }
 }

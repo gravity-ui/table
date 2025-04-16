@@ -4,6 +4,7 @@ import type {DragEndEvent, DragStartEvent, UniqueIdentifier} from '@dnd-kit/core
 import {arrayMove} from '@dnd-kit/sortable';
 
 import type {Column} from '../../types/base';
+import type {ColumnDefTemplate} from '@tanstack/react-table';
 
 const filterColumns = <TData extends unknown>(
     column: Column<TData> | undefined,
@@ -135,3 +136,8 @@ export const getInitialOrderItems = <TData extends unknown>(
 
 export const isDisplayedColumn = <TData extends unknown>(column: Column<TData, unknown>) =>
     !column.columnDef.meta?.hideInSettings;
+
+export const isFilteredColumn = <TProps extends object>(
+    title: ColumnDefTemplate<TProps>,
+    search: string,
+) => (typeof title === 'string' ? title.toLowerCase().includes(search.toLowerCase()) : false);
