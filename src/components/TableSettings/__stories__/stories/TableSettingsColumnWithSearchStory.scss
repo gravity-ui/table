@@ -1,0 +1,18 @@
+.table-settings-column-with-search-story {
+    width: 100%;
+    overflow: auto;
+
+    &__table {
+        border-collapse: collapse;
+
+        th,
+        td {
+            border: 1px solid var(--g-color-line-generic);
+            align-content: center;
+        }
+    }
+
+    .gt-styled-table__row .gt-styled-table__cell {
+        border-block-end: 1px solid var(--g-color-line-generic);
+    }
+}

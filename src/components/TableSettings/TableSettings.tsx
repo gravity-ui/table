@@ -3,17 +3,19 @@ import * as React from 'react';
 import {DndContext, MouseSensor, TouchSensor, useSensor, useSensors} from '@dnd-kit/core';
 import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import {Gear} from '@gravity-ui/icons';
-import {Button, Divider, Icon, Popup} from '@gravity-ui/uikit';
+import {Button, Divider, Icon, Popup, Text, TextInput} from '@gravity-ui/uikit';
 import type {PopupPlacement} from '@gravity-ui/uikit';
 import type {Table, VisibilityState} from '@tanstack/react-table';
-
+import debounce from 'lodash/debounce';
 import type {Column, Header} from '../../types/base';
 import {TableSettingsColumn} from '../TableSettingsColumn/TableSettingsColumn';
+import {getColumnTitle} from '../TableSettingsColumn/TableSettingsColumn.utils';
 
 import {b} from './TableSettings.classname';
 import {
     getInitialOrderItems,
     isDisplayedColumn,
+    isFilteredColumn,
     orderStateToColumnOrder,
     useOrderedItems,
 } from './TableSettings.utils';
@@ -24,6 +26,8 @@ import './TableSettings.scss';
 export interface TableSettingsOptions {
     sortable?: boolean;
     filterable?: boolean;
+    enableSearch?: boolean;
+    searchPlaceholder?: string;
 }
 
 export interface TableSettingsProps<TData> extends TableSettingsOptions {
@@ -43,12 +47,14 @@ export const TableSettings = <TData extends unknown>({
     table,
     sortable = true,
     filterable = true,
+    enableSearch = false,
+    searchPlaceholder = '',
     onSettingsApply,
 }: TableSettingsProps<TData>) => {
     const anchorRef = React.useRef<HTMLButtonElement>(null);
     const [open, setOpen] = React.useState<boolean>(false);
-    const columns = table.getAllColumns();
-    const filteredColumns = React.useMemo(() => columns.filter(isDisplayedColumn), [columns]);
+    const allColumns = table.getAllColumns();
+    const filteredColumns = React.useMemo(() => allColumns.filter(isDisplayedColumn), [allColumns]);
     const headers = table.getFlatHeaders();
     const headersById = React.useMemo(() => {
         return headers.reduce<Record<string, Header<TData, unknown>>>((acc, header) => {
@@ -64,16 +70,46 @@ export const TableSettings = <TData extends unknown>({
     const [orderState, setOrderState] = React.useState(() =>
         getInitialOrderItems(filteredColumns, table.getState().columnOrder),
     );
+    const [search, setSearch] = React.useState('');
 
     const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
     const {orderedItems, activeDepth, handleDragEnd, handleDragStart, handleDragCancel} =
         useOrderedItems(filteredColumns, orderState, setOrderState);
 
-    const renderColumns = (renderedColumns: Column<TData>[]) => {
-        return renderedColumns.map((innerColumn) => {
-            const children = renderColumns(innerColumn.columns.filter(isDisplayedColumn));
+    const renderColumns = (renderedColumns: Column<TData>[], level = 0) => {
+        let columns = renderedColumns;
+        let isSortableColumn = sortable;
+        const disabledColumns = new Set();
+
+        if (enableSearch && search.length > 0) {
+            isSortableColumn = false;
+            columns = renderedColumns.filter(function findColumn(column: Column<TData>): boolean {
+                if (isFilteredColumn(getColumnTitle(column, headersById[column.id]), search)) {
+                    return true;
+                }
+                if (column.columns.length > 0) {
+                    if (column.columns.findIndex((childColumn) => findColumn(childColumn)) !== -1) {
+                        disabledColumns.add(column.id);
+                        return true;
+                    }
+                }
+                return false;
+            });
+        }
+
+        if (!level && !columns.length) {
+            return (
+                <Text variant="body-1" className={b('empty-message')}>
+                    No results
+                </Text>
+            );
+        }
+
+        return columns.map((innerColumn) => {
+            const children = renderColumns(innerColumn.columns.filter(isDisplayedColumn), ++level);
             const header = headersById[innerColumn.id];
+            const isDisabledColumn = disabledColumns.has(innerColumn.id);
 
             return (
                 <TableSettingsColumn
@@ -81,8 +117,9 @@ export const TableSettings = <TData extends unknown>({
                     column={innerColumn}
                     header={header}
                     visibilityState={visibilityState}
-                    sortable={sortable}
-                    filterable={filterable}
+                    sortable={isSortableColumn}
+                    filterable={filterable && !isDisabledColumn}
+                    disabled={isDisabledColumn}
                     activeDepth={activeDepth}
                     onVisibilityToggle={setVisibilityState}
                 >
@@ -118,6 +155,10 @@ export const TableSettings = <TData extends unknown>({
         setOpen(false);
     };
 
+    const updateSearch = debounce((value: string) => {
+        setSearch(value);
+    }, 200);
+
     return (
         <React.Fragment>
             <Popup
@@ -130,6 +171,14 @@ export const TableSettings = <TData extends unknown>({
                 contentClassName={b()}
             >
                 <div className={b('popover-content')}>
+                    {enableSearch && (
+                        <TextInput
+                            placeholder={searchPlaceholder}
+                            className={b('search-input')}
+                            hasClear
+                            onUpdate={updateSearch}
+                        />
+                    )}
                     <DndContext
                         onDragEnd={handleDragEnd}
                         onDragStart={handleDragStart}

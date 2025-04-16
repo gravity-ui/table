@@ -34,6 +34,10 @@ $block: '.#{variables.$ns}table-settings-column';
         display: flex;
         align-items: center;
         gap: var(--g-spacing-2);
+
+        &_disabled {
+            color: var(--g-color-text-hint);
+        }
     }
 
     &_sortable #{$block}__content:hover {
