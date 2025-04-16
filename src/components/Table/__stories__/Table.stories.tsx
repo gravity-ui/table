@@ -6,6 +6,7 @@ import {DefaultStory} from './stories/DefaultStory';
 import {GroupingStory} from './stories/GroupingStory';
 import {ReorderingStory} from './stories/ReorderingStory';
 import {ReorderingWithVirtualizationStory} from './stories/ReorderingWithVirtualizationStory';
+import {RowLinkStory} from './stories/RowLinkStory';
 import {SizeSStory} from './stories/SizeSStory';
 import {SortingStory} from './stories/SortingStory';
 import {StickyHeaderStory} from './stories/StickyHeaderStory';
@@ -32,6 +33,10 @@ export default meta;
 
 export const Default: StoryObj<typeof DefaultStory> = {
     render: DefaultStory,
+};
+
+export const WithRowLink: StoryObj<typeof DefaultStory> = {
+    render: RowLinkStory,
 };
 
 export const WithInteractiveRows: StoryObj<typeof DefaultStory> = {

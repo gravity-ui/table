@@ -1,0 +1,23 @@
+@use '../variables';
+
+$block: '.#{variables.$ns}link-table-utils';
+
+#{$block} {
+    &__main-link-cell::before {
+        position: absolute;
+        inset: 0;
+        content: '';
+        z-index: 2;
+    }
+
+    &__interactive-element {
+        z-index: 3;
+        position: relative;
+        width: fit-content;
+    }
+}
+
+tr:has(#{$block}__main-link-cell):hover {
+    background-color: var(--g-color-base-simple-hover-solid);
+    cursor: pointer;
+}
