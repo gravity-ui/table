@@ -102,10 +102,7 @@ export const getInitialOrderItems = <TData extends unknown>(
     treeItems: Column<TData>[],
     initialOrder: string[],
 ) => {
-    const orderMap = initialOrder.reduce<Record<string, number>>(
-        (acc, id, index) => ({...acc, [id]: index}),
-        {},
-    );
+    const orderMap = Object.fromEntries(initialOrder.map((id, index) => [id, index]));
 
     const stack = [...treeItems];
     const result: Record<string, string[]> = {root: treeItems.map(({id}) => id)};
