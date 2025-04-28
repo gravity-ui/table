@@ -25,5 +25,5 @@ export const getColumnTitle = <TData extends unknown>(
     }
 
     const columnHeader = columnDef.header;
-    return typeof columnHeader === 'function' ? columnHeader(header?.getContext()) : columnHeader;
+    return typeof columnHeader === 'function' ? columnHeader(header?.getContext?.()) : columnHeader;
 };

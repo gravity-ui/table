@@ -141,3 +141,15 @@ export const isFilteredColumn = <TProps extends object>(
     title: ColumnDefTemplate<TProps>,
     search: string,
 ) => (typeof title === 'string' ? title.toLowerCase().includes(search.toLowerCase()) : false);
+
+export const getNestedColumnsCount = <TData extends unknown>(column: Column<TData>): number => {
+    return column.columns
+        ? column.columns.reduce((count, current) => {
+              count++;
+              if (current.columns.length > 0) {
+                  return count + getNestedColumnsCount(current);
+              }
+              return count;
+          }, 0)
+        : 0;
+};

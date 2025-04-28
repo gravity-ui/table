@@ -1,4 +1,13 @@
 {
   "button_apply": "Apply",
-  "not_found": "Your search returned no results. Try to change your request."
+  "expand_button": "Expand all",
+  "collapse_button": "Collapse all",
+  "not_found": "Your search returned no results. Try to change your request.",
+  "nested_columns_count": {
+    "one": "{{count}} nested column",
+    "two": "{{count}} nested columns",
+    "few": "{{count}} nested columns",
+    "other": "{{count}} nested columns",
+    "many": "{{count}} nested columns"
+  }
 }
