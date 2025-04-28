@@ -100,8 +100,8 @@ export const TableSettings = <TData extends unknown>({
 
         if (!level && !columns.length) {
             return (
-                <Text variant="body-1" className={b('empty-message')}>
-                    No results
+                <Text variant="body-1" color="secondary" className={b('empty-message')}>
+                    {i18n('not_found')}
                 </Text>
             );
         }
@@ -132,6 +132,7 @@ export const TableSettings = <TData extends unknown>({
     const resetSettings = () => {
         setVisibilityState(table.getState().columnVisibility);
         setOrderState(getInitialOrderItems(filteredColumns, table.getState().columnOrder));
+        setSearch('');
     };
 
     const cancelEditing = () => {
@@ -153,6 +154,7 @@ export const TableSettings = <TData extends unknown>({
         if (sortable) table.setColumnOrder(columnOrder);
 
         setOpen(false);
+        setSearch('');
     };
 
     const updateSearch = debounce((value: string) => {
