@@ -45,6 +45,8 @@ export interface TableSettingsProps<TData> extends TableSettingsOptions {
 
 const POPUP_PLACEMENT: PopupPlacement = ['bottom-end', 'bottom', 'top-end', 'top', 'left', 'right'];
 
+const NESTED_COLUMNS_PREFIX = 'nested_columns_count_';
+
 export const TableSettings = <TData extends unknown>({
     table,
     sortable = true,
@@ -144,7 +146,7 @@ export const TableSettings = <TData extends unknown>({
                 createColumn(
                     table,
                     {
-                        id: `nested_columns_count_${innerColumn.id}`,
+                        id: `${NESTED_COLUMNS_PREFIX}${innerColumn.id}`,
                         header: () => (
                             <Text variant="body-1" color="secondary">
                                 {i18n('nested_columns_count', {
@@ -166,6 +168,9 @@ export const TableSettings = <TData extends unknown>({
                 ? renderColumns(innerColumn.columns.filter(isDisplayedColumn), innerColumn)
                 : null;
             const header = headersById[innerColumn.id] ?? innerColumn.columnDef.header;
+            const isFilterableColumn = innerColumn.id.startsWith(NESTED_COLUMNS_PREFIX)
+                ? false
+                : filterable;
 
             return (
                 <TableSettingsColumn
@@ -174,8 +179,9 @@ export const TableSettings = <TData extends unknown>({
                     header={header}
                     visibilityState={visibilityState}
                     sortable={isSortableColumn}
-                    filterable={filterable}
+                    filterable={isFilterableColumn}
                     activeDepth={activeDepth}
+                    withOffset
                     onVisibilityToggle={setVisibilityState}
                 >
                     {children}

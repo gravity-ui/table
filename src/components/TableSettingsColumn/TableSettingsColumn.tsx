@@ -19,6 +19,7 @@ interface Props<TData> extends TableSettingsOptions {
     visibilityState: VisibilityState;
     activeDepth?: number;
     disabled?: boolean;
+    withOffset?: boolean;
     onVisibilityToggle: (updater: Updater<VisibilityState>) => void;
 }
 
@@ -31,6 +32,7 @@ export const TableSettingsColumn = <TData extends unknown>({
     sortable,
     disabled = false,
     activeDepth,
+    withOffset = false,
     onVisibilityToggle,
 }: React.PropsWithChildren<Props<TData>>) => {
     const innerColumns = column.getLeafColumns();
@@ -100,7 +102,7 @@ export const TableSettingsColumn = <TData extends unknown>({
                     className={b('layout', {dragging: isDragging})}
                 >
                     <div className={b('content', {disabled})}>
-                        {filterable ? (
+                        {filterable && (
                             // eslint-disable-next-line jsx-a11y/no-static-element-interactions
                             <div
                                 onMouseDown={(e) => {
@@ -118,7 +120,8 @@ export const TableSettingsColumn = <TData extends unknown>({
                                     className={b('checkbox', {'unset-coursor': isDragging})}
                                 />
                             </div>
-                        ) : null}
+                        )}
+                        {!filterable && withOffset && <div className={b('checkbox-spacer')} />}
                         {renderSpacers()}
                         <Text variant="body-1" className={b('name', {parent: isParent})}>
                             {getColumnTitle(column, header)}
@@ -132,7 +135,6 @@ export const TableSettingsColumn = <TData extends unknown>({
                             </span>
                         ) : null}
                     </div>
-
                     <SortableContext
                         id={column.id}
                         items={column.columns?.map(({id}) => id)}
