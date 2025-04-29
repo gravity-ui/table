@@ -137,7 +137,7 @@ export const TableSettings = <TData extends unknown>({
         if (innerColumn && !expandNestedColumns && partiallyHiddenNodes.has(innerColumn.id)) {
             let count = getNestedColumnsCount(innerColumn);
             if (displayedColumns.length) {
-                count -= columns.length - displayedColumns.length;
+                count -= displayedColumns.length;
             }
 
             displayedColumns.push(
@@ -158,14 +158,6 @@ export const TableSettings = <TData extends unknown>({
                     level + 1,
                     innerColumn,
                 ),
-            );
-        }
-
-        if (!displayedColumns.length && !level && search.length) {
-            return (
-                <Text variant="body-1" color="secondary" className={b('empty-message')}>
-                    {i18n('not_found')}
-                </Text>
             );
         }
 
@@ -224,6 +216,9 @@ export const TableSettings = <TData extends unknown>({
         setSearch(value);
     }, 200);
 
+    const emptyResult =
+        search.length > 0 && !orderedItems.filter((item) => !hiddenNodes.has(item.id)).length;
+
     return (
         <React.Fragment>
             <Popup
@@ -263,26 +258,34 @@ export const TableSettings = <TData extends unknown>({
                             onUpdate={updateSearch}
                         />
                     )}
-                    <DndContext
-                        onDragEnd={handleDragEnd}
-                        onDragStart={handleDragStart}
-                        onDragCancel={handleDragCancel}
-                        sensors={sensors}
-                    >
-                        <SortableContext
-                            items={orderedItems.map(({id}) => id)}
-                            strategy={verticalListSortingStrategy}
+                    {emptyResult ? (
+                        <Text variant="body-1" color="secondary" className={b('empty-message')}>
+                            {i18n('not_found')}
+                        </Text>
+                    ) : (
+                        <DndContext
+                            onDragEnd={handleDragEnd}
+                            onDragStart={handleDragStart}
+                            onDragCancel={handleDragCancel}
+                            sensors={sensors}
                         >
-                            {renderColumns(orderedItems)}
-                        </SortableContext>
-                    </DndContext>
+                            <SortableContext
+                                items={orderedItems.map(({id}) => id)}
+                                strategy={verticalListSortingStrategy}
+                            >
+                                {renderColumns(orderedItems)}
+                            </SortableContext>
+                        </DndContext>
+                    )}
                 </div>
                 <Divider />
-                <div className={b('popover-actions')}>
-                    <Button view="action" size="m" onClick={applyNewSettings} width="max">
-                        {i18n('button_apply')}
-                    </Button>
-                </div>
+                {!emptyResult && (
+                    <div className={b('popover-actions')}>
+                        <Button view="action" size="m" onClick={applyNewSettings} width="max">
+                            {i18n('button_apply')}
+                        </Button>
+                    </div>
+                )}
             </Popup>
             <Button view="flat-secondary" size="m" ref={anchorRef} onClick={togglePopup}>
                 <Icon data={Gear} />

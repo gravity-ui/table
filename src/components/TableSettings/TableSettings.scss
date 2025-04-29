@@ -21,6 +21,10 @@ $block: '.#{variables.$ns}table-settings';
 
     &__search-input {
         margin-block-end: var(--g-spacing-1);
+        position: sticky;
+        inset-block-start: 0;
+        z-index: 10;
+        background-color: var(--g-color-base-background);
     }
 
     &__empty-message {
