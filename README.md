@@ -257,7 +257,7 @@ const ReorderingExample = () => {
 
 ### Virtualization
 
-Use if you want to use grid container as the scroll element (if you want to use window see window virtualization section). Note that it is required to set a fixed height to the container or else virtualization will not work
+Use if you want to use grid container as the scroll element (if you want to use window see window virtualization section). Be sure to set a fixed height on the container; otherwise, virtualization will not work.
 
 ```tsx
 import {useRowVirtualizer} from '@gravity-ui/table';
