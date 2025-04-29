@@ -69,6 +69,12 @@ $block: '.#{variables.$ns}table-settings-column';
             cursor: unset;
         }
     }
+
+    &__checkbox-spacer {
+        width: 14px;
+        height: 14px;
+        flex-shrink: 0;
+    }
 }
 
 #{$block}_dragging {
