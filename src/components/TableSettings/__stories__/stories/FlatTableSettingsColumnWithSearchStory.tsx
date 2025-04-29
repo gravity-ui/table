@@ -13,7 +13,6 @@ import './TableSettingsColumnWithSearchStory.scss';
 
 type Item = {
     id: string;
-    operatorName: string;
     contactGroupName: string;
     contactName: string;
     contactPhone: string;
@@ -24,7 +23,6 @@ type Item = {
 const data: Item[] = [
     {
         id: '32',
-        operatorName: 'Some telecom',
         contactGroupName: 'Contact Group 1',
         contactName: 'Contact 1',
         contactPhone: '+7 123 456 789',
@@ -33,7 +31,6 @@ const data: Item[] = [
     },
     {
         id: '33',
-        operatorName: 'Some telecom',
         contactGroupName: 'Contact Group 2',
         contactName: 'Contact 2',
         contactPhone: '+7 123 456 789',
@@ -42,7 +39,7 @@ const data: Item[] = [
     },
     {
         id: '34',
-        operatorName: 'Another telecom',
+
         contactGroupName: 'Contact Group 3',
         contactName: 'Contact 3',
         contactPhone: '+7 123 456 789',
@@ -53,58 +50,40 @@ const data: Item[] = [
 
 const tableColumns: ColumnDef<Item>[] = [
     {
-        id: 'contact_group_group',
-        header: 'Contact Group',
-        columns: [
-            {
-                id: 'contact_group_name',
-                accessorKey: 'contactGroupName',
-                header: 'Name',
-                minSize: 250,
-            },
-            {
-                id: 'contact_group_type',
-                accessorKey: 'contactGroupType',
-                header: 'Type',
-                minSize: 230,
-            },
-        ],
+        id: 'contact_group_name',
+        accessorKey: 'contactGroupName',
+        header: 'Group',
+        minSize: 250,
     },
     {
-        id: 'contacts_group',
-        header: 'Contact',
-        columns: [
-            {
-                id: 'contacts_group_name',
-                accessorKey: 'contactName',
-                header: 'Name',
-                minSize: 200,
-            },
-            {
-                id: 'contacts_group_info',
-                accessorKey: 'contactInfo',
-                header: 'Info',
-                columns: [
-                    {
-                        id: 'contacts_group_phone',
-                        accessorKey: 'contactPhone',
-                        header: 'Phone',
-                    },
-                    {
-                        id: 'contacts_group_priority',
-                        accessorKey: 'contactPriority',
-                        header: () => <span>Priority</span>,
-                        meta: {
-                            titleInSettings: 'Priority',
-                        },
-                    },
-                ],
-            },
-        ],
+        id: 'contact_group_type',
+        accessorKey: 'contactGroupType',
+        header: 'Type',
+        minSize: 230,
+    },
+
+    {
+        id: 'contacts_group_name',
+        accessorKey: 'contactName',
+        header: 'Name',
+        minSize: 200,
+    },
+    {
+        id: 'contacts_group_phone',
+        accessorKey: 'contactPhone',
+        header: 'Phone',
+    },
+    {
+        id: 'contacts_group_priority',
+        accessorKey: 'contactPriority',
+        header: () => <span>Priority</span>,
+        meta: {
+            titleInSettings: 'Priority',
+        },
     },
 ];
 
-export const TableSettingsColumnWithSearchStory = ({
+export const FlatTableSettingsColumnWithSearchStory = ({
     sortable,
     filterable,
     enableSearch,

@@ -2,8 +2,9 @@ import type {Meta, StoryObj} from '@storybook/react';
 
 import type {TableSettingsOptions} from '../TableSettings';
 
+import {FlatTableSettingsColumnWithSearchStory} from './stories/FlatTableSettingsColumnWithSearchStory';
+import {NestedTableSettingsColumnWithSearchStory} from './stories/NestedTableSettingsColumnWithSearchStory';
 import {TableSettingsColumnStory} from './stories/TableSettingsColumnStory';
-import {TableSettingsColumnWithSearchStory} from './stories/TableSettingsColumnWithSearchStory';
 import {TableSettingsStory} from './stories/TableSettingsStory';
 
 const meta: Meta<TableSettingsOptions> = {
@@ -31,8 +32,16 @@ export const TableSettingsColumn: StoryObj<typeof TableSettingsColumnStory> = {
     render: TableSettingsColumnStory,
 };
 
-export const TableSettingsColumnWithSearch: StoryObj<typeof TableSettingsColumnStory> = {
-    render: TableSettingsColumnWithSearchStory.bind(null, {
+export const NestedTableSettingsColumnWithSearch: StoryObj<typeof TableSettingsColumnStory> = {
+    render: NestedTableSettingsColumnWithSearchStory.bind(null, {
+        sortable: true,
+        filterable: true,
+        enableSearch: true,
+    }),
+};
+
+export const FlatTableSettingsColumnWithSearch: StoryObj<typeof TableSettingsColumnStory> = {
+    render: FlatTableSettingsColumnWithSearchStory.bind(null, {
         sortable: true,
         filterable: true,
         enableSearch: true,
