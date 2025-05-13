@@ -18,6 +18,9 @@ $block: '.#{variables.$ns}link-table-utils';
 }
 
 tr:has(#{$block}__main-link-cell):hover {
+    // new context, transform instead of position relative because of safari
+    // alternative solution: https://mtsknn.fi/blog/relative-tr-in-safari/
+    transform: translateZ(0);
     background-color: var(--g-color-base-simple-hover-solid);
     cursor: pointer;
 }
