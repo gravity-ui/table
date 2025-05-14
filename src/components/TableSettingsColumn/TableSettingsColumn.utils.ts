@@ -1,4 +1,6 @@
-import type {Column, VisibilityState} from '@tanstack/react-table';
+import type {VisibilityState} from '@tanstack/react-table';
+
+import type {Column} from '../../types/tanstack';
 
 export const getIsVisible = <TData extends unknown>(
     column: Column<TData>,

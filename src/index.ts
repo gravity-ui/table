@@ -5,6 +5,7 @@ export {
     Table,
     TableSettings,
     SortableListContext,
+    TreeExpandableCell,
 } from './components';
 export type {
     BaseTableProps,
@@ -52,3 +53,5 @@ export type {
     RenderRowActionsProps,
     TableActionsSettings,
 } from './types/RowActions';
+
+export type {TableSize} from './components/Table/types';

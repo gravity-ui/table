@@ -1,6 +1,5 @@
-import type {ColumnDef} from '@tanstack/react-table';
-
 import {SelectionCheckbox} from '../components';
+import type {ColumnDef} from '../types/tanstack';
 
 export const selectionColumn: ColumnDef<unknown> = {
     id: '_select',

@@ -1,6 +1,5 @@
-import type {ColumnDef} from '@tanstack/react-table';
-
 import {DragHandle} from '../components';
+import type {ColumnDef} from '../types/tanstack';
 
 export const dragHandleColumn: ColumnDef<unknown> = {
     id: '_drag',

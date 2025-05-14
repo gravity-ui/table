@@ -1,9 +1,8 @@
 import * as React from 'react';
 
-import type {ColumnDef} from '@tanstack/react-table';
-
 import {dragHandleColumn} from '../../../../constants';
 import {useTable} from '../../../../hooks';
+import type {ColumnDef} from '../../../../types/tanstack';
 import {ReorderingProvider} from '../../../ReorderingProvider';
 import type {ReorderingProviderProps} from '../../../ReorderingProvider';
 import {BaseTable} from '../../BaseTable';

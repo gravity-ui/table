@@ -34,7 +34,17 @@ export const VirtualizedTreeStory = (props: TableProps<(typeof data)[number]>) =
 
     return (
         <div ref={containerRef} style={{height: '90vh', overflow: 'auto'}}>
-            <Table {...props} table={table} rowVirtualizer={rowVirtualizer} />
+            <Table
+                {...props}
+                table={table}
+                rowVirtualizer={rowVirtualizer}
+                headerCellAttributes={(header) => {
+                    if (header.column.id === 'name') {
+                        return {style: {paddingInlineStart: 36}};
+                    }
+                    return {};
+                }}
+            />
         </div>
     );
 };

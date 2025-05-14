@@ -1,7 +1,6 @@
-import type {ColumnDef} from '@tanstack/react-table';
-
 import type {TableSettingsOptions} from '../components';
 import type {TableActionsSettings} from '../types/RowActions';
+import type {ColumnDef} from '../types/tanstack';
 
 import {getActionsColumn} from './actionsColumn';
 import {getSettingsColumn} from './settingsColumn';

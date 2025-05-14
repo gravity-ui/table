@@ -1,4 +1,4 @@
-import type {ColumnDef} from '../../../Table/types';
+import type {ColumnDef} from '../../../../types/tanstack';
 import {TreeExpandableCell} from '../../../TreeExpandableCell';
 import {DraggableTreeNameCell} from '../cells/DraggableTreeNameCell';
 import {TreeNameCell} from '../cells/TreeNameCell';

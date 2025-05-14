@@ -1,10 +1,11 @@
 import type {NoStrictEntityMods} from '@bem-react/classname';
-import type {Header} from '@tanstack/react-table';
+
+import type {Header} from '../types/tanstack';
 
 import {getColumnPinningClassModes} from './getColumnPinningClassModes';
 
-export const getHeaderCellClassModes = <TData>(
-    header: Header<TData, unknown>,
+export const getHeaderCellClassModes = <TData, TValue = unknown>(
+    header: Header<TData, TValue>,
 ): NoStrictEntityMods => ({
     id: header.column.id,
     placeholder: header.isPlaceholder,

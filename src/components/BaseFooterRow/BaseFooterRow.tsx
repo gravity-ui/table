@@ -1,7 +1,8 @@
 import type * as React from 'react';
 
-import type {Header, HeaderGroup} from '@tanstack/react-table';
+import type {HeaderGroup} from '@tanstack/react-table';
 
+import type {Header} from '../../types/tanstack';
 import {shouldRenderFooterCell} from '../../utils';
 import type {BaseFooterCellProps} from '../BaseFooterCell';
 import {BaseFooterCell} from '../BaseFooterCell';

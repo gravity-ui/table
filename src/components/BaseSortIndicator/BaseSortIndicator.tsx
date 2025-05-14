@@ -1,4 +1,4 @@
-import type {Header} from '@tanstack/react-table';
+import type {Header} from '../../types/tanstack';
 
 import {b} from './BaseSortIndicator.classname';
 

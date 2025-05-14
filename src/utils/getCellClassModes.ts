@@ -1,5 +1,6 @@
 import type {NoStrictEntityMods} from '@bem-react/classname';
-import type {Cell} from '@tanstack/react-table';
+
+import type {Cell} from '../types/tanstack';
 
 import {getColumnPinningClassModes} from './getColumnPinningClassModes';
 

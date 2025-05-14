@@ -1,9 +1,8 @@
 import * as React from 'react';
 
-import type {ColumnDef} from '@tanstack/react-table';
-
 import {dragHandleColumn} from '../../../../constants';
 import {useTable, useWindowRowVirtualizer} from '../../../../hooks';
+import type {ColumnDef} from '../../../../types/tanstack';
 import {getVirtualRowRangeExtractor} from '../../../../utils';
 import {ReorderingProvider} from '../../../ReorderingProvider';
 import type {ReorderingProviderProps} from '../../../ReorderingProvider';

@@ -1,9 +1,8 @@
 import * as React from 'react';
 
-import type {ColumnDef} from '@tanstack/react-table';
-
 import {dragHandleColumn} from '../../../../constants';
 import {useTable, useWindowRowVirtualizer} from '../../../../hooks';
+import type {ColumnDef} from '../../../../types/tanstack';
 import {getVirtualRowRangeExtractor} from '../../../../utils';
 import {columns as originalColumns} from '../../../BaseTable/__stories__/constants/columns';
 import type {Item} from '../../../BaseTable/__stories__/types';
