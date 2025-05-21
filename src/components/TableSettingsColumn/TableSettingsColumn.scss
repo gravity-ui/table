@@ -45,7 +45,7 @@ $block: '.#{variables.$ns}table-settings-column';
 
     &__vertical-spacer {
         content: '';
-        width: 7px;
+        width: 0;
         height: 100%;
         border-inline-end: 1px solid var(--g-color-line-generic);
     }
