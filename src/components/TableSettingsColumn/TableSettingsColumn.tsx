@@ -99,18 +99,18 @@ export const TableSettingsColumn = <TData extends unknown>({
     };
 
     return (
-        <div style={style} ref={setNodeRef} className={b({dragging: isDragging, root: isRoot})}>
+        <div
+            style={style}
+            ref={setNodeRef}
+            className={b({dragging: isDragging, root: isRoot, sortable})}
+        >
             <div className={b('background')}>
-                <div {...attributes} className={b('layout', {dragging: isDragging})}>
+                <div
+                    {...attributes}
+                    {...(sortable ? {...listeners} : {})}
+                    className={b('layout', {dragging: isDragging})}
+                >
                     <div className={b('content')}>
-                        {sortable ? (
-                            <span
-                                className={b('drag-handle', {'unset-coursor': isDragging})}
-                                {...listeners}
-                            >
-                                <Icon data={Grip} size={16} />
-                            </span>
-                        ) : null}
                         {filterable ? (
                             <Checkbox
                                 checked={isVisible}
@@ -124,6 +124,11 @@ export const TableSettingsColumn = <TData extends unknown>({
                         <Text variant="body-1" className={b('name', {parent: isParent})}>
                             {renderColumn(column.columnDef)}
                         </Text>
+                        {sortable ? (
+                            <span className={b('drag-handle', {'unset-coursor': isDragging})}>
+                                <Icon data={Grip} size={16} />
+                            </span>
+                        ) : null}
                     </div>
 
                     <SortableContext
