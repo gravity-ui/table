@@ -18,3 +18,4 @@ export * from './BaseTable';
 export * from './Table';
 export * from './TableSettings';
 export * from './RowActions';
+export * from './RowLink';

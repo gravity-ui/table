@@ -5,6 +5,7 @@ export {
     Table,
     TableSettings,
     SortableListContext,
+    ExperimentalRowLink,
 } from './components';
 export type {
     BaseTableProps,
