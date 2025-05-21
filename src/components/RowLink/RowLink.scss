@@ -17,7 +17,7 @@ $block: '.#{variables.$ns}row-link';
     }
 }
 
-tr:has(#{$block}):hover {
+.gt-styled-table__row:has(#{$block}):hover {
     // new context, transform instead of position relative because of safari
     // alternative solution: https://mtsknn.fi/blog/relative-tr-in-safari/
     transform: translateZ(0);
