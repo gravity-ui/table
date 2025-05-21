@@ -1,27 +1,26 @@
 import * as React from 'react';
 
+import {Button} from '@gravity-ui/uikit';
+
 import {useTable} from '../../../../hooks';
 import {data} from '../../../BaseTable/__stories__/constants/data';
 import type {Item} from '../../../BaseTable/__stories__/types';
-import {RowLink} from '../../../RowLink/RowLink';
-import {Table} from '../../index';
+import {ExperimentalRowLink} from '../../../RowLink';
+import {interactiveElementLinkRowClassName} from '../../../RowLink/RowLink';
 import type {ColumnDef, TableProps} from '../../index';
+import {Table} from '../../index';
 
 const patchedColumns: ColumnDef<Item>[] = [
     {accessorKey: 'name', header: 'Name', size: 100},
     {accessorKey: 'age', header: 'Age', size: 100},
     {
         id: 'name-age',
-        accessorFn: (item, index) => (
+        accessorFn: (item) => (
             <React.Fragment>
                 {`${item.name}: ${item.age}`}
-                <RowLink
-                    entity={item}
-                    index={index}
-                    getLinkProps={() => ({
-                        href: `https://github.com/gravity-ui/table#${item.name}`,
-                        target: '_blank',
-                    })}
+                <ExperimentalRowLink
+                    href={`https://github.com/gravity-ui/table#${item.name}`}
+                    target="_blank"
                 />
             </React.Fragment>
         ),
@@ -31,8 +30,17 @@ const patchedColumns: ColumnDef<Item>[] = [
         minSize: 100,
     },
     {
-        accessorKey: 'status',
-        header: 'Status',
+        accessorKey: 'interactiveCell',
+        header: 'Interactive Cell',
+        accessorFn: (item) => (
+            <Button
+                className={interactiveElementLinkRowClassName}
+                onClick={() => alert(`Clicked on ${item.name}`)}
+            >
+                {item.name}
+            </Button>
+        ),
+        cell: (info) => info.getValue(),
         size: 100,
     },
 ];

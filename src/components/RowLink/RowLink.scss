@@ -1,9 +1,9 @@
 @use '../variables';
 
-$block: '.#{variables.$ns}link-table-utils';
+$block: '.#{variables.$ns}row-link';
 
 #{$block} {
-    &__main-link-cell::before {
+    &::before {
         position: absolute;
         inset: 0;
         content: '';
@@ -17,7 +17,7 @@ $block: '.#{variables.$ns}link-table-utils';
     }
 }
 
-tr:has(#{$block}__main-link-cell):hover {
+tr:has(#{$block}):hover {
     // new context, transform instead of position relative because of safari
     // alternative solution: https://mtsknn.fi/blog/relative-tr-in-safari/
     transform: translateZ(0);
