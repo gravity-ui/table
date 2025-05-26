@@ -4,7 +4,7 @@ import type {ExpandedState, Row, RowSelectionState} from '@tanstack/react-table'
 
 import {selectionColumn} from '../../../../constants';
 import {useTable} from '../../../../hooks';
-import type {ColumnDef} from '../../../../types/tanstack';
+import type {ColumnDef} from '../../../../types/base';
 import {BaseTable} from '../../BaseTable';
 import type {GroupOrItem} from '../constants/grouping';
 import {data, columns as originalColumns} from '../constants/grouping';

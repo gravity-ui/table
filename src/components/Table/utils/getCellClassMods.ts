@@ -1,6 +1,6 @@
 import type {NoStrictEntityMods} from '@bem-react/classname';
 
-import type {Cell} from '../../../types/tanstack';
+import type {Cell} from '../../../types/base';
 
 export const getCellClassMods = <TData>(cell?: Cell<TData, unknown>): NoStrictEntityMods | null => {
     if (!cell) {

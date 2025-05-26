@@ -1,4 +1,4 @@
-import type {Header} from '../../types/tanstack';
+import type {Header} from '../../types/base';
 
 import {b} from './BaseSortIndicator.classname';
 

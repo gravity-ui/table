@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import {dragHandleColumn} from '../../../../constants';
 import {useTable, useWindowRowVirtualizer} from '../../../../hooks';
-import type {ColumnDef} from '../../../../types/tanstack';
+import type {ColumnDef} from '../../../../types/base';
 import {getVirtualRowRangeExtractor} from '../../../../utils';
 import {ReorderingProvider} from '../../../ReorderingProvider';
 import type {ReorderingProviderProps} from '../../../ReorderingProvider';

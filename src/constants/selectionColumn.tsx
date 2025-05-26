@@ -1,5 +1,5 @@
 import {SelectionCheckbox} from '../components';
-import type {ColumnDef} from '../types/tanstack';
+import type {ColumnDef} from '../types/base';
 
 export const selectionColumn: ColumnDef<unknown> = {
     id: '_select',

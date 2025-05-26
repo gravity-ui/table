@@ -1,6 +1,6 @@
 import type {NoStrictEntityMods} from '@bem-react/classname';
 
-import type {Header} from '../types/tanstack';
+import type {Header} from '../types/base';
 
 import {getColumnPinningClassModes} from './getColumnPinningClassModes';
 

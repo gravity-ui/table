@@ -1,6 +1,6 @@
 import type {NoStrictEntityMods} from '@bem-react/classname';
 
-import type {Cell, Header} from '../types/tanstack';
+import type {Cell, Header} from '../types/base';
 
 export const getColumnPinningClassModes = <TData, TValue = unknown>(
     cell: Cell<TData, TValue> | Header<TData, TValue>,

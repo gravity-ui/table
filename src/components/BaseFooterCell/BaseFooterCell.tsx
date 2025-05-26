@@ -2,7 +2,7 @@ import type * as React from 'react';
 
 import {flexRender} from '@tanstack/react-table';
 
-import type {Header} from '../../types/tanstack';
+import type {Header} from '../../types/base';
 import {getCellStyles, getHeaderCellClassModes} from '../../utils';
 import {b} from '../BaseTable/BaseTable.classname';
 

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import type {Cell} from '../../types/tanstack';
+import type {Cell} from '../../types/base';
 import {BaseTable} from '../BaseTable';
 import type {BaseTableProps} from '../BaseTable';
 

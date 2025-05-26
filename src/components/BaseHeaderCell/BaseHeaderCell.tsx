@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import {flexRender} from '@tanstack/react-table';
 
-import type {Header} from '../../types/tanstack';
+import type {Header} from '../../types/base';
 import {
     getAriaSort,
     getCellStyles,

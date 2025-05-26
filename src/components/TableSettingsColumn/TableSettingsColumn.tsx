@@ -5,7 +5,7 @@ import {Grip} from '@gravity-ui/icons';
 import {Checkbox, Divider, Icon, Text} from '@gravity-ui/uikit';
 import type {Updater, VisibilityState} from '@tanstack/react-table';
 
-import type {Column, ColumnDef, Header} from '../../types/tanstack';
+import type {Column, ColumnDef, Header} from '../../types/base';
 import type {TableSettingsOptions} from '../TableSettings/TableSettings';
 
 import {b} from './TableSettingsColumn.classname';

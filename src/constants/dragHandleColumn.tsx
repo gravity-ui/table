@@ -1,5 +1,5 @@
 import {DragHandle} from '../components';
-import type {ColumnDef} from '../types/tanstack';
+import type {ColumnDef} from '../types/base';
 
 export const dragHandleColumn: ColumnDef<unknown> = {
     id: '_drag',

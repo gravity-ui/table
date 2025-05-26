@@ -1,6 +1,6 @@
 import type * as React from 'react';
 
-import type {Cell, Header} from '../types/tanstack';
+import type {Cell, Header} from '../types/base';
 
 export const getCellStyles = <TData, TValue = unknown>(
     cell?: Cell<TData, TValue> | Header<TData, TValue>,

@@ -2,7 +2,7 @@ import type * as React from 'react';
 
 import {useActionHandlers} from '@gravity-ui/uikit';
 
-import type {Header} from '../../types/tanstack';
+import type {Header} from '../../types/base';
 import {b} from '../BaseTable/BaseTable.classname';
 
 export interface BaseSortProps<TData, TValue>

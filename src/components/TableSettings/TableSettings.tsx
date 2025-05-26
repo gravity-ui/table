@@ -7,7 +7,7 @@ import {Button, Divider, Icon, Popup} from '@gravity-ui/uikit';
 import type {PopupPlacement} from '@gravity-ui/uikit';
 import type {Table, VisibilityState} from '@tanstack/react-table';
 
-import type {Column, Header} from '../../types/tanstack';
+import type {Column, Header} from '../../types/base';
 import {TableSettingsColumn} from '../TableSettingsColumn/TableSettingsColumn';
 
 import {b} from './TableSettings.classname';

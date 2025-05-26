@@ -1,4 +1,4 @@
-import type {ColumnDef} from '../../../../types/tanstack';
+import type {ColumnDef} from '../../../../types/base';
 import type {Item} from '../types';
 
 export const columns: ColumnDef<Item>[] = [

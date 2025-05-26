@@ -2,7 +2,7 @@ import {Text} from '@gravity-ui/uikit';
 import type {VisibilityState} from '@tanstack/react-table';
 
 import {useTable, useTableSettings} from '../../../../hooks';
-import type {ColumnDef} from '../../../../types/tanstack';
+import type {ColumnDef} from '../../../../types/base';
 import {TableSettings} from '../../TableSettings';
 import type {TableSettingsOptions} from '../../TableSettings';
 

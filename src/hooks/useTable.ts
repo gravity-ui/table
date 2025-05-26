@@ -7,15 +7,7 @@ import {
     useReactTable,
 } from '@tanstack/react-table';
 
-import type {ColumnDef} from '../types/tanstack';
-
-interface PassedTableOptions<TData>
-    extends Omit<TableOptions<TData>, 'getCoreRowModel' | 'columns'> {
-    getCoreRowModel?: TableOptions<TData>['getCoreRowModel'];
-    columns: ColumnDef<TData, any>[];
-}
-
-export interface UseTableOptions<TData> extends PassedTableOptions<TData> {}
+import type {UseTableOptions} from '../types/base';
 
 export const useTable = <TData>(options: UseTableOptions<TData>) => {
     const tableOptions: TableOptions<TData> = {

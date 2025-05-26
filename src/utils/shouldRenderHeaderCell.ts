@@ -1,4 +1,4 @@
-import type {Header} from '../types/tanstack';
+import type {Header} from '../types/base';
 
 export const shouldRenderHeaderCell = <TData>(
     header: Header<TData, unknown>,

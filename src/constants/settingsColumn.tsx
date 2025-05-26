@@ -1,6 +1,6 @@
 import {TableSettings} from '../components/TableSettings/TableSettings';
 import type {TableSettingsOptions} from '../components/TableSettings/TableSettings';
-import type {ColumnDef} from '../types/tanstack';
+import type {ColumnDef} from '../types/base';
 
 export const SETTINGS_COLUMN_ID = '_settings';
 const SETTINGS_COLUMN_SIZE = 44;
