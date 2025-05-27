@@ -112,13 +112,23 @@ export const TableSettingsColumn = <TData extends unknown>({
                 >
                     <div className={b('content')}>
                         {filterable ? (
-                            <Checkbox
-                                checked={isVisible}
-                                disabled={!isEnabledHiding(column)}
-                                onChange={toggle}
-                                indeterminate={isIndeterminate}
-                                className={b('checkbox', {'unset-coursor': isDragging})}
-                            />
+                            // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+                            <div
+                                onMouseDown={(e) => {
+                                    e.stopPropagation();
+                                }}
+                                onTouchStart={(e) => {
+                                    e.stopPropagation();
+                                }}
+                            >
+                                <Checkbox
+                                    checked={isVisible}
+                                    disabled={!isEnabledHiding(column)}
+                                    onChange={toggle}
+                                    indeterminate={isIndeterminate}
+                                    className={b('checkbox', {'unset-coursor': isDragging})}
+                                />
+                            </div>
                         ) : null}
                         {renderSpacers()}
                         <Text variant="body-1" className={b('name', {parent: isParent})}>
