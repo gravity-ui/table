@@ -18,6 +18,10 @@ $block: '.#{variables.$ns}table-settings-column';
     &__drag-handle {
         cursor: grab;
         line-height: var(--g-text-body-short-line-height);
+        visibility: hidden;
+        margin-inline-start: auto;
+        display: flex;
+        width: 16px;
 
         &_unset-coursor {
             cursor: unset;
@@ -32,9 +36,16 @@ $block: '.#{variables.$ns}table-settings-column';
         gap: var(--g-spacing-2);
     }
 
+    &_sortable #{$block}__content:hover {
+        cursor: grab;
+        #{$block}__drag-handle {
+            visibility: visible;
+        }
+    }
+
     &__vertical-spacer {
         content: '';
-        width: 7px;
+        width: 0;
         height: 100%;
         border-inline-end: 1px solid var(--g-color-line-generic);
     }
