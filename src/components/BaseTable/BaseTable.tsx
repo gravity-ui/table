@@ -1,8 +1,9 @@
 import * as React from 'react';
 
-import type {HeaderGroup, Row, Table} from '@tanstack/react-table';
+import type {Row, Table} from '@tanstack/react-table';
 import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 
+import type {HeaderGroup} from '../../types/base';
 import {getAriaMultiselectable, getAriaRowIndexMap, shouldRenderFooterRow} from '../../utils';
 import {BaseDraggableRow} from '../BaseDraggableRow';
 import type {BaseFooterRowProps} from '../BaseFooterRow';

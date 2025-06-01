@@ -1,8 +1,9 @@
 import type {NoStrictEntityMods} from '@bem-react/classname';
-import type {Cell, Header} from '@tanstack/react-table';
 
-export const getColumnPinningClassModes = <TData>(
-    cell: Cell<TData, unknown> | Header<TData, unknown>,
+import type {Cell, Header} from '../types/base';
+
+export const getColumnPinningClassModes = <TData, TValue = unknown>(
+    cell: Cell<TData, TValue> | Header<TData, TValue>,
 ): NoStrictEntityMods => {
     const isPinned = cell.column.getIsPinned();
     const isPinnedLeft = isPinned === 'left';

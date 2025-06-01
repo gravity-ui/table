@@ -1,6 +1,7 @@
-import type {ColumnDef, Row} from '@tanstack/react-table';
+import type {Row} from '@tanstack/react-table';
 
 import {useTable} from '../../../../hooks';
+import type {ColumnDef} from '../../../../types/base';
 import type {BaseTableProps} from '../../BaseTable';
 import {BaseTable} from '../../BaseTable';
 import {data} from '../constants/data';

@@ -1,5 +1,5 @@
+import type {ColumnDef} from '../../../../types/base';
 import type {Item} from '../../../BaseTable/__stories__/types';
-import type {ColumnDef} from '../../../Table';
 import {TreeExpandableCell} from '../../../TreeExpandableCell';
 
 export interface Group {

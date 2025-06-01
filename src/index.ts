@@ -5,6 +5,7 @@ export {
     Table,
     TableSettings,
     SortableListContext,
+    TreeExpandableCell,
 } from './components';
 export type {
     BaseTableProps,
@@ -37,7 +38,6 @@ export {
 export type {
     UseDraggableRowDepthOptions,
     UseRowVirtualizerOptions,
-    UseTableOptions,
     UseWindowRowVirtualizerOptions,
     UseTableSettingsOptions,
 } from './hooks';
@@ -52,3 +52,7 @@ export type {
     RenderRowActionsProps,
     TableActionsSettings,
 } from './types/RowActions';
+
+export type {TableSize} from './components/Table/types';
+
+export type * from './types/base';

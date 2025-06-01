@@ -1,9 +1,10 @@
 import * as React from 'react';
 
-import type {ColumnDef, ExpandedState} from '@tanstack/react-table';
+import type {ExpandedState} from '@tanstack/react-table';
 
 import {dragHandleColumn} from '../../../../constants';
 import {useTable} from '../../../../hooks';
+import type {ColumnDef} from '../../../../types/base';
 import {ReorderingProvider} from '../../../ReorderingProvider';
 import {BaseTable} from '../../BaseTable';
 import type {TreeItem} from '../constants/tree';

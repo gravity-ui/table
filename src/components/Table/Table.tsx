@@ -1,10 +1,11 @@
 import * as React from 'react';
 
+import type {Cell} from '../../types/base';
 import {BaseTable} from '../BaseTable';
 import type {BaseTableProps} from '../BaseTable';
 
 import {b} from './Table.classname';
-import type {Cell, TableSize} from './types';
+import type {TableSize} from './types';
 import {getCellClassMods} from './utils/getCellClassMods';
 
 import './Table.scss';

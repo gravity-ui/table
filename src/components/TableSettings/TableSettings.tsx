@@ -5,8 +5,9 @@ import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import {Gear} from '@gravity-ui/icons';
 import {Button, Divider, Icon, Popup} from '@gravity-ui/uikit';
 import type {PopupPlacement} from '@gravity-ui/uikit';
-import type {Column, Header, Table, VisibilityState} from '@tanstack/react-table';
+import type {Table, VisibilityState} from '@tanstack/react-table';
 
+import type {Column, Header} from '../../types/base';
 import {TableSettingsColumn} from '../TableSettingsColumn/TableSettingsColumn';
 
 import {b} from './TableSettings.classname';
