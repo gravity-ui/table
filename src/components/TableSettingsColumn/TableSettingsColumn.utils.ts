@@ -1,4 +1,4 @@
-import type {VisibilityState, Header} from '@tanstack/react-table';
+import type {Header, VisibilityState} from '@tanstack/react-table';
 
 import type {Column} from '../../types/base';
 
