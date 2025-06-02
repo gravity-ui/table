@@ -8,6 +8,7 @@ import type {PopupPlacement} from '@gravity-ui/uikit';
 import type {Table, VisibilityState} from '@tanstack/react-table';
 import {createColumn} from '@tanstack/react-table';
 import debounce from 'lodash/debounce';
+
 import type {Column, Header} from '../../types/base';
 import {TableSettingsColumn} from '../TableSettingsColumn/TableSettingsColumn';
 import {getColumnTitle} from '../TableSettingsColumn/TableSettingsColumn.utils';

@@ -2,9 +2,9 @@ import * as React from 'react';
 
 import type {DragEndEvent, DragStartEvent, UniqueIdentifier} from '@dnd-kit/core';
 import {arrayMove} from '@dnd-kit/sortable';
+import type {ColumnDefTemplate} from '@tanstack/react-table';
 
 import type {Column} from '../../types/base';
-import type {ColumnDefTemplate} from '@tanstack/react-table';
 
 const filterColumns = <TData extends unknown>(
     column: Column<TData> | undefined,
