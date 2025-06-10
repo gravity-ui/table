@@ -60,7 +60,7 @@ export const TableSettings = <TData extends unknown>({
     const [open, setOpen] = React.useState<boolean>(false);
     const [search, setSearch] = React.useState('');
     const [expandNestedColumns, setExpandNestedColumns] = React.useState(false);
-    const allColumns = table.getAllColumns();
+    const allColumns = React.useMemo(table.getAllColumns, [table]);
     const filteredColumns = React.useMemo(() => allColumns.filter(isDisplayedColumn), [allColumns]);
 
     const headers = table.getFlatHeaders();
@@ -223,8 +223,10 @@ export const TableSettings = <TData extends unknown>({
         setSearch(value);
     }, 200);
 
+    const toggleNestedColumns = () => setExpandNestedColumns(!expandNestedColumns);
+
     const emptyResult =
-        search.length > 0 && !orderedItems.filter((item) => !hiddenNodes.has(item.id)).length;
+        search.length > 0 && !orderedItems.some((item) => !hiddenNodes.has(item.id));
 
     return (
         <React.Fragment>
@@ -244,10 +246,7 @@ export const TableSettings = <TData extends unknown>({
                             className={b('search-input')}
                             endContent={
                                 partiallyHiddenNodes.size > 0 && (
-                                    <Button
-                                        view="flat-secondary"
-                                        onClick={() => setExpandNestedColumns(!expandNestedColumns)}
-                                    >
+                                    <Button view="flat-secondary" onClick={toggleNestedColumns}>
                                         {expandNestedColumns ? (
                                             <Flex alignItems="center">
                                                 <Icon data={ChevronsDown} />
