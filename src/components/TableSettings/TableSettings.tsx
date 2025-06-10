@@ -130,6 +130,8 @@ export const TableSettings = <TData extends unknown>({
     const {orderedItems, activeDepth, handleDragEnd, handleDragStart, handleDragCancel} =
         useOrderedItems(filteredColumns, orderState, setOrderState);
 
+    const orderedItemIds = React.useMemo(() => orderedItems.map(({id}) => id), [orderedItems]);
+
     const renderColumns = (renderedColumns: Column<TData>[], innerColumn?: Column<TData>) => {
         const columns = [...renderedColumns];
         const isSortableColumn = sortable && !search.length;
@@ -276,7 +278,7 @@ export const TableSettings = <TData extends unknown>({
                             sensors={sensors}
                         >
                             <SortableContext
-                                items={orderedItems.map(({id}) => id)}
+                                items={orderedItemIds}
                                 strategy={verticalListSortingStrategy}
                             >
                                 {renderColumns(orderedItems)}
