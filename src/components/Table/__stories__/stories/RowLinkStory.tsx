@@ -10,7 +10,7 @@ import {interactiveElementLinkRowClassName} from '../../../RowLink/RowLink';
 import type {ColumnDef, TableProps} from '../../index';
 import {Table} from '../../index';
 
-const patchedColumns: ColumnDef<Item>[] = [
+const columns: ColumnDef<Item>[] = [
     {accessorKey: 'name', header: 'Name', size: 100},
     {accessorKey: 'age', header: 'Age', size: 100},
     {
@@ -18,10 +18,7 @@ const patchedColumns: ColumnDef<Item>[] = [
         accessorFn: (item) => (
             <React.Fragment>
                 {`${item.name}: ${item.age}`}
-                <ExperimentalRowLink
-                    href={`https://github.com/gravity-ui/table#${item.name}`}
-                    target="_blank"
-                />
+                <ExperimentalRowLink href={`#${item.name}`} target="_blank" />
             </React.Fragment>
         ),
         header: () => <b>Name: Age</b>,
@@ -47,7 +44,7 @@ const patchedColumns: ColumnDef<Item>[] = [
 
 export const RowLinkStory = (props: Omit<TableProps<(typeof data)[0]>, 'table'>) => {
     const table = useTable({
-        columns: patchedColumns,
+        columns: columns,
         data,
     });
 
