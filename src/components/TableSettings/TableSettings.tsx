@@ -9,16 +9,15 @@ import type {Table, VisibilityState} from '@tanstack/react-table';
 import {createColumn} from '@tanstack/react-table';
 import debounce from 'lodash/debounce';
 
+import {useFilterTableSettings} from '../../hooks';
 import type {Column, Header} from '../../types/base';
 import {TableSettingsColumn} from '../TableSettingsColumn/TableSettingsColumn';
-import {getColumnTitle} from '../TableSettingsColumn/TableSettingsColumn.utils';
 
 import {b} from './TableSettings.classname';
 import {
     getInitialOrderItems,
     getNestedColumnsCount,
     isDisplayedColumn,
-    isFilteredColumn,
     orderStateToColumnOrder,
     useOrderedItems,
 } from './TableSettings.utils';
@@ -72,51 +71,12 @@ export const TableSettings = <TData extends unknown>({
         }, {});
     }, [headers]);
 
-    const {hiddenNodes, partiallyHiddenNodes} = React.useMemo(() => {
-        const hiddenNodes = new Set();
-        const partiallyHiddenNodes = new Set();
-        const columnMatches = new Set();
-
-        const checkColumnVisibility = (column: Column<TData>[], parentColumn?: Column<TData>) => {
-            const visibleColumns = column.filter(function findColumn(
-                column: Column<TData>,
-            ): boolean {
-                // column matches
-                if (isFilteredColumn(getColumnTitle(column, headersById[column.id]), search)) {
-                    columnMatches.add(column.id);
-                    return true;
-                }
-
-                // nested column matches
-                if (column.columns.findIndex((childColumn) => findColumn(childColumn)) !== -1) {
-                    return true;
-                }
-
-                if (parentColumn) {
-                    if (columnMatches.has(parentColumn.id)) {
-                        partiallyHiddenNodes.add(parentColumn.id);
-                    }
-                    // show all columns in expanded view mode
-                    if (expandNestedColumns && !hiddenNodes.has(parentColumn.id)) {
-                        return true;
-                    }
-                }
-                // remove column form list
-                hiddenNodes.add(column.id);
-                return false;
-            });
-
-            visibleColumns.forEach((column) => {
-                checkColumnVisibility(column.columns, column);
-            });
-        };
-
-        if (search.length > 0) {
-            checkColumnVisibility(filteredColumns);
-        }
-
-        return {hiddenNodes, partiallyHiddenNodes};
-    }, [filteredColumns, search, expandNestedColumns, headersById]);
+    const {hiddenNodes, partiallyHiddenNodes} = useFilterTableSettings({
+        filteredColumns,
+        search,
+        expandNestedColumns,
+        headersById,
+    });
 
     const [visibilityState, setVisibilityState] = React.useState(
         () => table.getState().columnVisibility,
