@@ -1,12 +1,10 @@
-import * as React from 'react';
-
 import {Button} from '@gravity-ui/uikit';
 
 import {useTable} from '../../../../hooks';
 import {data} from '../../../BaseTable/__stories__/constants/data';
 import type {Item} from '../../../BaseTable/__stories__/types';
 import {ExperimentalRowLink} from '../../../RowLink';
-import {interactiveElementLinkRowClassName} from '../../../RowLink/RowLink';
+import {b} from '../../../RowLink/RowLink.classname';
 import type {ColumnDef, TableProps} from '../../index';
 import {Table} from '../../index';
 
@@ -16,10 +14,9 @@ const columns: ColumnDef<Item>[] = [
     {
         id: 'name-age',
         accessorFn: (item) => (
-            <React.Fragment>
-                {`${item.name}: ${item.age}`}
-                <ExperimentalRowLink href={`#${item.name}`} target="_blank" />
-            </React.Fragment>
+            <ExperimentalRowLink
+                href={`#${item.name}`}
+            >{`${item.name}: ${item.age}`}</ExperimentalRowLink>
         ),
         header: () => <b>Name: Age</b>,
         cell: (info) => <i>{info.getValue<string>()} </i>,
@@ -31,7 +28,7 @@ const columns: ColumnDef<Item>[] = [
         header: 'Interactive Cell',
         accessorFn: (item) => (
             <Button
-                className={interactiveElementLinkRowClassName}
+                className={b('interactive-element')}
                 onClick={() => alert(`Clicked on ${item.name}`)}
             >
                 {item.name}
