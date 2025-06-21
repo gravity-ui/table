@@ -19,3 +19,4 @@ export * from './Table';
 export * from './TableSettings';
 export * from './TreeExpandableCell';
 export * from './RowActions';
+export * from './RowLink';

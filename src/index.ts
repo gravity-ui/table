@@ -5,6 +5,7 @@ export {
     Table,
     TableSettings,
     SortableListContext,
+    ExperimentalRowLink,
     TreeExpandableCell,
 } from './components';
 export type {

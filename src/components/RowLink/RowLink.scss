@@ -1,0 +1,26 @@
+@use '../variables';
+
+$block: '.#{variables.$ns}row-link';
+
+#{$block} {
+    &::before {
+        position: absolute;
+        inset: 0;
+        content: '';
+        z-index: 2;
+    }
+
+    &__interactive-element {
+        z-index: 3;
+        position: relative;
+        width: fit-content;
+    }
+}
+
+.gt-styled-table__row:has(#{$block}):hover {
+    // new context, transform instead of position relative because of safari
+    // alternative solution: https://mtsknn.fi/blog/relative-tr-in-safari/
+    transform: translateZ(0);
+    background-color: var(--g-color-base-simple-hover-solid);
+    cursor: pointer;
+}
