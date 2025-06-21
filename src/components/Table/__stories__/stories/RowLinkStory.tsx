@@ -1,11 +1,12 @@
 import {Button} from '@gravity-ui/uikit';
+import type {ColumnDef} from '@tanstack/react-table';
 
 import {useTable} from '../../../../hooks';
 import {data} from '../../../BaseTable/__stories__/constants/data';
 import type {Item} from '../../../BaseTable/__stories__/types';
 import {ExperimentalRowLink} from '../../../RowLink';
 import {b} from '../../../RowLink/RowLink.classname';
-import type {ColumnDef, TableProps} from '../../index';
+import type {TableProps} from '../../index';
 import {Table} from '../../index';
 
 const columns: ColumnDef<Item>[] = [
