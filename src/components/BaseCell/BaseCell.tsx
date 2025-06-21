@@ -1,8 +1,8 @@
 import type * as React from 'react';
 
-import type {Cell} from '@tanstack/react-table';
 import {flexRender} from '@tanstack/react-table';
 
+import type {Cell} from '../../types/base';
 import {getCellClassModes, getCellStyles} from '../../utils';
 import {b} from '../BaseTable/BaseTable.classname';
 

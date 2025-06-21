@@ -1,9 +1,9 @@
 import type * as React from 'react';
 
-import type {Cell, Header} from '@tanstack/react-table';
+import type {Cell, Header} from '../types/base';
 
-export const getCellStyles = <TData>(
-    cell?: Cell<TData, unknown> | Header<TData, unknown>,
+export const getCellStyles = <TData, TValue = unknown>(
+    cell?: Cell<TData, TValue> | Header<TData, TValue>,
     style?: React.CSSProperties,
 ): React.CSSProperties | undefined => {
     if (!cell) {

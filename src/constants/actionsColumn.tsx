@@ -1,7 +1,6 @@
-import type {ColumnDef} from '@tanstack/react-table';
-
 import {ActionsCell} from '../components';
 import type {TableActionsSettings} from '../types/RowActions';
+import type {ColumnDef} from '../types/base';
 
 export const ACTIONS_COLUMN_ID = '_actions';
 const ACTIONS_COLUMN_SIZE = 44;

@@ -1,8 +1,9 @@
 import * as React from 'react';
 
-import type {ColumnDef, ColumnPinningState} from '@tanstack/react-table';
+import type {ColumnPinningState} from '@tanstack/react-table';
 
 import {useTable} from '../../../../hooks';
+import type {ColumnDef} from '../../../../types/base';
 import {BaseTable} from '../../BaseTable';
 import {ColumnPinningHeaderCell} from '../cells/ColumnPinningHeaderCell';
 import {data} from '../constants/data';

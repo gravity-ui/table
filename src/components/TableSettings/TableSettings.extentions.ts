@@ -1,4 +1,6 @@
-import type {Column, RowData} from '@tanstack/react-table';
+import type {RowData} from '@tanstack/react-table';
+
+import type {Column} from '../../types/base';
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {

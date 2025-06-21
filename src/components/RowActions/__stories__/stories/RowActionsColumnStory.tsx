@@ -1,9 +1,10 @@
 import * as React from 'react';
 
-import type {ColumnDef, RowSelectionState} from '@tanstack/react-table';
+import type {RowSelectionState} from '@tanstack/react-table';
 
 import {ACTIONS_COLUMN_ID, getActionsColumn, selectionColumn} from '../../../../constants';
 import {useTable} from '../../../../hooks';
+import type {ColumnDef} from '../../../../types/base';
 import type {Item} from '../../../BaseTable/__stories__/types';
 import {generateData} from '../../../BaseTable/__stories__/utils';
 import {Table} from '../../../Table/Table';

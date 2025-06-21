@@ -1,9 +1,10 @@
 import * as React from 'react';
 
-import type {ColumnDef, ColumnPinningState, RowSelectionState} from '@tanstack/react-table';
+import type {ColumnPinningState, RowSelectionState} from '@tanstack/react-table';
 
 import {SETTINGS_COLUMN_ID, getSettingsColumn, selectionColumn} from '../../../../constants';
 import {useTable} from '../../../../hooks';
+import type {ColumnDef} from '../../../../types/base';
 import {Table} from '../../../Table/Table';
 import type {TableSettingsOptions} from '../../TableSettings';
 

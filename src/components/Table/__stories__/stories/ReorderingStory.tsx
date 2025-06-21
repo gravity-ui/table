@@ -1,9 +1,8 @@
 import * as React from 'react';
 
-import type {ColumnDef} from '@tanstack/react-table';
-
 import {dragHandleColumn} from '../../../../constants';
 import {useTable} from '../../../../hooks';
+import type {ColumnDef} from '../../../../types/base';
 import {columns as originalColumns} from '../../../BaseTable/__stories__/constants/columns';
 import {data as originalData} from '../../../BaseTable/__stories__/constants/data';
 import type {Item} from '../../../BaseTable/__stories__/types';

@@ -17,5 +17,6 @@ export * from './SortIndicator';
 export * from './BaseTable';
 export * from './Table';
 export * from './TableSettings';
+export * from './TreeExpandableCell';
 export * from './RowActions';
 export * from './RowLink';

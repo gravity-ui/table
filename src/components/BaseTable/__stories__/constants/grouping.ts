@@ -1,5 +1,4 @@
-import type {ColumnDef} from '@tanstack/react-table';
-
+import type {ColumnDef} from '../../../../types/base';
 import type {Item} from '../types';
 
 export interface Group {

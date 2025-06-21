@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.1](https://github.com/gravity-ui/table/compare/v1.10.0...v1.10.1) (2025-04-25)
+
+
+### Bug Fixes
+
+* speed-up getInitialOrderItems ([4f0660f](https://github.com/gravity-ui/table/commit/4f0660f2c8c6c4e116a6c6555246a1ef11ab5b5a))
+
 ## [1.10.0](https://github.com/gravity-ui/table/compare/v1.9.0...v1.10.0) (2025-04-08)
 
 

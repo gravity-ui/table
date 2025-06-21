@@ -1,6 +1,5 @@
-import type {ColumnDef} from '@tanstack/react-table';
-
 import {useTable} from '../../../../hooks';
+import type {ColumnDef} from '../../../../types/base';
 import {BaseTable} from '../../BaseTable';
 import {columns as nestedColumns} from '../constants/columns';
 import {data} from '../constants/data';
