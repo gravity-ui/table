@@ -34,6 +34,10 @@ $block: '.#{variables.$ns}table-settings-column';
         display: flex;
         align-items: center;
         gap: var(--g-spacing-2);
+
+        &_disabled {
+            color: var(--g-color-text-hint);
+        }
     }
 
     &_sortable #{$block}__content:hover {
@@ -64,6 +68,12 @@ $block: '.#{variables.$ns}table-settings-column';
         &_unset-coursor {
             cursor: unset;
         }
+    }
+
+    &__checkbox-spacer {
+        width: 14px;
+        height: 14px;
+        flex-shrink: 0;
     }
 }
 

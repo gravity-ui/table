@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import type {DragEndEvent, DragStartEvent, UniqueIdentifier} from '@dnd-kit/core';
 import {arrayMove} from '@dnd-kit/sortable';
+import type {ColumnDefTemplate} from '@tanstack/react-table';
 
 import type {Column} from '../../types/base';
 
@@ -135,3 +136,20 @@ export const getInitialOrderItems = <TData extends unknown>(
 
 export const isDisplayedColumn = <TData extends unknown>(column: Column<TData, unknown>) =>
     !column.columnDef.meta?.hideInSettings;
+
+export const isFilteredColumn = <TProps extends object>(
+    title: ColumnDefTemplate<TProps>,
+    search: string,
+) => (typeof title === 'string' ? title.toLowerCase().includes(search.toLowerCase()) : false);
+
+export const getNestedColumnsCount = <TData extends unknown>(column: Column<TData>): number => {
+    return column.columns
+        ? column.columns.reduce((count, current) => {
+              count++;
+              if (current.columns.length > 0) {
+                  return count + getNestedColumnsCount(current);
+              }
+              return count;
+          }, 0)
+        : 0;
+};
