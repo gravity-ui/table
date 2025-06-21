@@ -2,7 +2,10 @@ import type {Meta, StoryObj} from '@storybook/react';
 
 import type {TableSettingsOptions} from '../TableSettings';
 
-import {TableSettingsColumnStory} from './stories/TableSettingsColumnStory';
+import {
+    TableSettingsColumnStory,
+    TableSettingsColumnWithGroupsStory,
+} from './stories/TableSettingsColumnStory';
 import {TableSettingsStory} from './stories/TableSettingsStory';
 
 const meta: Meta<TableSettingsOptions> = {
@@ -25,4 +28,8 @@ export const TableSettings: StoryObj<typeof TableSettingsStory> = {
 
 export const TableSettingsColumn: StoryObj<typeof TableSettingsColumnStory> = {
     render: TableSettingsColumnStory,
+};
+
+export const TableSettingsColumnWithGroups: StoryObj<typeof TableSettingsColumnWithGroupsStory> = {
+    render: TableSettingsColumnWithGroupsStory,
 };
