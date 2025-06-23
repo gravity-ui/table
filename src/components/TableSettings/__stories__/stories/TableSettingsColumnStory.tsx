@@ -54,6 +54,39 @@ const data: Item[] = [
 
 const tableColumns: ColumnDef<Item>[] = [
     {
+        id: 'contact_group_name',
+        accessorKey: 'contactGroupName',
+        header: 'Name',
+        minSize: 250,
+    },
+    {
+        id: 'contact_group_type',
+        accessorKey: 'contactGroupType',
+        header: 'Type',
+        minSize: 230,
+    },
+    {
+        id: 'contacts_group_name',
+        accessorKey: 'contactName',
+        header: 'Name',
+        minSize: 200,
+    },
+    {
+        id: 'contacts_group_phone',
+        accessorKey: 'contactPhone',
+        header: 'Phone',
+        minSize: 230,
+    },
+    {
+        id: 'contacts_group_priority',
+        accessorKey: 'contactPriority',
+        header: 'Priority',
+        minSize: 200,
+    },
+];
+
+const tableColumnsWithGroups: ColumnDef<Item>[] = [
+    {
         id: 'contact_group_group',
         header: 'Contact Group',
         columns: [
@@ -99,6 +132,42 @@ const tableColumns: ColumnDef<Item>[] = [
 
 export const TableSettingsColumnStory = ({sortable, filterable}: TableSettingsOptions) => {
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+
+    const columns = React.useMemo(
+        () => [
+            selectionColumn as ColumnDef<Item>,
+            ...tableColumns,
+            getSettingsColumn<Item>(SETTINGS_COLUMN_ID, {sortable, filterable}),
+        ],
+        [sortable, filterable],
+    );
+
+    const table = useTable({
+        columns,
+        data,
+        enableColumnPinning: true,
+        state: {rowSelection},
+        enableRowSelection: true,
+        enableMultiRowSelection: true,
+        onRowSelectionChange: setRowSelection,
+    });
+
+    return (
+        <div className={cnTableSettingsColumnStory()}>
+            <Table
+                table={table}
+                cellClassName={cnTableSettingsColumnStory('cell')}
+                headerCellClassName={cnTableSettingsColumnStory('header-cell')}
+            />
+        </div>
+    );
+};
+
+export const TableSettingsColumnWithGroupsStory = ({
+    sortable,
+    filterable,
+}: TableSettingsOptions) => {
+    const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
     const [columnPinning, setColumnPinning] = React.useState<ColumnPinningState>({
         left: ['_select'],
         right: [SETTINGS_COLUMN_ID],
@@ -107,7 +176,7 @@ export const TableSettingsColumnStory = ({sortable, filterable}: TableSettingsOp
     const columns = React.useMemo(
         () => [
             selectionColumn as ColumnDef<Item>,
-            ...tableColumns,
+            ...tableColumnsWithGroups,
             getSettingsColumn<Item>(SETTINGS_COLUMN_ID, {sortable, filterable}),
         ],
         [sortable, filterable],
