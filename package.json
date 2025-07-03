@@ -74,7 +74,8 @@
   "dependencies": {
     "@bem-react/classname": "^1.6.0",
     "@tanstack/react-table": "^8.20.6",
-    "@tanstack/react-virtual": "^3.11.2"
+    "@tanstack/react-virtual": "^3.11.2",
+    "react-use": "^17.6.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.26.0",
