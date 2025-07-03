@@ -5,11 +5,11 @@ import {Grip} from '@gravity-ui/icons';
 import {Checkbox, Divider, Icon, Text} from '@gravity-ui/uikit';
 import type {Updater, VisibilityState} from '@tanstack/react-table';
 
-import type {Column, ColumnDef, Header} from '../../types/base';
+import type {Column, Header} from '../../types/base';
 import type {TableSettingsOptions} from '../TableSettings/TableSettings';
 
 import {b} from './TableSettingsColumn.classname';
-import {getIsVisible, isEnabledHiding} from './TableSettingsColumn.utils';
+import {getColumnTitle, getIsVisible, isEnabledHiding} from './TableSettingsColumn.utils';
 
 import './TableSettingsColumn.scss';
 
@@ -18,6 +18,8 @@ interface Props<TData> extends TableSettingsOptions {
     header: Header<TData, unknown>;
     visibilityState: VisibilityState;
     activeDepth?: number;
+    disabled?: boolean;
+    withOffset?: boolean;
     onVisibilityToggle: (updater: Updater<VisibilityState>) => void;
 }
 
@@ -28,7 +30,9 @@ export const TableSettingsColumn = <TData extends unknown>({
     visibilityState,
     filterable,
     sortable,
+    disabled = false,
     activeDepth,
+    withOffset = false,
     onVisibilityToggle,
 }: React.PropsWithChildren<Props<TData>>) => {
     const innerColumns = column.getLeafColumns();
@@ -43,20 +47,6 @@ export const TableSettingsColumn = <TData extends unknown>({
             innerColumns.some((innerColumn) => !getIsVisible(innerColumn, visibilityState)),
         [isVisible, innerColumns, visibilityState],
     );
-
-    const context = header?.getContext();
-
-    const renderColumn = (columnDef: ColumnDef<TData, unknown>) => {
-        if (columnDef.meta?.titleInSettings) {
-            const titleInSettings = columnDef.meta?.titleInSettings;
-            return typeof titleInSettings === 'function'
-                ? titleInSettings(column)
-                : titleInSettings;
-        }
-
-        const columnHeader = columnDef.header;
-        return typeof columnHeader === 'function' ? columnHeader(context) : columnHeader;
-    };
 
     const isParent = innerColumns.length > 1;
 
@@ -111,8 +101,8 @@ export const TableSettingsColumn = <TData extends unknown>({
                     {...(sortable ? {...listeners} : {})}
                     className={b('layout', {dragging: isDragging})}
                 >
-                    <div className={b('content')}>
-                        {filterable ? (
+                    <div className={b('content', {disabled})}>
+                        {filterable && (
                             // eslint-disable-next-line jsx-a11y/no-static-element-interactions
                             <div
                                 onMouseDown={(e) => {
@@ -130,18 +120,21 @@ export const TableSettingsColumn = <TData extends unknown>({
                                     className={b('checkbox', {'unset-coursor': isDragging})}
                                 />
                             </div>
-                        ) : null}
+                        )}
+                        {!filterable && withOffset && <div className={b('checkbox-spacer')} />}
                         {renderSpacers()}
                         <Text variant="body-1" className={b('name', {parent: isParent})}>
-                            {renderColumn(column.columnDef)}
+                            {getColumnTitle(column, header)}
                         </Text>
                         {sortable ? (
-                            <span className={b('drag-handle', {'unset-coursor': isDragging})}>
+                            <span
+                                className={b('drag-handle', {'unset-coursor': isDragging})}
+                                {...listeners}
+                            >
                                 <Icon data={Grip} size={16} />
                             </span>
                         ) : null}
                     </div>
-
                     <SortableContext
                         id={column.id}
                         items={column.columns?.map(({id}) => id)}
