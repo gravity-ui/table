@@ -9,7 +9,6 @@ import type {Table, VisibilityState} from '@tanstack/react-table';
 import {createColumn} from '@tanstack/react-table';
 import debounce from 'lodash/debounce';
 
-import {useFilterTableSettings} from '../../hooks';
 import type {Column, Header} from '../../types/base';
 import {TableSettingsColumn} from '../TableSettingsColumn/TableSettingsColumn';
 
@@ -21,6 +20,7 @@ import {
     orderStateToColumnOrder,
     useOrderedItems,
 } from './TableSettings.utils';
+import {useFilterTableSettings} from './hooks';
 import i18n from './i18n';
 
 import './TableSettings.scss';

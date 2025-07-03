@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import {isFilteredColumn} from '../components/TableSettings/TableSettings.utils';
-import {getColumnTitle} from '../components/TableSettingsColumn/TableSettingsColumn.utils';
-import type {Column, Header} from '../types/base';
+import type {Column, Header} from '../../../types/base';
+import {getColumnTitle} from '../../TableSettingsColumn/TableSettingsColumn.utils';
+import {isFilteredColumn} from '../TableSettings.utils';
 
 interface UseFilterTableSettingsParams<TData> {
     filteredColumns: Column<TData, unknown>[];
