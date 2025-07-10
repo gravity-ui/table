@@ -34,6 +34,8 @@ export {
     useTable,
     useWindowRowVirtualizer,
     useTableSettings,
+    useColumnsAutoSize as experimentalUseColumnsAutoSize,
+    renderElementForMeasure as experimentalRenderElementForMeasure,
 } from './hooks';
 
 export type {
@@ -41,6 +43,8 @@ export type {
     UseRowVirtualizerOptions,
     UseWindowRowVirtualizerOptions,
     UseTableSettingsOptions,
+    UseColumnsAutoSizeOptions,
+    UseColumnsAutoSizeProps,
 } from './hooks';
 
 export {getVirtualRowRangeExtractor} from './utils';
