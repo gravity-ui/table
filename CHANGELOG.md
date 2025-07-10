@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.11.0](https://github.com/gravity-ui/table/compare/v1.10.1...v1.11.0) (2025-07-10)
+
+
+### Features
+
+* add exports for expanding types and components ([#108](https://github.com/gravity-ui/table/issues/108)) ([b3e9c7e](https://github.com/gravity-ui/table/commit/b3e9c7e6c9bc03c09460bcca9c904e2be7997cb8))
+* add search for table column settings ([#107](https://github.com/gravity-ui/table/issues/107)) ([8a6cef6](https://github.com/gravity-ui/table/commit/8a6cef6408d2c6f76600c3cebb28bdb73fd76025))
+* added experimental row link component ([#106](https://github.com/gravity-ui/table/issues/106)) ([346fc7c](https://github.com/gravity-ui/table/commit/346fc7cbd0569d6c34edcbd2a8e6a1a785bb583c))
+* **TableSettings:** move drag icon to the right ([#113](https://github.com/gravity-ui/table/issues/113)) ([1a91d8d](https://github.com/gravity-ui/table/commit/1a91d8d307c4cc0adfb0a8e98ee72b33f3d48211))
+* **useColumnsAutoSize:** add an experimental hook for calculating the columns widths ([#116](https://github.com/gravity-ui/table/issues/116)) ([404c8a6](https://github.com/gravity-ui/table/commit/404c8a6a900819f479aa9f1908ad65cd35f8b11d))
+
 ## [1.10.1](https://github.com/gravity-ui/table/compare/v1.10.0...v1.10.1) (2025-04-25)
 
 
