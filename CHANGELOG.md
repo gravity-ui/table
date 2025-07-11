@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.1](https://github.com/gravity-ui/table/compare/v1.11.0...v1.11.1) (2025-07-11)
+
+
+### Bug Fixes
+
+* add lodash to package.json ([#117](https://github.com/gravity-ui/table/issues/117)) ([846b8e6](https://github.com/gravity-ui/table/commit/846b8e64e7e7558b016170185aace9d755e31f20))
+
 ## [1.11.0](https://github.com/gravity-ui/table/compare/v1.10.1...v1.11.0) (2025-07-10)
 
 
