@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import cloneDeep from 'lodash/cloneDeep';
+import cloneDeep from 'lodash/cloneDeep.js';
 
 import type {ReorderingProviderProps} from '../../../ReorderingProvider';
 import type {TreeItem} from '../constants/tree';
