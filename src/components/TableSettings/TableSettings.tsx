@@ -7,7 +7,7 @@ import {Button, Divider, Flex, Icon, Popup, Text, TextInput} from '@gravity-ui/u
 import type {PopupPlacement} from '@gravity-ui/uikit';
 import type {Table, VisibilityState} from '@tanstack/react-table';
 import {createColumn} from '@tanstack/react-table';
-import debounce from 'lodash/debounce';
+import debounce from 'lodash/debounce.js';
 
 import type {Column, Header} from '../../types/base';
 import {TableSettingsColumn} from '../TableSettingsColumn/TableSettingsColumn';

@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import type {ColumnDef} from '@tanstack/react-table';
-import debounce from 'lodash/debounce';
+import debounce from 'lodash/debounce.js';
 import {useDeepCompareEffect} from 'react-use';
 
 import type {useTable} from '..';
