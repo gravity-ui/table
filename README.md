@@ -81,8 +81,6 @@ const RowSelectionExample = () => {
 
 ### Sorting
 
-#### Your column MUST have accessorFn for sorting to enable
-
 Learn about the column properties in the react-table [docs](https://tanstack.com/table/v8/docs/guide/sorting)
 
 ```tsx
@@ -98,6 +96,8 @@ const data: Person[] = [
 
 const SortingExample = () => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
+
+  // Your column MUST have accessorFn for sorting to be enabled
 
   const table = useTable({
     columns,

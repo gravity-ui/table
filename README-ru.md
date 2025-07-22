@@ -97,6 +97,8 @@ const data: Person[] = [
 const SortingExample = () => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
+  // Ваша колонка ДОЛЖНА иметь accessorFn для включения сортировки
+
   const table = useTable({
     columns,
     data,
