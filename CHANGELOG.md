@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.2](https://github.com/gravity-ui/table/compare/v1.11.1...v1.11.2) (2025-07-22)
+
+
+### Bug Fixes
+
+* add .js extension to lodash imports ([#120](https://github.com/gravity-ui/table/issues/120)) ([3a54cf1](https://github.com/gravity-ui/table/commit/3a54cf1d5116c858d067d56fd607a6ad922d2238))
+
 ## [1.11.1](https://github.com/gravity-ui/table/compare/v1.11.0...v1.11.1) (2025-07-11)
 
 
