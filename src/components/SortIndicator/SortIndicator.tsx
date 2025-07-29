@@ -1,9 +1,10 @@
-import {Icon} from '@gravity-ui/uikit';
+import {ActionTooltip, Icon} from '@gravity-ui/uikit';
 
 import {getSortIndicatorIcon} from '../../utils';
 import type {BaseSortIndicatorProps} from '../BaseSortIndicator';
 
 import {b} from './SortIndicator.classname';
+import i18n from './i18n';
 
 import './SortIndicator.scss';
 
@@ -14,10 +15,19 @@ export const SortIndicator = <TData, TValue>({
     header,
 }: SortIndicatorProps<TData, TValue>) => {
     const order = header.column.getIsSorted();
+    const nextOrder = header.column.getNextSortingOrder();
+
+    let label = i18n('label-sort-reset');
+
+    if (nextOrder) {
+        label = nextOrder === 'desc' ? i18n('label-sort-desc') : i18n('label-sort-asc');
+    }
 
     return (
-        <span className={b({order}, className)}>
-            <Icon data={getSortIndicatorIcon(order)} size={16} />
-        </span>
+        <ActionTooltip title={label}>
+            <span aria-label={label} className={b({order}, className)}>
+                <Icon data={getSortIndicatorIcon(order)} size={16} />
+            </span>
+        </ActionTooltip>
     );
 };
