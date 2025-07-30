@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.0](https://github.com/gravity-ui/table/compare/v1.11.2...v1.12.0) (2025-07-29)
+
+
+### Features
+
+* **SortIndicator:** add tooltip ([#123](https://github.com/gravity-ui/table/issues/123)) ([62170f9](https://github.com/gravity-ui/table/commit/62170f968d6f564e9f42218ddee4b07106ee8190))
+
 ## [1.11.2](https://github.com/gravity-ui/table/compare/v1.11.1...v1.11.2) (2025-07-22)
 
 
