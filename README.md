@@ -79,7 +79,7 @@ const RowSelectionExample = () => {
 };
 ```
 
-To use grouping with selection, use `useRowSelectionWithSubRows` hook
+To use grouping with selection, use `useRowSelectionWithSubRows` hook. Without it parent row checkbox state will be wrong
 
 ### Sorting
 
@@ -188,7 +188,7 @@ const GroupingExample = () => {
 };
 ```
 
-To use grouping with selection, use `useRowSelectionWithSubRows` hook
+To use grouping with selection, use `useRowSelectionWithSubRows` hook. Without it parent row checkbox state will be wrong
 
 To enable nesting styles, pass `withNestingStyles = true` in the column configuration.
 
