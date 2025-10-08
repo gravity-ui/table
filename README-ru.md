@@ -79,6 +79,8 @@ const RowSelectionExample = () => {
 };
 ```
 
+Для использования выбора строки вместе с группировкой не забудьте вызвать хук `useRowSelectionWithSubRows`
+
 ### Сортировка
 
 Подробности о свойствах столбцов можно найти в [руководстве по сортировке](https://tanstack.com/table/v8/docs/guide/sorting) документации библиотеки React Table.
@@ -185,6 +187,8 @@ const GroupingExample = () => {
   return <Table table={table} getGroupTitle={getGroupTitle} />;
 };
 ```
+
+Для использования выбора строки вместе с группировкой не забудьте вызвать хук `useRowSelectionWithSubRows`
 
 Для включения стилей вложенности передайте `withNestingStyles = true` в конфигурацию столбца.
 

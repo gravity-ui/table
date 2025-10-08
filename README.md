@@ -79,6 +79,8 @@ const RowSelectionExample = () => {
 };
 ```
 
+To use grouping with selection, use `useRowSelectionWithSubRows` hook
+
 ### Sorting
 
 Learn about the column properties in the react-table [docs](https://tanstack.com/table/v8/docs/guide/sorting)
@@ -185,6 +187,8 @@ const GroupingExample = () => {
   return <Table table={table} getGroupTitle={getGroupTitle} />;
 };
 ```
+
+To use grouping with selection, use `useRowSelectionWithSubRows` hook
 
 To enable nesting styles, pass `withNestingStyles = true` in the column configuration.
 
