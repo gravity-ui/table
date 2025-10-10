@@ -2,7 +2,7 @@ import type {Meta, StoryObj} from '@storybook/react';
 
 import {Table} from '../index';
 
-import {GroupingWithSelectionStory} from './stories//GroupingWithSelectionStory';
+import {GroupingWithSelectionStory} from './stories/GroupingWithSelectionStory';
 import {DefaultStory} from './stories/DefaultStory';
 import {GroupingStory} from './stories/GroupingStory';
 import {ReorderingStory} from './stories/ReorderingStory';
