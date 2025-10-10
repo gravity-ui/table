@@ -7,6 +7,7 @@ export {
     SortableListContext,
     ExperimentalRowLink,
     TreeExpandableCell,
+    RangedSelectionCheckbox,
 } from './components';
 export type {
     BaseTableProps,
@@ -16,6 +17,7 @@ export type {
     TableSettingsOptions,
     TableSettingsProps,
     BaseGroupHeaderProps,
+    RangedSelectionCheckboxProps,
 } from './components';
 
 export {
@@ -36,6 +38,7 @@ export {
     useTableSettings,
     useColumnsAutoSize as experimentalUseColumnsAutoSize,
     renderElementForMeasure as experimentalRenderElementForMeasure,
+    useToggleRangeSelectionHandler,
 } from './hooks';
 
 export type {

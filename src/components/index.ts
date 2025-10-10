@@ -18,5 +18,6 @@ export * from './BaseTable';
 export * from './Table';
 export * from './TableSettings';
 export * from './TreeExpandableCell';
+export * from './RangedSelectionCheckbox';
 export * from './RowActions';
 export * from './RowLink';

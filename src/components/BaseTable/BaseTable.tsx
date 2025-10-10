@@ -12,6 +12,7 @@ import type {BaseHeaderRowProps} from '../BaseHeaderRow';
 import {BaseHeaderRow} from '../BaseHeaderRow';
 import type {BaseRowProps} from '../BaseRow';
 import {BaseRow} from '../BaseRow';
+import {LastSelectedRowContextProvider} from '../LastSelectedRowContext';
 import {SortableListContext} from '../SortableListContext';
 
 import {b} from './BaseTable.classname';
@@ -263,78 +264,82 @@ export const BaseTable = React.forwardRef(
         };
 
         return (
-            <table
-                ref={ref}
-                className={b({'with-row-virtualization': Boolean(rowVirtualizer)}, className)}
-                data-dragging-row-index={draggingRowIndex > -1 ? draggingRowIndex : undefined}
-                aria-colcount={colCount > 0 ? colCount : undefined}
-                aria-rowcount={rowCount > 0 ? rowCount : undefined}
-                aria-multiselectable={getAriaMultiselectable(table)}
-                {...attributes}
-            >
-                {withHeader && (
-                    <thead
-                        className={b('header', {sticky: stickyHeader}, headerClassName)}
-                        {...headerAttributes}
-                    >
-                        {headerGroups.map((headerGroup, index) => (
-                            <BaseHeaderRow
-                                key={headerGroup.id}
-                                cellClassName={headerCellClassName}
-                                className={headerRowClassName}
-                                headerGroup={headerGroup}
-                                parentHeaderGroup={headerGroups[index - 1]}
-                                renderHeaderCellContent={renderHeaderCellContent}
-                                renderResizeHandle={renderResizeHandle}
-                                renderSortIndicator={renderSortIndicator}
-                                resizeHandleClassName={resizeHandleClassName}
-                                sortIndicatorClassName={sortIndicatorClassName}
-                                attributes={headerRowAttributes}
-                                cellAttributes={headerCellAttributes}
-                                aria-rowindex={index + 1}
-                            />
-                        ))}
-                    </thead>
-                )}
-                <tbody
-                    ref={bodyRef}
-                    className={b('body', bodyClassName)}
-                    {...bodyAttributes}
-                    style={{
-                        height: bodyRows.length ? rowVirtualizer?.getTotalSize() : undefined,
-                        ...bodyAttributes?.style,
-                    }}
+            <LastSelectedRowContextProvider>
+                <table
+                    ref={ref}
+                    className={b({'with-row-virtualization': Boolean(rowVirtualizer)}, className)}
+                    data-dragging-row-index={draggingRowIndex > -1 ? draggingRowIndex : undefined}
+                    aria-colcount={colCount > 0 ? colCount : undefined}
+                    aria-rowcount={rowCount > 0 ? rowCount : undefined}
+                    aria-multiselectable={getAriaMultiselectable(table)}
+                    {...attributes}
                 >
-                    {bodyRows.length ? renderBodyRows() : renderEmptyContent()}
-                </tbody>
-                {withFooter && (
-                    <tfoot
-                        className={b('footer', {sticky: stickyFooter}, footerClassName)}
-                        {...footerAttributes}
+                    {withHeader && (
+                        <thead
+                            className={b('header', {sticky: stickyHeader}, headerClassName)}
+                            {...headerAttributes}
+                        >
+                            {headerGroups.map((headerGroup, index) => (
+                                <BaseHeaderRow
+                                    key={headerGroup.id}
+                                    cellClassName={headerCellClassName}
+                                    className={headerRowClassName}
+                                    headerGroup={headerGroup}
+                                    parentHeaderGroup={headerGroups[index - 1]}
+                                    renderHeaderCellContent={renderHeaderCellContent}
+                                    renderResizeHandle={renderResizeHandle}
+                                    renderSortIndicator={renderSortIndicator}
+                                    resizeHandleClassName={resizeHandleClassName}
+                                    sortIndicatorClassName={sortIndicatorClassName}
+                                    attributes={headerRowAttributes}
+                                    cellAttributes={headerCellAttributes}
+                                    aria-rowindex={index + 1}
+                                />
+                            ))}
+                        </thead>
+                    )}
+                    <tbody
+                        ref={bodyRef}
+                        className={b('body', bodyClassName)}
+                        {...bodyAttributes}
+                        style={{
+                            height: bodyRows.length ? rowVirtualizer?.getTotalSize() : undefined,
+                            ...bodyAttributes?.style,
+                        }}
                     >
-                        {renderCustomFooterContent
-                            ? renderCustomFooterContent({
-                                  cellClassName: b('footer-cell'),
-                                  footerGroups,
-                                  rowClassName: b('footer-row'),
-                                  rowIndex: headerRowCount + bodyRowCount + 1,
-                              })
-                            : footerGroups.map((footerGroup, index) =>
-                                  shouldRenderFooterRow(footerGroup) ? (
-                                      <BaseFooterRow
-                                          key={footerGroup.id}
-                                          footerGroup={footerGroup}
-                                          attributes={footerRowAttributes}
-                                          cellAttributes={footerCellAttributes}
-                                          cellClassName={footerCellClassName}
-                                          className={footerRowClassName}
-                                          aria-rowindex={headerRowCount + bodyRowCount + index + 1}
-                                      />
-                                  ) : null,
-                              )}
-                    </tfoot>
-                )}
-            </table>
+                        {bodyRows.length ? renderBodyRows() : renderEmptyContent()}
+                    </tbody>
+                    {withFooter && (
+                        <tfoot
+                            className={b('footer', {sticky: stickyFooter}, footerClassName)}
+                            {...footerAttributes}
+                        >
+                            {renderCustomFooterContent
+                                ? renderCustomFooterContent({
+                                      cellClassName: b('footer-cell'),
+                                      footerGroups,
+                                      rowClassName: b('footer-row'),
+                                      rowIndex: headerRowCount + bodyRowCount + 1,
+                                  })
+                                : footerGroups.map((footerGroup, index) =>
+                                      shouldRenderFooterRow(footerGroup) ? (
+                                          <BaseFooterRow
+                                              key={footerGroup.id}
+                                              footerGroup={footerGroup}
+                                              attributes={footerRowAttributes}
+                                              cellAttributes={footerCellAttributes}
+                                              cellClassName={footerCellClassName}
+                                              className={footerRowClassName}
+                                              aria-rowindex={
+                                                  headerRowCount + bodyRowCount + index + 1
+                                              }
+                                          />
+                                      ) : null,
+                                  )}
+                        </tfoot>
+                    )}
+                </table>
+            </LastSelectedRowContextProvider>
         );
     },
 ) as (<TData, TScrollElement extends Element | Window = HTMLDivElement>(
