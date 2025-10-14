@@ -81,6 +81,137 @@ const RowSelectionExample = () => {
 
 Для использования выбора строки вместе с группировкой не забудьте вызвать хук `useRowSelectionWithSubRows`. Без него стейт строки-родителя будет вычисляться неправильно. https://github.com/TanStack/table/issues/4878
 
+### Кастомная колонка с выбором диапазона строк
+
+Хук `useToggleRangeSelectionHandler` возвращает обработчик, который слушает события Shift+click и выполняет выделение диапазона строк. Для доступа к внутренним состояниям таблицы и строки ему необходимо передать экземпляр `CellContext`.
+
+```tsx
+import React, {type ChangeEvent, useCallback, useState} from 'react';
+
+import {Table, useToggleRangeSelectionHandler, useTable} from '@gravity-ui/table';
+import type {CellContext, ColumnDef, RowSelectionState} from '@gravity-ui/table/tanstack';
+import {Checkbox, type CheckboxProps} from '@gravity-ui/uikit';
+
+type CustomRangedSelectionCheckboxProps = Omit<CheckboxProps, 'onChange'> & {
+  cellContext: CellContext<unknown, unknown>;
+};
+
+const CustomRangedSelectionCheckbox = ({
+  className,
+  cellContext,
+  ...restProps
+}: CustomRangedSelectionCheckboxProps) => {
+  const rowToggleRangedSelectionHandler = useToggleRangeSelectionHandler(cellContext);
+
+  const handleChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>): void => {
+      rowToggleRangedSelectionHandler(event);
+    },
+    [rowToggleRangedSelectionHandler],
+  );
+
+  return <Checkbox {...restProps} onChange={handleChange} />;
+};
+
+const customSelectionColumn: ColumnDef<unknown> = {
+  id: '_select',
+  header: ({table}) => (
+    <Checkbox
+      size="l"
+      checked={table.getIsAllRowsSelected()}
+      indeterminate={table.getIsSomeRowsSelected()}
+      onChange={table.getToggleAllRowsSelectedHandler()}
+    />
+  ),
+  cell: (cellContext) => (
+    <CustomRangedSelectionCheckbox
+      size="l"
+      checked={cellContext.row.getIsSelected()}
+      disabled={!cellContext.row.getCanSelect()}
+      indeterminate={cellContext.row.getIsSomeSelected()}
+      cellContext={cellContext}
+    />
+  ),
+  size: 41,
+  maxSize: 41,
+  minSize: 41,
+  enableResizing: false,
+  enableSorting: false,
+};
+
+const columns: ColumnDef<Person>[] = [
+  customSelectionColumn as ColumnDef<Person>,
+  // ...other columns
+];
+
+const data: Person[] = [
+  /* ... */
+];
+
+const RowRangedSelectionExample = () => {
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+
+  const table = useTable({
+    columns,
+    data,
+    enableRowSelection: true,
+    enableMultiRowSelection: true,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      rowSelection,
+    },
+  });
+
+  return <Table table={table} />;
+};
+```
+
+Также существует компонент `RangedSelectionCheckbox`, который внутренне использует этот хук и принимает экземпляр `CellContext` в качестве пропса. Этот компонент удобен для добавления функциональности выделения диапазона в кастомную колонку выбора строк.
+
+```tsx
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+import {RangedSelectionCheckbox, SelectionCheckbox} from '@gravity-ui/table';
+
+export const selectionColumn: ColumnDef<unknown> = {
+  id: '_select',
+  header: ({table}) => (
+    <SelectionCheckbox
+      checked={table.getIsAllRowsSelected()}
+      disabled={!table.options.enableRowSelection}
+      indeterminate={table.getIsSomeRowsSelected()}
+      onChange={table.getToggleAllRowsSelectedHandler()}
+    />
+  ),
+  cell: (cellContext) => (
+    <RangedSelectionCheckbox
+      checked={cellContext.row.getIsSelected()}
+      disabled={!cellContext.row.getCanSelect()}
+      indeterminate={cellContext.row.getIsSomeSelected()}
+      cellContext={cellContext}
+    />
+  ),
+  meta: {
+    hideInSettings: true,
+  },
+  size: 32,
+  minSize: 32,
+};
+```
+
+По умолчанию столбец выбора строк, созданный с помощью `selectionColumn`, уже включает в себя функциональность выделения диапазона.
+
+```tsx
+import {selectionColumn} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+const columns: ColumnDef<Person>[] = [
+  selectionColumn as ColumnDef<Person>,
+  // ...other columns
+];
+```
+
+**Обратите внимание**: если в таблице есть вложенные строки, выбор диапазона работать не будет. На данный момент это считается неопределённым поведением.
+
 ### Сортировка
 
 Подробности о свойствах столбцов можно найти в [руководстве по сортировке](https://tanstack.com/table/v8/docs/guide/sorting) документации библиотеки React Table.

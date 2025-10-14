@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.0](https://github.com/gravity-ui/table/compare/v1.12.0...v1.13.0) (2025-10-13)
+
+
+### Features
+
+* **BaseTable:** add ranged selection functionality to selection column ([#126](https://github.com/gravity-ui/table/issues/126)) ([3678a33](https://github.com/gravity-ui/table/commit/3678a33d3b60b6edb351f8d0894541d01637a9da))
+
 ## [1.12.0](https://github.com/gravity-ui/table/compare/v1.11.2...v1.12.0) (2025-07-29)
 
 

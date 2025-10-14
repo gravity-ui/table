@@ -1,4 +1,4 @@
-import {SelectionCheckbox} from '../components';
+import {RangedSelectionCheckbox, SelectionCheckbox} from '../components';
 import type {ColumnDef} from '../types/base';
 
 export const selectionColumn: ColumnDef<unknown> = {
@@ -11,12 +11,12 @@ export const selectionColumn: ColumnDef<unknown> = {
             onChange={table.getToggleAllRowsSelectedHandler()}
         />
     ),
-    cell: ({row}) => (
-        <SelectionCheckbox
-            checked={row.getIsSelected()}
-            disabled={!row.getCanSelect()}
-            indeterminate={row.getIsSomeSelected()}
-            onChange={row.getToggleSelectedHandler()}
+    cell: (cellContext) => (
+        <RangedSelectionCheckbox
+            checked={cellContext.row.getIsSelected()}
+            disabled={!cellContext.row.getCanSelect()}
+            indeterminate={cellContext.row.getIsSomeSelected()}
+            cellContext={cellContext}
         />
     ),
     meta: {
