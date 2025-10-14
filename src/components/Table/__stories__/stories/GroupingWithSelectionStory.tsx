@@ -22,6 +22,7 @@ export const GroupingWithSelectionStory = () => {
         enableExpanding: true,
         enableRowSelection: true,
         enableMultiRowSelection: true,
+        enableSubRowSelection: true,
         getSubRows: (item) => ('items' in item ? item.items : undefined),
         onExpandedChange: setExpanded,
         onRowSelectionChange: setRowSelection,
@@ -31,7 +32,7 @@ export const GroupingWithSelectionStory = () => {
         },
     });
 
-    useRowSelectionWithSubRows(table, rowSelection);
+    useRowSelectionWithSubRows(table, rowSelection, setRowSelection);
 
     return (
         <Table
