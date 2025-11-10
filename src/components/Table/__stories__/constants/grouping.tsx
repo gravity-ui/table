@@ -43,13 +43,13 @@ export const data: GroupOrItem[] = [
                 status: 'busy',
                 items: [
                     {
-                        id: 'john',
+                        id: 'john 1',
                         name: 'John',
                         age: 23,
                         status: 'free',
                     },
                     {
-                        id: 'michael',
+                        id: 'michael 1',
                         name: 'Michael',
                         age: 27,
                         status: 'busy',
@@ -70,13 +70,13 @@ export const data: GroupOrItem[] = [
         isGroupHeader: true,
         items: [
             {
-                id: 'john',
+                id: 'john 2',
                 name: 'John',
                 age: 23,
                 status: 'free',
             },
             {
-                id: 'michael',
+                id: 'michael 2',
                 name: 'Michael',
                 age: 27,
                 status: 'busy',
