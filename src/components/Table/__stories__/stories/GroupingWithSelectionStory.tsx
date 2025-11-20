@@ -3,8 +3,7 @@ import * as React from 'react';
 import type {ColumnDef, ExpandedState, RowSelectionState} from '@tanstack/react-table';
 
 import {selectionColumn} from '../../../../constants';
-import {useTable} from '../../../../hooks';
-import {useRowSelectionFixedHandler} from '../../../../utils';
+import {useRowSelectionFixedHandler, useTable} from '../../../../hooks';
 import {TreeExpandableCell} from '../../../TreeExpandableCell';
 import {Table} from '../../Table';
 import type {GroupOrItem} from '../constants/grouping';
