@@ -84,3 +84,81 @@ export const data: GroupOrItem[] = [
         ],
     },
 ];
+
+export const generateLargeData = (): GroupOrItem[] => {
+    const statuses: Array<'free' | 'busy' | 'unknown'> = ['free', 'busy', 'unknown'];
+    const result: GroupOrItem[] = [];
+    let itemCounter = 0;
+
+    for (let groupIndex = 0; groupIndex < 50; groupIndex++) {
+        const groupItems: GroupOrItem[] = [];
+
+        // Each group has 100 items
+        for (let itemIndex = 0; itemIndex < 100; itemIndex++) {
+            const hasSubItems = itemIndex % 5 === 0; // Every 5th item has sub-items
+
+            if (hasSubItems) {
+                // Create an item with sub-items (2-3 levels deep)
+                const subItems: Item[] = [];
+                const subItemCount = 3 + (itemCounter % 3); // 3-5 sub-items
+
+                for (let subIndex = 0; subIndex < subItemCount; subIndex++) {
+                    const hasDeepSubItems = subIndex === 0; // First sub-item has even deeper items
+
+                    if (hasDeepSubItems) {
+                        const deepSubItems: Item[] = [];
+                        const deepSubItemCount = 2 + (itemCounter % 2); // 2-3 deep sub-items
+
+                        for (let deepIndex = 0; deepIndex < deepSubItemCount; deepIndex++) {
+                            deepSubItems.push({
+                                id: `item-${itemCounter++}`,
+                                name: `Deep Item ${itemCounter}`,
+                                age: 20 + (itemCounter % 50),
+                                status: statuses[itemCounter % 3],
+                            });
+                        }
+
+                        subItems.push({
+                            id: `item-${itemCounter++}`,
+                            name: `Sub Item ${itemCounter}`,
+                            age: 20 + (itemCounter % 50),
+                            status: statuses[itemCounter % 3],
+                            items: deepSubItems,
+                        } as Item);
+                    } else {
+                        subItems.push({
+                            id: `item-${itemCounter++}`,
+                            name: `Sub Item ${itemCounter}`,
+                            age: 20 + (itemCounter % 50),
+                            status: statuses[itemCounter % 3],
+                        });
+                    }
+                }
+
+                groupItems.push({
+                    id: `item-${itemCounter++}`,
+                    name: `Item ${itemCounter}`,
+                    age: 20 + (itemCounter % 50),
+                    status: statuses[itemCounter % 3],
+                    items: subItems,
+                } as Item);
+            } else {
+                groupItems.push({
+                    id: `item-${itemCounter++}`,
+                    name: `Item ${itemCounter}`,
+                    age: 20 + (itemCounter % 50),
+                    status: statuses[itemCounter % 3],
+                });
+            }
+        }
+
+        result.push({
+            id: `group-${groupIndex}`,
+            name: `Group ${groupIndex + 1}`,
+            isGroupHeader: true,
+            items: groupItems,
+        });
+    }
+
+    return result;
+};

@@ -4,20 +4,30 @@ import type {ColumnDef, ExpandedState, RowSelectionState} from '@tanstack/react-
 
 import {selectionColumn} from '../../../../constants';
 import {useTable} from '../../../../hooks';
-import {getFixedRowSelection} from '../../../../utils/getFixedRowSelection';
+import {useRowSelectionFixedHandler} from '../../../../utils';
 import {TreeExpandableCell} from '../../../TreeExpandableCell';
 import {Table} from '../../Table';
 import type {GroupOrItem} from '../constants/grouping';
-import {columns, data} from '../constants/grouping';
+import {columns, generateLargeData} from '../constants/grouping';
 
 const patchedColumns = [selectionColumn as ColumnDef<GroupOrItem>, ...columns];
 
 export const GroupingWithSelectionStory = () => {
+    const data = React.useMemo(() => generateLargeData(), []);
+
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
     const getSubRows = (item: GroupOrItem) => ('items' in item ? item.items : undefined);
     const getRowId = (item: GroupOrItem) => item.id;
+
+    const fixedRowSelectionHandler = useRowSelectionFixedHandler({
+        rowSelection,
+        setRowSelection,
+        tableData: data,
+        getSubRows,
+        getRowId,
+    });
 
     const table = useTable({
         columns: patchedColumns,
@@ -29,13 +39,7 @@ export const GroupingWithSelectionStory = () => {
         getSubRows,
         getRowId,
         onExpandedChange: setExpanded,
-        onRowSelectionChange: getFixedRowSelection({
-            rowSelection,
-            setRowSelection,
-            tableData: data,
-            getSubRows,
-            getRowId,
-        }),
+        onRowSelectionChange: fixedRowSelectionHandler,
         state: {
             expanded,
             rowSelection,

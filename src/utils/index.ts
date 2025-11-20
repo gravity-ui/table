@@ -12,3 +12,4 @@ export * from './getVirtualRowRangeExtractor';
 export * from './shouldRenderFooterCell';
 export * from './shouldRenderFooterRow';
 export * from './shouldRenderHeaderCell';
+export * from './useRowSelectionFixedHandler';
