@@ -276,6 +276,7 @@ const columns: ColumnDef<User>[] = [
 ##### ❌ Before
 
 ```typescript jsx
+import React from 'react';
 import {Table} from '@gravity-ui/uikit';
 
 function MyTable() {
@@ -342,6 +343,7 @@ const columns: ColumnDef<User>[] = [
 ##### ❌ Before
 
 ```typescript jsx
+import React from 'react';
 import {Table} from '@gravity-ui/uikit';
 
 function MyTable() {
@@ -359,6 +361,7 @@ function MyTable() {
 ##### ✅ After
 
 ```typescript jsx
+import React from 'react';
 import type {ColumnDef} from '@gravity-ui/table/tanstack';
 
 const columns: ColumnDef<User>[] = [
@@ -408,6 +411,7 @@ const columns: ColumnDef<User>[] = [
 ##### ❌ Before
 
 ```typescript jsx
+import React from 'react';
 import {Table} from '@gravity-ui/uikit';
 
 function MyTable() {
@@ -452,6 +456,7 @@ function MyTable() {
 ##### ❌ Before
 
 ```typescript jsx
+import React from 'react';
 import {Table} from '@gravity-ui/uikit';
 
 function MyTable() {
@@ -628,10 +633,15 @@ const columns: ColumnDef<User>[] = [
 // Server-side sorting
 function ServerSideSorting() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [data, setData] = React.useState([]);
+  const [data, setData] = React.useState<User[]>([]);
 
   React.useEffect(() => {
     // Server request with sorting parameters
+    const fetchData = async (params: {sortBy?: string; sortOrder?: string}) => {
+      const response = await fetch(`/api/users?sortBy=${params.sortBy}&sortOrder=${params.sortOrder}`);
+      return response.json();
+    };
+
     fetchData({
       sortBy: sorting[0]?.id,
       sortOrder: sorting[0]?.desc ? 'desc' : 'asc',
@@ -874,6 +884,14 @@ import {Button, DropdownMenu} from '@gravity-ui/uikit';
 import type {ColumnDef} from '@gravity-ui/table/tanstack';
 
 function MyTable() {
+    const handleEdit = (user: User) => {
+        console.log('Edit', user);
+    };
+
+    const handleDelete = (user: User) => {
+        console.log('Delete', user);
+    };
+
   const columns: ColumnDef<User>[] = [
     {
       id: 'name',
@@ -916,14 +934,6 @@ function MyTable() {
     },
   ];
 
-  const handleEdit = (user: User) => {
-    console.log('Edit', user);
-  };
-
-  const handleDelete = (user: User) => {
-    console.log('Delete', user);
-  };
-
   const table = useTable({
     data,
     columns,
@@ -931,116 +941,6 @@ function MyTable() {
 
   return (
     <Table table={table} />
-  );
-}
-```
-
-**🎉 More Flexible Actions:**
-
-```typescript jsx
-import React from 'react';
-import {Table, useTable} from '@gravity-ui/table';
-import {Button, Icon, Flex, DropdownMenu} from '@gravity-ui/uikit';
-import {Pencil, TrashBin, Eye} from '@gravity-ui/icons';
-import type {ColumnDef} from '@gravity-ui/table/tanstack';
-
-// Actions with icons
-const columns: ColumnDef<User>[] = [
-  // ... other columns
-  {
-    id: 'actions',
-    header: 'Actions',
-    cell: ({row}) => {
-      const user = row.original;
-
-      return (
-        <Flex gap={2}>
-          <Button
-            view="flat-secondary"
-            size="s"
-            onClick={() => handleView(user)}
-          >
-            <Icon data={Eye} size={16} />
-          </Button>
-          <Button
-            view="flat-secondary"
-            size="s"
-            onClick={() => handleEdit(user)}
-          >
-            <Icon data={Pencil} size={16} />
-          </Button>
-          <Button
-            view="flat-danger"
-            size="s"
-            onClick={() => handleDelete(user)}
-            disabled={!user.canDelete}
-          >
-            <Icon data={TrashBin} size={16} />
-          </Button>
-        </Flex>
-      );
-    },
-    size: 120,
-    meta: {
-      align: 'right',
-    },
-  },
-];
-
-// Context menu on right-click
-function TableWithContextMenu() {
-  const [contextMenu, setContextMenu] = React.useState<{
-    x: number;
-    y: number;
-    user: User | null;
-  } | null>(null);
-
-  const handleContextMenu = (e: React.MouseEvent, user: User) => {
-    e.preventDefault();
-    setContextMenu({
-      x: e.clientX,
-      y: e.clientY,
-      user,
-    });
-  };
-
-  return (
-    <>
-      <Table
-        data={data}
-        columns={columns}
-      >
-        {(table) => (
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr
-                key={row.id}
-                onContextMenu={(e) => handleContextMenu(e, row.original)}
-              >
-                {/* ... cells */}
-              </tr>
-            ))}
-          </tbody>
-        )}
-      </Table>
-
-      {contextMenu && (
-        <DropdownMenu
-          open
-          anchorRef={{current: null}}
-          style={{
-            position: 'fixed',
-            left: contextMenu.x,
-            top: contextMenu.y,
-          }}
-          onClose={() => setContextMenu(null)}
-          items={[
-            {text: 'Edit', action: () => handleEdit(contextMenu.user)},
-            {text: 'Delete', action: () => handleDelete(contextMenu.user)},
-          ]}
-        />
-      )}
-    </>
   );
 }
 ```
@@ -2693,6 +2593,10 @@ function AdvancedEmployeeTable() {
 
   // Load data
   React.useEffect(() => {
+    const fetchEmployees = async (): Promise<Employee[]> => {
+      const response = await fetch('/api/employees');
+      return response.json();
+    };
     fetchEmployees().then(setData);
   }, []);
 
@@ -3085,6 +2989,7 @@ function formatBytes(bytes: number): string {
 ### Example 3: Table with Virtualization and Infinite Scroll
 
 ```typescript jsx
+import React from 'react';
 import {Table, useTable, useRowVirtualizer} from '@gravity-ui/table';
 import {useInfiniteQuery} from '@tanstack/react-query';
 

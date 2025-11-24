@@ -276,6 +276,7 @@ const columns: ColumnDef<User>[] = [
 ##### ❌ Было
 
 ```typescript jsx
+import React from 'react';
 import {Table} from '@gravity-ui/uikit';
 
 function MyTable() {
@@ -342,6 +343,7 @@ const columns: ColumnDef<User>[] = [
 ##### ❌ Было
 
 ```typescript jsx
+import React from 'react';
 import {Table} from '@gravity-ui/uikit';
 
 function MyTable() {
@@ -359,6 +361,7 @@ function MyTable() {
 ##### ✅ Стало
 
 ```typescript jsx
+import React from 'react';
 import type {ColumnDef} from '@gravity-ui/table/tanstack';
 
 const columns: ColumnDef<User>[] = [
@@ -408,6 +411,7 @@ const columns: ColumnDef<User>[] = [
 ##### ❌ Было
 
 ```typescript jsx
+import React from 'react';
 import {Table} from '@gravity-ui/uikit';
 
 function MyTable() {
@@ -452,6 +456,7 @@ function MyTable() {
 ##### ❌ Было
 
 ```typescript jsx
+import React from 'react';
 import {Table} from '@gravity-ui/uikit';
 
 function MyTable() {
@@ -632,6 +637,11 @@ function ServerSideSorting() {
 
   React.useEffect(() => {
     // Запрос на сервер с параметрами сортировки
+    const fetchData = async (params: {sortBy?: string; sortOrder?: string}) => {
+      const response = await fetch(`/api/users?sortBy=${params.sortBy}&sortOrder=${params.sortOrder}`);
+      return response.json();
+    };
+
     fetchData({
       sortBy: sorting[0]?.id,
       sortOrder: sorting[0]?.desc ? 'desc' : 'asc',
@@ -874,6 +884,14 @@ import {Button, DropdownMenu} from '@gravity-ui/uikit';
 import type {ColumnDef} from '@gravity-ui/table/tanstack';
 
 function MyTable() {
+    const handleEdit = (user: User) => {
+        console.log('Edit', user);
+    };
+
+    const handleDelete = (user: User) => {
+        console.log('Delete', user);
+    };
+
   const columns: ColumnDef<User>[] = [
     {
       id: 'name',
@@ -915,14 +933,6 @@ function MyTable() {
       enableSorting: false,
     },
   ];
-
-  const handleEdit = (user: User) => {
-    console.log('Edit', user);
-  };
-
-  const handleDelete = (user: User) => {
-    console.log('Delete', user);
-  };
 
   const table = useTable({
     data,
@@ -2585,6 +2595,10 @@ function AdvancedEmployeeTable() {
 
   // Загрузка данных
   React.useEffect(() => {
+    const fetchEmployees = async (): Promise<Employee[]> => {
+      const response = await fetch('/api/employees');
+      return response.json();
+    };
     fetchEmployees().then(setData);
   }, []);
 
