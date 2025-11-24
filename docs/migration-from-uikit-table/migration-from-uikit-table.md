@@ -276,11 +276,18 @@ const columns: ColumnDef<User>[] = [
 ##### ❌ Before
 
 ```typescript jsx
-<Table
-  verticalAlign="top"
-  data={data}
-  columns={columns}
-/>
+import {Table} from '@gravity-ui/uikit';
+
+function MyTable() {
+  return (
+    <Table
+      verticalAlign="top"
+      data={data}
+      columns={columns}
+      getRowId={(item) => item.id}
+    />
+  );
+}
 ```
 
 ##### ✅ After
@@ -335,11 +342,18 @@ const columns: ColumnDef<User>[] = [
 ##### ❌ Before
 
 ```typescript jsx
-<Table
-  wordWrap="break-word"
-  data={data}
-  columns={columns}
-/>
+import {Table} from '@gravity-ui/uikit';
+
+function MyTable() {
+  return (
+    <Table
+      wordWrap="break-word"
+      data={data}
+      columns={columns}
+      getRowId={(item) => item.id}
+    />
+  );
+}
 ```
 
 ##### ✅ After
@@ -394,13 +408,20 @@ const columns: ColumnDef<User>[] = [
 ##### ❌ Before
 
 ```typescript jsx
-<Table
-  data={data}
-  columns={columns}
-  onRowClick={(item, index, event) => {
-    console.log('Clicked:', item);
-  }}
-/>
+import {Table} from '@gravity-ui/uikit';
+
+function MyTable() {
+  return (
+    <Table
+      data={data}
+      columns={columns}
+      getRowId={(item) => item.id}
+      onRowClick={(item, index, event) => {
+        console.log('Clicked:', item);
+      }}
+    />
+  );
+}
 ```
 
 ##### ✅ After
@@ -431,11 +452,18 @@ function MyTable() {
 ##### ❌ Before
 
 ```typescript jsx
-<Table
-  edgePadding={true}
-  data={data}
-  columns={columns}
-/>
+import {Table} from '@gravity-ui/uikit';
+
+function MyTable() {
+  return (
+    <Table
+      edgePadding={true}
+      data={data}
+      columns={columns}
+      getRowId={(item) => item.id}
+    />
+  );
+}
 ```
 
 ##### ✅ After
@@ -482,6 +510,7 @@ In the old table, functionality was extended through Higher-Order Components (HO
 #### ❌ Before
 
 ```typescript jsx
+import React from 'react';
 import {Table, withTableSorting} from '@gravity-ui/uikit';
 
 const TableWithSorting = withTableSorting(Table);
@@ -631,6 +660,7 @@ function ServerSideSorting() {
 #### ❌ Before
 
 ```typescript jsx
+import React from 'react';
 import {Table, withTableSelection} from '@gravity-ui/uikit';
 
 const TableWithSelection = withTableSelection(Table);
@@ -807,6 +837,7 @@ function GroupSelection() {
 #### ❌ Before
 
 ```typescript jsx
+import React from 'react';
 import {Table, withTableActions} from '@gravity-ui/uikit';
 
 const TableWithActions = withTableActions(Table);
@@ -1021,6 +1052,7 @@ function TableWithContextMenu() {
 #### ❌ Before
 
 ```typescript jsx
+import React from 'react';
 import {Table, withTableSettings} from '@gravity-ui/uikit';
 
 const TableWithSettings = withTableSettings(Table);
@@ -1270,6 +1302,7 @@ function SortableColumnItem({id, label, visible, onVisibilityChange}: any) {
 #### ❌ Before
 
 ```typescript jsx
+import React from 'react';
 import {Table, withTableCopy} from '@gravity-ui/uikit';
 
 const TableWithCopy = withTableCopy(Table);
@@ -1279,6 +1312,7 @@ function MyTable() {
     <TableWithCopy
       data={data}
       columns={columns}
+      getRowId={(item) => item.id}
       allowCopy={true}
     />
   );
@@ -1290,7 +1324,7 @@ function MyTable() {
 ```typescript jsx
 import React from 'react';
 import {Table, useTable} from '@gravity-ui/table';
-import {Button, Toaster} from '@gravity-ui/uikit';
+import {Button, Toaster, Flex, Icon} from '@gravity-ui/uikit';
 import {Copy} from '@gravity-ui/icons';
 import type {ColumnDef} from '@gravity-ui/table/tanstack';
 
@@ -2912,6 +2946,11 @@ function AdvancedEmployeeTable() {
 ### Example 2: Tree Table with File System
 
 ```typescript jsx
+import React from 'react';
+import {Table, useTable} from '@gravity-ui/table';
+import {Button, Flex} from '@gravity-ui/uikit';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
 type FileNode = {
   id: string;
   name: string;

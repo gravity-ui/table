@@ -276,11 +276,18 @@ const columns: ColumnDef<User>[] = [
 ##### ❌ Было
 
 ```typescript jsx
-<Table
-  verticalAlign="top"
-  data={data}
-  columns={columns}
-/>
+import {Table} from '@gravity-ui/uikit';
+
+function MyTable() {
+  return (
+    <Table
+      verticalAlign="top"
+      data={data}
+      columns={columns}
+      getRowId={(item) => item.id}
+    />
+  );
+}
 ```
 
 ##### ✅ Стало
@@ -335,11 +342,18 @@ const columns: ColumnDef<User>[] = [
 ##### ❌ Было
 
 ```typescript jsx
-<Table
-  wordWrap="break-word"
-  data={data}
-  columns={columns}
-/>
+import {Table} from '@gravity-ui/uikit';
+
+function MyTable() {
+  return (
+    <Table
+      wordWrap="break-word"
+      data={data}
+      columns={columns}
+      getRowId={(item) => item.id}
+    />
+  );
+}
 ```
 
 ##### ✅ Стало
@@ -394,13 +408,20 @@ const columns: ColumnDef<User>[] = [
 ##### ❌ Было
 
 ```typescript jsx
-<Table
-  data={data}
-  columns={columns}
-  onRowClick={(item, index, event) => {
-    console.log('Clicked:', item);
-  }}
-/>
+import {Table} from '@gravity-ui/uikit';
+
+function MyTable() {
+  return (
+    <Table
+      data={data}
+      columns={columns}
+      getRowId={(item) => item.id}
+      onRowClick={(item, index, event) => {
+        console.log('Clicked:', item);
+      }}
+    />
+  );
+}
 ```
 
 ##### ✅ Стало
@@ -431,11 +452,18 @@ function MyTable() {
 ##### ❌ Было
 
 ```typescript jsx
-<Table
-  edgePadding={true}
-  data={data}
-  columns={columns}
-/>
+import {Table} from '@gravity-ui/uikit';
+
+function MyTable() {
+  return (
+    <Table
+      edgePadding={true}
+      data={data}
+      columns={columns}
+      getRowId={(item) => item.id}
+    />
+  );
+}
 ```
 
 ##### ✅ Стало
@@ -482,6 +510,7 @@ function MyTable() {
 #### ❌ Было
 
 ```typescript jsx
+import React from 'react';
 import {Table, withTableSorting} from '@gravity-ui/uikit';
 
 const TableWithSorting = withTableSorting(Table);
@@ -631,6 +660,7 @@ function ServerSideSorting() {
 #### ❌ Было
 
 ```typescript jsx
+import React from 'react';
 import {Table, withTableSelection} from '@gravity-ui/uikit';
 
 const TableWithSelection = withTableSelection(Table);
@@ -807,6 +837,7 @@ function GroupSelection() {
 #### ❌ Было
 
 ```typescript jsx
+import React from 'react';
 import {Table, withTableActions} from '@gravity-ui/uikit';
 
 const TableWithActions = withTableActions(Table);
@@ -911,6 +942,7 @@ function MyTable() {
 #### ❌ Было
 
 ```typescript jsx
+import React from 'react';
 import {Table, withTableSettings} from '@gravity-ui/uikit';
 
 const TableWithSettings = withTableSettings(Table);
@@ -1158,6 +1190,7 @@ function SortableColumnItem({id, label, visible, onVisibilityChange}: any) {
 #### ❌ Было
 
 ```typescript jsx
+import React from 'react';
 import {Table, withTableCopy} from '@gravity-ui/uikit';
 
 const TableWithCopy = withTableCopy(Table);
@@ -1167,6 +1200,7 @@ function MyTable() {
     <TableWithCopy
       data={data}
       columns={columns}
+      getRowId={(item) => item.id}
       allowCopy={true}
     />
   );
