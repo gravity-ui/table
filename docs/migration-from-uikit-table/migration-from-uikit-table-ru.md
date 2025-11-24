@@ -100,6 +100,7 @@ import type {ColumnDef} from '@gravity-ui/table/tanstack';
 #### ❌ Было (@gravity-ui/uikit)
 
 ```typescript jsx
+import React from 'react';
 import {Table} from '@gravity-ui/uikit';
 
 type User = {
@@ -207,6 +208,8 @@ function MyTable() {
 ##### ❌ Было
 
 ```typescript jsx
+import React from 'react';
+
 const columns = [
   {
     id: 'name',
