@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import type {RowSelectionState, Updater} from '@tanstack/react-table';
 
-interface RowSelectionProps<T> {
+interface UseRowSelectionFixedHandlerParams<T> {
     rowSelection: RowSelectionState;
     setRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>;
     tableData: T[];
@@ -16,7 +16,7 @@ const processItemSelection = <T>({
     item,
     getSubRows,
     getRowId,
-}: Omit<RowSelectionProps<T>, 'setRowSelection' | 'tableData'>): boolean => {
+}: Omit<UseRowSelectionFixedHandlerParams<T>, 'setRowSelection' | 'tableData'>): boolean => {
     let isSelected = true;
 
     const itemId = getRowId(item);
@@ -24,6 +24,8 @@ const processItemSelection = <T>({
     const subRows = getSubRows(item) ?? [];
 
     if (subRows.length > 0) {
+        // We cannot use every because it exits early
+        // and prevents all items from being checked
         subRows.forEach((subRow) => {
             const isSubRowSelected = processItemSelection({
                 item: subRow,
@@ -55,7 +57,7 @@ export const useRowSelectionFixedHandler = <T>({
     tableData,
     getSubRows,
     getRowId,
-}: Omit<RowSelectionProps<T>, 'item'>) => {
+}: Omit<UseRowSelectionFixedHandlerParams<T>, 'item'>) => {
     const fixedRowSelectionHandler = React.useCallback(
         (rowSelectionUpdater: Updater<RowSelectionState>) => {
             const rowSelectionUpdated =
