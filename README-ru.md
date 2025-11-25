@@ -79,6 +79,8 @@ const RowSelectionExample = () => {
 };
 ```
 
+Для использования выбора строки вместе с группировкой не забудьте вызвать хук `useRowSelectionFixedHandler`. Без него стейт строки-родителя будет вычисляться неправильно. https://github.com/TanStack/table/issues/4878
+
 ### Кастомная колонка с выбором диапазона строк
 
 Хук `useToggleRangeSelectionHandler` возвращает обработчик, который слушает события Shift+click и выполняет выделение диапазона строк. Для доступа к внутренним состояниям таблицы и строки ему необходимо передать экземпляр `CellContext`.
@@ -316,6 +318,8 @@ const GroupingExample = () => {
   return <Table table={table} getGroupTitle={getGroupTitle} />;
 };
 ```
+
+Для использования выбора строки вместе с группировкой не забудьте вызвать хук `useRowSelectionFixedHandler`. Без него стейт строки-родителя будет вычисляться неправильно. https://github.com/TanStack/table/issues/4878
 
 Для включения стилей вложенности передайте `withNestingStyles = true` в конфигурацию столбца.
 

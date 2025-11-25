@@ -4,6 +4,7 @@ import {Table} from '../index';
 
 import {DefaultStory} from './stories/DefaultStory';
 import {GroupingStory} from './stories/GroupingStory';
+import {GroupingWithSelectionStory} from './stories/GroupingWithSelectionStory';
 import {ReorderingStory} from './stories/ReorderingStory';
 import {ReorderingWithVirtualizationStory} from './stories/ReorderingWithVirtualizationStory';
 import {RowLinkStory} from './stories/RowLinkStory';
@@ -97,4 +98,8 @@ export const TreeWithVirtualization: StoryObj<typeof TreeStory> = {
 
 export const Grouping: StoryObj<typeof GroupingStory> = {
     render: GroupingStory,
+};
+
+export const GroupingWithSelection: StoryObj<typeof GroupingWithSelectionStory> = {
+    render: GroupingWithSelectionStory,
 };
