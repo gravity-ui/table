@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.0](https://github.com/gravity-ui/table/compare/v1.13.0...v1.14.0) (2025-11-25)
+
+
+### Features
+
+* added useRowSelectionFixedHandler ([#128](https://github.com/gravity-ui/table/issues/128)) ([39ebd4d](https://github.com/gravity-ui/table/commit/39ebd4de7a8401a726db5456c7bd15d9e808c2cb))
+
 ## [1.13.0](https://github.com/gravity-ui/table/compare/v1.12.0...v1.13.0) (2025-10-13)
 
 
