@@ -6,10 +6,55 @@
 2. [Когда стоит мигрировать](#когда-стоит-мигрировать)
 3. [Установка и настройка](#установка-и-настройка)
 4. [Базовая миграция](#базовая-миграция)
+   - [Простейший пример](#простейший-пример)
 5. [Миграция свойств](#миграция-свойств)
+   - [1. `columns` — Определение колонок](#1-columns--определение-колонок)
+   - [2. `verticalAlign` — Вертикальное выравнивание](#2-verticalalign--вертикальное-выравнивание)
+   - [3. `wordWrap` — Перенос текста](#3-wordwrap--перенос-текста)
+   - [4. `onRowClick` — Клик по строке](#4-onrowclick--клик-по-строке)
+   - [5. `edgePadding` — Отступы по краям](#5-edgepadding--отступы-по-краям)
 6. [Миграция HOC](#миграция-hoc)
+   - [1. `withTableSorting` — Сортировка](#1-withtablesorting--сортировка)
+   - [2. `withTableSelection` — Выбор строк](#2-withtableselection--выбор-строк)
+   - [3. `withTableActions` — Действия со строками](#3-withtableactions--действия-со-строками)
+   - [4. `withTableSettings` — Настройка колонок](#4-withtablesettings--настройка-колонок)
+   - [4.1. `TableColumnSetup` — Компонент настройки колонок](#41-tablecolumnsetup--компонент-настройки-колонок)
+   - [4.2. Использование вспомогательной функции `getSettingsColumn`](#42-использование-вспомогательной-функции-getsettingscolumn)
+   - [5. `withTableCopy` — Копирование данных](#5-withtablecopy--копирование-данных)
 7. [Новые возможности](#новые-возможности)
+   - [1. 🌳 Древовидная таблица (Tree Table)](#1--древовидная-таблица-tree-table)
+   - [2. 📌 Закрепление колонок (Column Pinning)](#2--закрепление-колонок-column-pinning)
+   - [3. 📏 Изменение размера колонок (Column Resizing)](#3--изменение-размера-колонок-column-resizing)
+   - [4. 🎭 Виртуализация (Virtualization)](#4--виртуализация-virtualization)
+   - [4.1. 🪟 Виртуализация окна (Window Virtualization)](#41--виртуализация-окна-window-virtualization)
+   - [4.2. 🔄 Переупорядочивание строк (Row Reordering)](#42--переупорядочивание-строк-row-reordering)
+   - [4.3. 🔄 Переупорядочивание с виртуализацией](#43--переупорядочивание-с-виртуализацией)
+   - [5. 🔄 Группировка (Grouping)](#5--группировка-grouping)
+   - [6. 🔍 Глобальный поиск и фильтры](#6--глобальный-поиск-и-фильтры)
+   - [7. 📄 Расширяемые строки (Expanding Rows)](#7--расширяемые-строки-expanding-rows)
+   - [8. 📌 Липкий заголовок (Sticky Header)](#8--липкий-заголовок-sticky-header)
+   - [9. 📏 Размер таблицы (Table Size)](#9--размер-таблицы-table-size)
+   - [10. 🔗 Ссылки в строках (Row Links)](#10--ссылки-в-строках-row-links)
+   - [11. 📭 Пустой контент (Empty Content)](#11--пустой-контент-empty-content)
+   - [12. 📋 Группы заголовков (Header Groups)](#12--группы-заголовков-header-groups)
+   - [12.1. 📋 Таблица без заголовка (Table Without Header)](#121--таблица-без-заголовка-table-without-header)
+   - [13. 🌳 Виртуализированное дерево (Virtualized Tree)](#13--виртуализированное-дерево-virtualized-tree)
+   - [13.1. 📊 Footer таблицы (Table Footer)](#131--footer-таблицы-table-footer)
+   - [13.1.1. Липкий Footer](#1311-липкий-footer)
+   - [14. 📐 Автоматический размер колонок (Column Auto Sizing)](#14--автоматический-размер-колонок-column-auto-sizing)
+   - [14.1. С предопределенными ширинами](#141-с-предопределенными-ширинами)
+   - [14.2. С кастомными ограничениями ширины](#142-с-кастомными-ограничениями-ширины)
+   - [14.3. Оптимизация для больших датасетов](#143-оптимизация-для-больших-датасетов)
+   - [14.4. С кастомным рендерером для измерения](#144-с-кастомным-рендерером-для-измерения)
+   - [15. 🎨 Кастомные стили строк и ячеек](#15--кастомные-стили-строк-и-ячеек)
 8. [Практические примеры](#практические-примеры)
+   - [Пример 1: Сложная таблица с множественным функционалом](#пример-1-сложная-таблица-с-множественным-функционалом)
+   - [Пример 2: Древовидная таблица с файловой системой](#пример-2-древовидная-таблица-с-файловой-системой)
+   - [Пример 3: Таблица с виртуализацией и бесконечной прокруткой](#пример-3-таблица-с-виртуализацией-и-бесконечной-прокруткой)
+9. [Чек-лист миграции](#чек-лист-миграции)
+10. [Известные проблемы и совместимость](#известные-проблемы-и-совместимость)
+    - [Совместимость с React 19 + React Compiler](#совместимость-с-react-19--react-compiler)
+11. [Заключение](#заключение)
 
 ---
 
@@ -1193,6 +1238,294 @@ function SortableColumnItem({id, label, visible, onVisibilityChange}: any) {
       </Checkbox>
     </div>
   );
+}
+```
+
+---
+
+### 4.1. `TableColumnSetup` — Компонент настройки колонок
+
+#### ❌ Было
+
+```typescript jsx
+import React from 'react';
+import {Table, TableColumnSetup} from '@gravity-ui/uikit';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+}
+
+const columns = [
+  {id: 'name', name: 'Name'},
+  {id: 'email', name: 'Email'},
+  {id: 'phone', name: 'Phone'},
+];
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com', phone: '+1234567890'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com', phone: '+0987654321'},
+];
+
+function MyTable() {
+  const [items, setItems] = React.useState([
+    {id: 'name', title: 'Name', selected: true},
+    {id: 'email', title: 'Email', selected: true},
+    {id: 'phone', title: 'Phone', selected: false},
+  ]);
+
+  // Фильтруем колонки на основе items
+  const visibleColumns = columns.filter(col =>
+    items.find(item => item.id === col.id && item.selected)
+  );
+
+  return (
+    <>
+      <TableColumnSetup
+        items={items}
+        onUpdate={(newItems) => {
+          setItems(newItems);
+        }}
+      />
+      <Table
+        data={data}
+        columns={visibleColumns}
+        getRowId={(item) => item.id}
+      />
+    </>
+  );
+}
+```
+
+#### ✅ Стало
+
+```typescript jsx
+import React from 'react';
+import {Table, useTable, TableSettings} from '@gravity-ui/table';
+import {Button, Icon} from '@gravity-ui/uikit';
+import {Gear} from '@gravity-ui/icons';
+import type {ColumnDef, VisibilityState, ColumnOrderState} from '@gravity-ui/table/tanstack';
+
+function MyTable() {
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
+    phone: false,
+  });
+  const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>([
+    'name',
+    'email',
+    'phone',
+  ]);
+
+  const columns: ColumnDef<User>[] = [
+    {
+      id: 'name',
+      header: 'Name',
+      accessorKey: 'name',
+    },
+    {
+      id: 'email',
+      header: 'Email',
+      accessorKey: 'email',
+    },
+    {
+      id: 'phone',
+      header: 'Phone',
+      accessorKey: 'phone',
+      enableHiding: true,
+    },
+  ];
+
+  const table = useTable({
+    data,
+    columns,
+    enableHiding: true,
+    enableColumnOrdering: true,
+    state: {
+      columnVisibility,
+      columnOrder,
+    },
+    onColumnVisibilityChange: setColumnVisibility,
+    onColumnOrderChange: setColumnOrder,
+  });
+
+  const handleSettingsApply = ({
+    visibilityState,
+    columnOrder,
+  }: {
+    visibilityState: VisibilityState;
+    columnOrder: string[];
+  }) => {
+    setColumnVisibility(visibilityState);
+    setColumnOrder(columnOrder);
+    // Опционально: сохранить в localStorage или отправить на сервер
+  };
+
+  return (
+    <>
+      <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '16px'}}>
+        <TableSettings
+          table={table}
+          sortable={true}
+          filterable={true}
+          enableSearch={true}
+          searchPlaceholder="Поиск колонок..."
+          onSettingsApply={handleSettingsApply}
+        />
+      </div>
+      <Table table={table} />
+    </>
+  );
+}
+```
+
+**🎉 Ключевые возможности TableSettings:**
+
+- **Переупорядочивание Drag & Drop**: Изменение порядка колонок перетаскиванием
+- **Переключение видимости**: Показать/скрыть колонки с помощью чекбоксов
+- **Поиск**: Быстрый поиск колонок
+- **Поддержка вложенных колонок**: Работает с группами заголовков
+- **Применить/Отменить**: Предпросмотр изменений перед применением
+
+**Кастомная кнопка:**
+
+```typescript jsx
+import React from 'react';
+import {Table, useTable, TableSettings} from '@gravity-ui/table';
+import {Button, Icon, Popup} from '@gravity-ui/uikit';
+import {Gear} from '@gravity-ui/icons';
+
+function MyTable() {
+  const table = useTable({
+    data,
+    columns,
+    enableHiding: true,
+    enableColumnOrdering: true,
+  });
+
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const anchorRef = React.useRef<HTMLButtonElement>(null);
+
+  return (
+    <>
+      <Button
+        ref={anchorRef}
+        view="outlined"
+        onClick={() => setSettingsOpen(!settingsOpen)}
+      >
+        <Icon data={Gear} /> Настройки колонок
+      </Button>
+
+      <Popup
+        anchorRef={anchorRef}
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        placement="bottom-end"
+      >
+        <TableSettings
+          table={table}
+          sortable={true}
+          filterable={true}
+          enableSearch={true}
+          onSettingsApply={() => {
+            setSettingsOpen(false);
+          }}
+        />
+      </Popup>
+
+      <Table table={table} />
+    </>
+  );
+}
+```
+
+### 4.2. Использование вспомогательной функции `getSettingsColumn`
+
+```typescript jsx
+import React from 'react';
+import {Table, useTable, getSettingsColumn} from '@gravity-ui/table';
+import type {ColumnDef, VisibilityState, ColumnOrderState} from '@gravity-ui/table/tanstack';
+
+function MyTable() {
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
+    phone: false,
+  });
+  const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>([
+    'name',
+    'email',
+    'phone',
+  ]);
+
+  const columns: ColumnDef<User>[] = [
+    {
+      id: 'name',
+      header: 'Name',
+      accessorKey: 'name',
+    },
+    {
+      id: 'email',
+      header: 'Email',
+      accessorKey: 'email',
+    },
+    {
+      id: 'phone',
+      header: 'Phone',
+      accessorKey: 'phone',
+      enableHiding: true,
+    },
+    // Добавить колонку настроек с помощью вспомогательной функции
+    getSettingsColumn<User>(),
+  ];
+
+  const table = useTable({
+    data,
+    columns,
+    enableHiding: true,
+    enableColumnOrdering: true,
+    state: {
+      columnVisibility,
+      columnOrder,
+    },
+    onColumnVisibilityChange: setColumnVisibility,
+    onColumnOrderChange: setColumnOrder,
+  });
+
+  return <Table table={table} />;
+}
+```
+
+**С кастомными опциями:**
+
+```typescript jsx
+import React from 'react';
+import {Table, useTable, getSettingsColumn} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+function MyTable() {
+  const columns: ColumnDef<User>[] = [
+    // ... другие колонки
+    // Добавить колонку настроек с кастомными опциями
+    getSettingsColumn<User>('_custom-settings-id', {
+      sortable: true,
+      filterable: true,
+      enableSearch: true,
+      searchPlaceholder: 'Поиск колонок...',
+      onSettingsApply: ({visibilityState, columnOrder}) => {
+        // Обработка применения настроек
+        console.log('Настройки применены', {visibilityState, columnOrder});
+      },
+    }),
+  ];
+
+  const table = useTable({
+    data,
+    columns,
+    enableHiding: true,
+    enableColumnOrdering: true,
+  });
+
+  return <Table table={table} />;
 }
 ```
 
@@ -3105,6 +3438,63 @@ function InfiniteScrollTable() {
 - [ ] Проверить производительность
 - [ ] Убедиться в корректности типов TypeScript
 - [ ] Провести код-ревью
+
+---
+
+## Известные проблемы и совместимость
+
+### Совместимость с React 19 + React Compiler
+
+**⚠️ Известная проблема:** Существует известная проблема совместимости с React 19 и React Compiler при использовании `@gravity-ui/table` (который построен на базе TanStack Table). Таблица может не перерисовываться при изменении данных. Подробности см. в [TanStack Table issue #5567](https://github.com/TanStack/table/issues/5567).
+
+**Обходное решение:**
+
+Если вы используете React 19 с React Compiler и сталкиваетесь с проблемами перерисовки таблицы, вы можете использовать директиву `'use no memo'` в коде вашего компонента:
+
+```typescript jsx
+import React from 'react';
+import {Table, useTable} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+function MyTable() {
+  'use no memo'; // Отключить мемоизацию React Compiler для этого компонента
+
+  const [data, setData] = React.useState<User[]>([]);
+
+  const table = useTable({
+    data,
+    columns,
+  });
+
+  return <Table table={table} />;
+}
+```
+
+**Альтернативное решение:**
+
+Вы также можете явно мемоизировать экземпляр таблицы или данные, чтобы обеспечить правильную перерисовку:
+
+```typescript jsx
+import React from 'react';
+import {Table, useTable} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+function MyTable() {
+  const [data, setData] = React.useState<User[]>([]);
+
+  // Явно мемоизировать данные для обеспечения перерисовки
+  const memoizedData = React.useMemo(() => data, [data]);
+
+  const table = useTable({
+    data: memoizedData,
+    columns,
+  });
+
+  return <Table table={table} />;
+}
+```
+
+**Примечание:** Эта проблема находится в базовой библиотеке TanStack Table и должна быть исправлена там. Приведенные выше обходные решения должны помочь до тех пор, пока не будет доступно исправление.
 
 ---
 

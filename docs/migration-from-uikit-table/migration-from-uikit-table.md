@@ -6,10 +6,57 @@
 2. [When to Migrate](#when-to-migrate)
 3. [Installation and Setup](#installation-and-setup)
 4. [Basic Migration](#basic-migration)
+   - [Simplest Example](#simplest-example)
 5. [Props Migration](#props-migration)
+   - [1. `columns` — Column Definition](#1-columns--column-definition)
+   - [2. `verticalAlign` — Vertical Alignment](#2-verticalalign--vertical-alignment)
+   - [3. `wordWrap` — Text Wrapping](#3-wordwrap--text-wrapping)
+   - [4. `onRowClick` — Row Click](#4-onrowclick--row-click)
+   - [5. `edgePadding` — Edge Padding](#5-edgepadding--edge-padding)
 6. [HOC Migration](#hoc-migration)
+   - [1. `withTableSorting` — Sorting](#1-withtablesorting--sorting)
+   - [2. `withTableSelection` — Row Selection](#2-withtableselection--row-selection)
+   - [3. `withTableActions` — Row Actions](#3-withtableactions--row-actions)
+
+- [4. `withTableSettings` — Column Settings](#4-withtablesettings--column-settings)
+- [4.1. `TableColumnSetup` — Column Setup Component](#41-tablecolumnsetup--column-setup-component)
+- [4.2. Using `getSettingsColumn` Helper](#42-using-getsettingscolumn-helper)
+- [5. `withTableCopy` — Data Copying](#5-withtablecopy--data-copying)
+
 7. [New Features](#new-features)
+   - [1. 🌳 Tree Table](#1--tree-table)
+   - [2. 📌 Column Pinning](#2--column-pinning)
+   - [3. 📏 Column Resizing](#3--column-resizing)
+   - [4. 🎭 Virtualization](#4--virtualization)
+   - [4.1. 🪟 Window Virtualization](#41--window-virtualization)
+   - [4.2. 🔄 Row Reordering](#42--row-reordering)
+   - [4.3. 🔄 Reordering with Virtualization](#43--reordering-with-virtualization)
+   - [5. 🔄 Grouping](#5--grouping)
+   - [6. 🔍 Global Search and Filters](#6--global-search-and-filters)
+   - [7. 📄 Expandable Rows](#7--expandable-rows)
+   - [8. 📌 Sticky Header](#8--sticky-header)
+   - [9. 📏 Table Size](#9--table-size)
+   - [10. 🔗 Row Links](#10--row-links)
+   - [11. 📭 Empty Content](#11--empty-content)
+   - [12. 📋 Header Groups](#12--header-groups)
+   - [12.1. 📋 Table Without Header](#121--table-without-header)
+   - [13. 🌳 Virtualized Tree](#13--virtualized-tree)
+   - [13.1. 📊 Table Footer](#131--table-footer)
+   - [13.1.1. Sticky Footer](#1311-sticky-footer)
+   - [14. 📐 Column Auto Sizing](#14--column-auto-sizing)
+   - [14.1. With Predefined Widths](#141-with-predefined-widths)
+   - [14.2. With Custom Width Limits](#142-with-custom-width-limits)
+   - [14.3. Optimization for Large Datasets](#143-optimization-for-large-datasets)
+   - [14.4. With Custom Renderer for Measurement](#144-with-custom-renderer-for-measurement)
+   - [15. 🎨 Custom Row and Cell Styles](#15--custom-row-and-cell-styles)
 8. [Practical Examples](#practical-examples)
+   - [Example 1: Complex Table with Multiple Features](#example-1-complex-table-with-multiple-features)
+   - [Example 2: Tree Table with File System](#example-2-tree-table-with-file-system)
+   - [Example 3: Table with Virtualization and Infinite Scroll](#example-3-table-with-virtualization-and-infinite-scroll)
+9. [Migration Checklist](#migration-checklist)
+10. [Known Issues and Compatibility](#known-issues-and-compatibility)
+    - [React 19 + React Compiler Compatibility](#react-19--react-compiler-compatibility)
+11. [Conclusion](#conclusion)
 
 ---
 
@@ -1192,6 +1239,294 @@ function SortableColumnItem({id, label, visible, onVisibilityChange}: any) {
       </Checkbox>
     </div>
   );
+}
+```
+
+---
+
+### 4.1. `TableColumnSetup` — Column Setup Component
+
+#### ❌ Before
+
+```typescript jsx
+import React from 'react';
+import {Table, TableColumnSetup} from '@gravity-ui/uikit';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+}
+
+const columns = [
+  {id: 'name', name: 'Name'},
+  {id: 'email', name: 'Email'},
+  {id: 'phone', name: 'Phone'},
+];
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com', phone: '+1234567890'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com', phone: '+0987654321'},
+];
+
+function MyTable() {
+  const [items, setItems] = React.useState([
+    {id: 'name', title: 'Name', selected: true},
+    {id: 'email', title: 'Email', selected: true},
+    {id: 'phone', title: 'Phone', selected: false},
+  ]);
+
+  // Filter columns based on items
+  const visibleColumns = columns.filter(col =>
+    items.find(item => item.id === col.id && item.selected)
+  );
+
+  return (
+    <>
+      <TableColumnSetup
+        items={items}
+        onUpdate={(newItems) => {
+          setItems(newItems);
+        }}
+      />
+      <Table
+        data={data}
+        columns={visibleColumns}
+        getRowId={(item) => item.id}
+      />
+    </>
+  );
+}
+```
+
+#### ✅ After
+
+```typescript jsx
+import React from 'react';
+import {Table, useTable, TableSettings} from '@gravity-ui/table';
+import {Button, Icon} from '@gravity-ui/uikit';
+import {Gear} from '@gravity-ui/icons';
+import type {ColumnDef, VisibilityState, ColumnOrderState} from '@gravity-ui/table/tanstack';
+
+function MyTable() {
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
+    phone: false,
+  });
+  const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>([
+    'name',
+    'email',
+    'phone',
+  ]);
+
+  const columns: ColumnDef<User>[] = [
+    {
+      id: 'name',
+      header: 'Name',
+      accessorKey: 'name',
+    },
+    {
+      id: 'email',
+      header: 'Email',
+      accessorKey: 'email',
+    },
+    {
+      id: 'phone',
+      header: 'Phone',
+      accessorKey: 'phone',
+      enableHiding: true,
+    },
+  ];
+
+  const table = useTable({
+    data,
+    columns,
+    enableHiding: true,
+    enableColumnOrdering: true,
+    state: {
+      columnVisibility,
+      columnOrder,
+    },
+    onColumnVisibilityChange: setColumnVisibility,
+    onColumnOrderChange: setColumnOrder,
+  });
+
+  const handleSettingsApply = ({
+    visibilityState,
+    columnOrder,
+  }: {
+    visibilityState: VisibilityState;
+    columnOrder: string[];
+  }) => {
+    setColumnVisibility(visibilityState);
+    setColumnOrder(columnOrder);
+    // Optionally save to localStorage or send to server
+  };
+
+  return (
+    <>
+      <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '16px'}}>
+        <TableSettings
+          table={table}
+          sortable={true}
+          filterable={true}
+          enableSearch={true}
+          searchPlaceholder="Search columns..."
+          onSettingsApply={handleSettingsApply}
+        />
+      </div>
+      <Table table={table} />
+    </>
+  );
+}
+```
+
+**🎉 Key Features of TableSettings:**
+
+- **Drag & Drop Reordering**: Change column order by dragging
+- **Visibility Toggle**: Show/hide columns with checkboxes
+- **Search**: Find columns quickly with search
+- **Nested Columns Support**: Works with header groups
+- **Apply/Cancel**: Preview changes before applying
+
+**Custom Button:**
+
+```typescript jsx
+import React from 'react';
+import {Table, useTable, TableSettings} from '@gravity-ui/table';
+import {Button, Icon, Popup} from '@gravity-ui/uikit';
+import {Gear} from '@gravity-ui/icons';
+
+function MyTable() {
+  const table = useTable({
+    data,
+    columns,
+    enableHiding: true,
+    enableColumnOrdering: true,
+  });
+
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const anchorRef = React.useRef<HTMLButtonElement>(null);
+
+  return (
+    <>
+      <Button
+        ref={anchorRef}
+        view="outlined"
+        onClick={() => setSettingsOpen(!settingsOpen)}
+      >
+        <Icon data={Gear} /> Column Settings
+      </Button>
+
+      <Popup
+        anchorRef={anchorRef}
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        placement="bottom-end"
+      >
+        <TableSettings
+          table={table}
+          sortable={true}
+          filterable={true}
+          enableSearch={true}
+          onSettingsApply={() => {
+            setSettingsOpen(false);
+          }}
+        />
+      </Popup>
+
+      <Table table={table} />
+    </>
+  );
+}
+```
+
+### 4.2. Using `getSettingsColumn` Helper
+
+```typescript jsx
+import React from 'react';
+import {Table, useTable, getSettingsColumn} from '@gravity-ui/table';
+import type {ColumnDef, VisibilityState, ColumnOrderState} from '@gravity-ui/table/tanstack';
+
+function MyTable() {
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
+    phone: false,
+  });
+  const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>([
+    'name',
+    'email',
+    'phone',
+  ]);
+
+  const columns: ColumnDef<User>[] = [
+    {
+      id: 'name',
+      header: 'Name',
+      accessorKey: 'name',
+    },
+    {
+      id: 'email',
+      header: 'Email',
+      accessorKey: 'email',
+    },
+    {
+      id: 'phone',
+      header: 'Phone',
+      accessorKey: 'phone',
+      enableHiding: true,
+    },
+    // Add settings column using helper function
+    getSettingsColumn<User>(),
+  ];
+
+  const table = useTable({
+    data,
+    columns,
+    enableHiding: true,
+    enableColumnOrdering: true,
+    state: {
+      columnVisibility,
+      columnOrder,
+    },
+    onColumnVisibilityChange: setColumnVisibility,
+    onColumnOrderChange: setColumnOrder,
+  });
+
+  return <Table table={table} />;
+}
+```
+
+**With custom options:**
+
+```typescript jsx
+import React from 'react';
+import {Table, useTable, getSettingsColumn} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+function MyTable() {
+  const columns: ColumnDef<User>[] = [
+    // ... other columns
+    // Add settings column with custom options
+    getSettingsColumn<User>('_custom-settings-id', {
+      sortable: true,
+      filterable: true,
+      enableSearch: true,
+      searchPlaceholder: 'Search columns...',
+      onSettingsApply: ({visibilityState, columnOrder}) => {
+        // Handle settings apply
+        console.log('Settings applied', {visibilityState, columnOrder});
+      },
+    }),
+  ];
+
+  const table = useTable({
+    data,
+    columns,
+    enableHiding: true,
+    enableColumnOrdering: true,
+  });
+
+  return <Table table={table} />;
 }
 ```
 
@@ -3100,6 +3435,63 @@ function InfiniteScrollTable() {
 - [ ] Verify performance
 - [ ] Ensure TypeScript types are correct
 - [ ] Conduct code review
+
+---
+
+## Known Issues and Compatibility
+
+### React 19 + React Compiler Compatibility
+
+**⚠️ Known Issue:** There is a known compatibility issue with React 19 and React Compiler when using `@gravity-ui/table` (which is built on top of TanStack Table). The table may not re-render when data changes. See [TanStack Table issue #5567](https://github.com/TanStack/table/issues/5567) for details.
+
+**Workaround:**
+
+If you're using React 19 with React Compiler and experiencing issues with table re-rendering, you can use the `'use no memo'` directive in your component code:
+
+```typescript jsx
+import React from 'react';
+import {Table, useTable} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+function MyTable() {
+  'use no memo'; // Disable React Compiler memoization for this component
+
+  const [data, setData] = React.useState<User[]>([]);
+
+  const table = useTable({
+    data,
+    columns,
+  });
+
+  return <Table table={table} />;
+}
+```
+
+**Alternative Solution:**
+
+You can also explicitly memoize the table instance or data to ensure proper re-renders:
+
+```typescript jsx
+import React from 'react';
+import {Table, useTable} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+function MyTable() {
+  const [data, setData] = React.useState<User[]>([]);
+
+  // Explicitly memoize data to ensure re-renders
+  const memoizedData = React.useMemo(() => data, [data]);
+
+  const table = useTable({
+    data: memoizedData,
+    columns,
+  });
+
+  return <Table table={table} />;
+}
+```
+
+**Note:** This issue is in the underlying TanStack Table library and will need to be fixed there. The workarounds above should help until a fix is available.
 
 ---
 
