@@ -13,13 +13,13 @@
    - [3. `wordWrap` — Перенос текста](#3-wordwrap--перенос-текста)
    - [4. `onRowClick` — Клик по строке](#4-onrowclick--клик-по-строке)
    - [5. `edgePadding` — Отступы по краям](#5-edgepadding--отступы-по-краям)
+   - [6. `getRowDescriptor` — Дескриптор строки с дополнительными свойствами](#6-getrowdescriptor--дескриптор-строки-с-дополнительными-свойствами)
 6. [Миграция HOC](#миграция-hoc)
    - [1. `withTableSorting` — Сортировка](#1-withtablesorting--сортировка)
    - [2. `withTableSelection` — Выбор строк](#2-withtableselection--выбор-строк)
    - [3. `withTableActions` — Действия со строками](#3-withtableactions--действия-со-строками)
    - [4. `withTableSettings` — Настройка колонок](#4-withtablesettings--настройка-колонок)
    - [4.1. `TableColumnSetup` — Компонент настройки колонок](#41-tablecolumnsetup--компонент-настройки-колонок)
-   - [4.2. Использование вспомогательной функции `getSettingsColumn`](#42-использование-вспомогательной-функции-getsettingscolumn)
    - [5. `withTableCopy` — Копирование данных](#5-withtablecopy--копирование-данных)
 7. [Новые возможности](#новые-возможности)
    - [1. 🌳 Древовидная таблица (Tree Table)](#1--древовидная-таблица-tree-table)
@@ -169,7 +169,7 @@ function MyTable() {
     <Table
       columns={columns}
       data={data}
-      getRowId={(item) => item.id}
+      getRowDescriptor={(item) => ({id: item.id})}
     />
   );
 }
@@ -235,16 +235,16 @@ function MyTable() {
 
 ### Таблица соответствия props
 
-| @gravity-ui/uikit | @gravity-ui/table | Комментарий                        |
-| ----------------- | ----------------- | ---------------------------------- |
-| `data`            | `data`            | ✅ Идентично                       |
-| `columns`         | `columns`         | ⚠️ Другая структура (см. ниже)     |
-| `getRowId`        | `getRowId`        | ✅ Та же сигнатура                 |
-| `verticalAlign`   | -                 | ⚠️ Настраивается через CSS         |
-| `wordWrap`        | -                 | ⚠️ Настраивается через CSS колонок |
-| `className`       | `className`       | ✅ Идентично                       |
-| `edgePadding`     | -                 | ⚠️ Настраивается через CSS         |
-| `onRowClick`      | `onRowClick`      | ⚠️ Другая сигнатура                |
+| @gravity-ui/uikit  | @gravity-ui/table           | Комментарий                        |
+| ------------------ | --------------------------- | ---------------------------------- |
+| `data`             | `data`                      | ✅ Идентично                       |
+| `columns`          | `columns`                   | ⚠️ Другая структура (см. ниже)     |
+| `getRowDescriptor` | `getRowId` + `rowClassName` | ⚠️ Другая сигнатура (см. ниже)     |
+| `verticalAlign`    | -                           | ⚠️ Настраивается через CSS         |
+| `wordWrap`         | -                           | ⚠️ Настраивается через CSS колонок |
+| `className`        | `className`                 | ✅ Идентично                       |
+| `edgePadding`      | -                           | ⚠️ Настраивается через CSS         |
+| `onRowClick`       | `onRowClick`                | ⚠️ Другая сигнатура                |
 
 ### Детальная миграция свойств
 
@@ -254,6 +254,13 @@ function MyTable() {
 
 ```typescript jsx
 import React from 'react';
+import {Table} from '@gravity-ui/uikit';
+
+type User = {
+  id: string;
+  name: string;
+  age: number;
+}
 
 const columns = [
   {
@@ -269,6 +276,21 @@ const columns = [
     width: 100,
   },
 ];
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', age: 30},
+  {id: '2', name: 'Jane Smith', age: 25},
+];
+
+function MyTable() {
+  return (
+    <Table
+      data={data}
+      columns={columns}
+      getRowDescriptor={(item) => ({id: item.id})}
+    />
+  );
+}
 ```
 
 ##### ✅ Стало
@@ -304,6 +326,21 @@ const columns: ColumnDef<User>[] = [
     size: 100,
   },
 ];
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', age: 30},
+  {id: '2', name: 'Jane Smith', age: 25},
+];
+
+function MyTable() {
+  const table = useTable({
+    data,
+    columns,
+    getRowId: (row) => row.id,
+  });
+
+  return <Table table={table} />;
+}
 ```
 
 **Маппинг свойств колонки:**
@@ -327,13 +364,29 @@ const columns: ColumnDef<User>[] = [
 import React from 'react';
 import {Table} from '@gravity-ui/uikit';
 
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const columns = [
+  {id: 'name', name: 'Name'},
+  {id: 'email', name: 'Email'},
+];
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com'},
+];
+
 function MyTable() {
   return (
     <Table
       verticalAlign="top"
       data={data}
       columns={columns}
-      getRowId={(item) => item.id}
+      getRowDescriptor={(item) => ({id: item.id})}
     />
   );
 }
@@ -344,46 +397,50 @@ function MyTable() {
 ```typescript jsx
 import React from 'react';
 import {Table, useTable} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
 
-// Вариант 1: Через className
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const columns: ColumnDef<User>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
+];
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com'},
+];
+
 function MyTable() {
     const table = useTable({
         data,
         columns,
+        getRowId: (row) => row.id,
     });
 
     return (
-        <Table table={table} className="my-table" />
+        <Table table={table} cellClassName="my-table-cell" />
     );
 }
 ```
 
 ```scss
 // В SCSS
-.my-table {
-  td {
-    vertical-align: top;
-  }
+.my-table-cell {
+  vertical-align: top;
 }
-```
-
-```typescript jsx
-import React from 'react';
-import type {ColumnDef} from '@gravity-ui/table/tanstack';
-
-// Вариант 2: Через глобальные стили колонок
-const columns: ColumnDef<User>[] = [
-  {
-    id: 'name',
-    header: 'Name',
-    accessorKey: 'name',
-    cell: (info) => (
-      <div style={{display: 'flex', alignItems: 'flex-start'}}>
-        {info.getValue()}
-      </div>
-    ),
-  },
-];
 ```
 
 #### 3. `wordWrap` — Перенос текста
@@ -394,13 +451,37 @@ const columns: ColumnDef<User>[] = [
 import React from 'react';
 import {Table} from '@gravity-ui/uikit';
 
+type Article = {
+  id: string;
+  title: string;
+  description: string;
+}
+
+const columns = [
+  {id: 'title', name: 'Title', width: 200},
+  {id: 'description', name: 'Description', width: 300},
+];
+
+const data: Article[] = [
+  {
+    id: '1',
+    title: 'SupercalifragilisticexpialidociousArticleTitle',
+    description: 'Thisisaverylongwordthatneedstobewrappedproperlyinthecell',
+  },
+  {
+    id: '2',
+    title: 'AntidisestablishmentarianismTitleExample',
+    description: 'Anothersuperlongwordwithoutspacestodemonstratewordwrapping',
+  },
+];
+
 function MyTable() {
   return (
     <Table
-      wordWrap="break-word"
+      wordWrap={true}
       data={data}
       columns={columns}
-      getRowId={(item) => item.id}
+      getRowDescriptor={(item) => ({id: item.id})}
     />
   );
 }
@@ -410,45 +491,58 @@ function MyTable() {
 
 ```typescript jsx
 import React from 'react';
+import {Table, useTable} from '@gravity-ui/table';
 import type {ColumnDef} from '@gravity-ui/table/tanstack';
 
-const columns: ColumnDef<User>[] = [
-  {
-    id: 'description',
-    header: 'Description',
-    accessorKey: 'description',
-    cell: (info) => (
-      <div style={{
-        wordWrap: 'break-word',
-        whiteSpace: 'normal',
-        maxWidth: '300px',
-      }}>
-        {info.getValue()}
-      </div>
-    ),
-  },
-];
-```
-
-```typescript jsx
-import type {ColumnDef} from '@gravity-ui/table/tanstack';
+type Article = {
+  id: string;
+  title: string;
+  description: string;
+}
 
 // Или через CSS класс
-const columns: ColumnDef<User>[] = [
+const columns: ColumnDef<Article>[] = [
+  {
+    id: 'title',
+    header: 'Title',
+    accessorKey: 'title',
+    maxSize: 200,
+  },
   {
     id: 'description',
     header: 'Description',
     accessorKey: 'description',
-    meta: {
-      className: 'wrapped-cell',
-    },
+    maxSize: 300,
   },
 ];
+
+const data: Article[] = [
+  {
+    id: '1',
+    title: 'SupercalifragilisticexpialidociousArticleTitle',
+    description: 'Thisisaverylongwordthatneedstobewrappedproperlyinthecell',
+  },
+  {
+    id: '2',
+    title: 'AntidisestablishmentarianismTitleExample',
+    description: 'Anothersuperlongwordwithoutspacestodemonstratewordwrapping',
+  },
+];
+
+function MyTable() {
+  const table = useTable({
+    data,
+    columns,
+    getRowId: (row) => row.id,
+  });
+
+  return <Table table={table} cellClassName="my-table-cell" />;
+}
 ```
 
 ```scss
 // SCSS
-.wrapped-cell {
+.my-table-cell {
   word-wrap: break-word;
   white-space: normal;
 }
@@ -462,12 +556,28 @@ const columns: ColumnDef<User>[] = [
 import React from 'react';
 import {Table} from '@gravity-ui/uikit';
 
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const columns = [
+  {id: 'name', name: 'Name'},
+  {id: 'email', name: 'Email'},
+];
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com'},
+];
+
 function MyTable() {
   return (
     <Table
       data={data}
       columns={columns}
-      getRowId={(item) => item.id}
+      getRowDescriptor={(item) => ({id: item.id})}
       onRowClick={(item, index, event) => {
         console.log('Clicked:', item);
       }}
@@ -481,11 +591,37 @@ function MyTable() {
 ```typescript jsx
 import React from 'react';
 import {Table, useTable} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const columns: ColumnDef<User>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
+];
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com'},
+];
 
 function MyTable() {
     const table = useTable({
         data,
         columns,
+        getRowId: (row) => row.id,
     });
 
     return (
@@ -507,13 +643,29 @@ function MyTable() {
 import React from 'react';
 import {Table} from '@gravity-ui/uikit';
 
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const columns = [
+  {id: 'name', name: 'Name'},
+  {id: 'email', name: 'Email'},
+];
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com'},
+];
+
 function MyTable() {
   return (
     <Table
       edgePadding={true}
       data={data}
       columns={columns}
-      getRowId={(item) => item.id}
+      getRowDescriptor={(item) => ({id: item.id})}
     />
   );
 }
@@ -524,11 +676,37 @@ function MyTable() {
 ```typescript jsx
 import React from 'react';
 import {Table, useTable} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const columns: ColumnDef<User>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
+];
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com'},
+];
 
 function MyTable() {
     const table = useTable({
         data,
         columns,
+        getRowId: (row) => row.id,
     });
 
     return (
@@ -542,15 +720,115 @@ function MyTable() {
 .table-with-padding {
   td:first-child,
   th:first-child {
-    padding-left: 20px;
+    padding-inline-start: var(--g-spacing-3);
   }
 
   td:last-child,
   th:last-child {
-    padding-right: 20px;
+    padding-inline-end: var(--g-spacing-3);
   }
 }
 ```
+
+#### 6. `getRowDescriptor` — Дескриптор строки с дополнительными свойствами
+
+В `@gravity-ui/uikit` `getRowDescriptor` возвращает объект, который может содержать не только `id`, но и дополнительные свойства, например `className` для стилизации отдельных строк.
+
+##### ❌ Было
+
+```typescript jsx
+import React from 'react';
+import {Table} from '@gravity-ui/uikit';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  status: 'active' | 'inactive';
+}
+
+const columns = [
+  {id: 'name', name: 'Name'},
+  {id: 'email', name: 'Email'},
+];
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com', status: 'active'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com', status: 'inactive'},
+];
+
+function MyTable() {
+  return (
+    <Table
+      columns={columns}
+      data={data}
+      getRowDescriptor={(item) => ({
+        id: item.id,
+        className: item.status === 'inactive' ? 'row-inactive' : undefined,
+      })}
+    />
+  );
+}
+```
+
+##### ✅ Стало
+
+В `@gravity-ui/table` используйте проп `rowClassName` на компоненте `Table`. Он принимает либо строку, либо функцию, которая получает строку и возвращает className.
+
+```typescript jsx
+import React from 'react';
+import {Table, useTable} from '@gravity-ui/table';
+import type {ColumnDef, Row} from '@gravity-ui/table/tanstack';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  status: 'active' | 'inactive';
+}
+
+const columns: ColumnDef<User>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
+];
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com', status: 'active'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com', status: 'inactive'},
+];
+
+function MyTable() {
+  const table = useTable({
+    data,
+    columns,
+    getRowId: (row) => row.id,
+  });
+
+  return (
+    <Table
+      table={table}
+      rowClassName={(row: Row<User>) =>
+        row.original.status === 'inactive' ? 'row-inactive' : undefined
+      }
+    />
+  );
+}
+```
+
+**Ключевые различия:**
+
+- `getRowDescriptor` возвращает объект с `id` и опциональными свойствами, такими как `className`
+- `rowClassName` — это проп компонента `Table`, а не часть дескриптора строки
+- `rowClassName` получает объект `Row` из TanStack, поэтому доступ к данным осуществляется через `row.original`
+- `rowClassName` может быть строкой (применяется ко всем строкам) или функцией `(row: Row<TData>) => string | undefined`
 
 ---
 
@@ -565,11 +843,30 @@ function MyTable() {
 ```typescript jsx
 import React from 'react';
 import {Table, withTableSorting} from '@gravity-ui/uikit';
+import type {WithTableSortingProps} from '@gravity-ui/uikit';
+
+type User = {
+    id: string;
+    name: string;
+    email: string;
+    status?: string;
+};
+
+const columns = [
+    {id: 'name', name: 'Name', meta: {sort: true}},
+    {id: 'email', name: 'Email', meta: {sort: true}},
+    {id: 'status', name: 'Status', meta: {sort: false}},
+];
+
+const data: User[] = [
+    {id: '1', name: 'John Doe', email: 'john@example.com', status: 'active'},
+    {id: '2', name: 'Jane Smith', email: 'jane@example.com', status: 'inactive'},
+];
 
 const TableWithSorting = withTableSorting(Table);
 
 function MyTable() {
-  const [sortState, setSortState] = React.useState([
+  const [sortState, setSortState] = React.useState<WithTableSortingProps['sortState']>([
     {column: 'name', order: 'asc'}
   ]);
 
@@ -577,8 +874,9 @@ function MyTable() {
     <TableWithSorting
       data={data}
       columns={columns}
-      defaultSortState={sortState}
+      sortState={sortState}
       onSortStateChange={setSortState}
+      disableDataSorting={false}
     />
   );
 }
@@ -591,41 +889,54 @@ import React from 'react';
 import {Table, useTable} from '@gravity-ui/table';
 import type {ColumnDef, SortingState} from '@gravity-ui/table/tanstack';
 
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  status?: string;
+}
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com', status: 'active'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com', status: 'inactive'},
+];
+
+const sortingColumns: ColumnDef<User>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+    enableSorting: true, // Включить сортировку
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+    enableSorting: true,
+  },
+  {
+    id: 'status',
+    header: 'Status',
+    accessorKey: 'status',
+    enableSorting: false, // Отключить сортировку
+  },
+];
+
 function MyTable() {
   const [sorting, setSorting] = React.useState<SortingState>([
     {id: 'name', desc: false}
   ]);
 
-  const columns: ColumnDef<User>[] = [
-    {
-      id: 'name',
-      header: 'Name',
-      accessorKey: 'name',
-      enableSorting: true, // Включить сортировку
-    },
-    {
-      id: 'email',
-      header: 'Email',
-      accessorKey: 'email',
-      enableSorting: true,
-    },
-    {
-      id: 'status',
-      header: 'Status',
-      accessorKey: 'status',
-      enableSorting: false, // Отключить сортировку
-    },
-  ];
-
   const table = useTable({
     data,
-    columns,
+    columns: sortingColumns,
     enableSorting: true, // Глобальное включение сортировки
     manualSorting: false, // false = клиентская, true = серверная
     state: {
       sorting,
     },
     onSortingChange: setSorting,
+    getRowId: (row) => row.id,
   });
 
   return (
@@ -641,6 +952,40 @@ import React from 'react';
 import {Table, useTable} from '@gravity-ui/table';
 import type {ColumnDef, SortingState} from '@gravity-ui/table/tanstack';
 
+type Employee = {
+  id: string;
+  name: string;
+  department: string;
+  email: string;
+}
+
+const employeeColumns: ColumnDef<Employee>[] = [
+  {
+    id: 'department',
+    header: 'Department',
+    accessorKey: 'department',
+    enableSorting: true,
+  },
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+    enableSorting: true,
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+    enableSorting: true,
+  },
+];
+
+const employeeData: Employee[] = [
+  {id: '1', name: 'John Doe', department: 'Engineering', email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', department: 'Marketing', email: 'jane@example.com'},
+  {id: '3', name: 'Bob Johnson', department: 'Engineering', email: 'bob@example.com'},
+];
+
 // Мультиколоночная сортировка
 function AdvancedSorting() {
   const [sorting, setSorting] = React.useState<SortingState>([
@@ -649,13 +994,14 @@ function AdvancedSorting() {
   ]);
 
   const table = useTable({
-    data,
-    columns,
+    data: employeeData,
+    columns: employeeColumns,
     enableSorting: true,
     enableMultiSort: true, // Мультисортировка через Shift+Click
     maxMultiSortColCount: 3, // Максимум 3 колонки
     state: {sorting},
     onSortingChange: setSorting,
+    getRowId: (row) => row.id,
   });
 
   return (
@@ -664,7 +1010,13 @@ function AdvancedSorting() {
 }
 
 // Кастомная функция сортировки
-const columns: ColumnDef<User>[] = [
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const customSortColumns: ColumnDef<User>[] = [
   {
     id: 'name',
     header: 'Name',
@@ -676,9 +1028,49 @@ const columns: ColumnDef<User>[] = [
       return a.localeCompare(b);
     },
   },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
 ];
 
+const customSortData: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com'},
+];
+
+function CustomSorting() {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+
+  const table = useTable({
+    data: customSortData,
+    columns: customSortColumns,
+    enableSorting: true,
+    state: {sorting},
+    onSortingChange: setSorting,
+    getRowId: (row) => row.id,
+  });
+
+  return <Table table={table} />;
+}
+
 // Серверная сортировка
+const serverSortColumns: ColumnDef<User>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+    enableSorting: true,
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+    enableSorting: true,
+  },
+];
+
 function ServerSideSorting() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [data, setData] = React.useState<User[]>([]);
@@ -698,11 +1090,12 @@ function ServerSideSorting() {
 
   const table = useTable({
     data,
-    columns,
+    columns: serverSortColumns,
     enableSorting: true,
     manualSorting: true, // Серверная сортировка
     state: {sorting},
     onSortingChange: setSorting,
+    getRowId: (row) => row.id,
   });
 
   return (
@@ -721,19 +1114,38 @@ function ServerSideSorting() {
 import React from 'react';
 import {Table, withTableSelection} from '@gravity-ui/uikit';
 
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const columns = [
+  {id: 'name', name: 'Name'},
+  {id: 'email', name: 'Email'},
+];
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com'},
+];
+
 const TableWithSelection = withTableSelection(Table);
 
 function MyTable() {
-  const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
+    const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
 
-  return (
-    <TableWithSelection
-      data={data}
-      columns={columns}
-      selectedIds={selectedIds}
-      onSelectionChange={setSelectedIds}
-    />
-  );
+    return (
+        <>
+            <div>Selected: {selectedIds.length}</div>
+            <TableWithSelection
+                data={data}
+                columns={columns}
+                selectedIds={selectedIds}
+                onSelectionChange={setSelectedIds}
+            />
+        </>
+    );
 }
 ```
 
@@ -741,70 +1153,59 @@ function MyTable() {
 
 ```typescript jsx
 import React from 'react';
-import {Table, useTable} from '@gravity-ui/table';
+import {Table, selectionColumn, useTable} from '@gravity-ui/table';
 import type {ColumnDef, RowSelectionState} from '@gravity-ui/table/tanstack';
 
+type User = {
+    id: string;
+    name: string;
+    email: string;
+    status?: string;
+};
+
+const data: User[] = [
+    {id: '1', name: 'John Doe', email: 'john@example.com'},
+    {id: '2', name: 'Jane Smith', email: 'jane@example.com'},
+];
+
+const selectionColumns: ColumnDef<User>[] = [
+    selectionColumn as ColumnDef<User>,
+    {
+        id: 'name',
+        header: 'Name',
+        accessorKey: 'name',
+    },
+    {
+        id: 'email',
+        header: 'Email',
+        accessorKey: 'email',
+    },
+];
+
 function MyTable() {
-  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+    const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
-  const columns: ColumnDef<User>[] = [
-    {
-      id: 'select',
-      header: ({table}) => (
-        <input
-          type="checkbox"
-          checked={table.getIsAllRowsSelected()}
-          indeterminate={table.getIsSomeRowsSelected()}
-          onChange={table.getToggleAllRowsSelectedHandler()}
-        />
-      ),
-      cell: ({row}) => (
-        <input
-          type="checkbox"
-          checked={row.getIsSelected()}
-          disabled={!row.getCanSelect()}
-          onChange={row.getToggleSelectedHandler()}
-        />
-      ),
-      size: 50,
-      enableSorting: false,
-      enableResizing: false,
-    },
-    {
-      id: 'name',
-      header: 'Name',
-      accessorKey: 'name',
-    },
-    // ... другие колонки
-  ];
+    const table = useTable({
+        data,
+        columns: selectionColumns,
+        enableMultiRowSelection: true, // Глобальное включение
+        enableRowSelection: true, // Глобальное включение
+        // enableRowSelection: (row) => row.original.selectable, // Условное включение
+        state: {
+            rowSelection,
+        },
+        onRowSelectionChange: setRowSelection,
+        getRowId: (row) => row.id,
+    });
 
-  // Получить выбранные строки
-  const selectedRows = React.useMemo(() => {
-    return Object.keys(rowSelection)
-      .filter(key => rowSelection[key])
-      .map(id => data.find(row => row.id === id));
-  }, [rowSelection, data]);
-
-  const table = useTable({
-    data,
-    columns,
-    enableRowSelection: true, // Глобальное включение
-    // enableRowSelection: (row) => row.original.selectable, // Условное включение
-    state: {
-      rowSelection,
-    },
-    onRowSelectionChange: setRowSelection,
-    getRowId: (row) => row.id,
-  });
-
-  return (
-    <>
-      <div>
-        Selected: {Object.keys(rowSelection).filter(key => rowSelection[key]).length}
-      </div>
-      <Table table={table} />
-    </>
-  );
+    return (
+        <>
+            <div>
+                Selected: {Object.keys(rowSelection).filter((key) => rowSelection[key]).length}
+            </div>
+            <Table table={table} />
+        </>
+    );
 }
 ```
 
@@ -812,56 +1213,105 @@ function MyTable() {
 
 ```typescript jsx
 import React from 'react';
-import {Table, useTable} from '@gravity-ui/table';
-import type {ColumnDef, RowSelectionState} from '@gravity-ui/table/tanstack';
+import {Table, selectionColumn, useTable} from '@gravity-ui/table';
+import type {ColumnDef, RowSelectionState, ExpandedState} from '@gravity-ui/table/tanstack';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  status?: 'active' | 'inactive';
+}
+
+const selectionData: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com', status: 'active'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com', status: 'inactive'},
+  {id: '3', name: 'Bob Johnson', email: 'bob@example.com', status: 'active'},
+];
+
+const conditionalSelectionColumns: ColumnDef<User>[] = [
+  selectionColumn as ColumnDef<User>,
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
+  {
+    id: 'status',
+    header: 'Status',
+    accessorKey: 'status',
+  },
+];
 
 // Условный выбор строк
 function ConditionalSelection() {
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
   const table = useTable({
-    data,
-    columns,
+    data: selectionData,
+    columns: conditionalSelectionColumns,
     enableRowSelection: (row) => {
       // Можно выбрать только активных пользователей
       return row.original.status === 'active';
     },
     state: {rowSelection},
     onRowSelectionChange: setRowSelection,
+    getRowId: (row) => row.id,
   });
 
   return <Table table={table} />;
 }
 
+const getSingleSelectionColumns = (
+  setRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>
+): ColumnDef<User>[] => [
+  {
+    id: 'select',
+    header: 'Select',
+    cell: ({row}) => (
+      <input
+        type="radio"
+        name="row-selection"
+        checked={row.getIsSelected()}
+        onChange={() => {
+          // Сбросить все и выбрать текущую
+          setRowSelection({[row.id]: true});
+        }}
+      />
+    ),
+    size: 50,
+    enableSorting: false,
+    enableResizing: false,
+  },
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
+];
+
 // Одиночный выбор (radio-режим)
 function SingleSelection() {
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
-  const columns: ColumnDef<User>[] = [
-    {
-      id: 'select',
-      cell: ({row}) => (
-        <input
-          type="radio"
-          name="row-selection"
-          checked={row.getIsSelected()}
-          onChange={() => {
-            // Сбросить все и выбрать текущую
-            setRowSelection({[row.id]: true});
-          }}
-        />
-      ),
-    },
-    // ... остальные колонки
-  ];
-
   const table = useTable({
-    data,
-    columns,
+    data: selectionData,
+    columns: getSingleSelectionColumns(setRowSelection),
     enableRowSelection: true,
     enableMultiRowSelection: false, // Одиночный выбор
     state: {rowSelection},
     onRowSelectionChange: setRowSelection,
+    getRowId: (row) => row.id,
   });
 
   return (
@@ -869,17 +1319,71 @@ function SingleSelection() {
   );
 }
 
+type GroupedUser = {
+  id: string;
+  name: string;
+  email: string;
+  subRows?: GroupedUser[];
+}
+
+const groupSelectionData: GroupedUser[] = [
+  {
+    id: 'group-1',
+    name: 'Engineering',
+    email: 'engineering@example.com',
+    subRows: [
+      {id: '1', name: 'John Doe', email: 'john@example.com'},
+      {id: '2', name: 'Jane Smith', email: 'jane@example.com'},
+    ],
+  },
+  {
+    id: 'group-2',
+    name: 'Marketing',
+    email: 'marketing@example.com',
+    subRows: [
+      {id: '3', name: 'Bob Johnson', email: 'bob@example.com'},
+      {id: '4', name: 'Alice Brown', email: 'alice@example.com'},
+    ],
+  },
+];
+
+const groupSelectionColumns: ColumnDef<GroupedUser>[] = [
+  selectionColumn as ColumnDef<GroupedUser>,
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
+];
+
 // Выбор с группировкой (выбрать всю группу)
 function GroupSelection() {
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+  const [expanded, setExpanded] = React.useState<ExpandedState>({
+    'group-1': true,
+    'group-2': true,
+  });
 
   const table = useTable({
-    data,
-    columns,
+    data: groupSelectionData,
+    columns: groupSelectionColumns,
+    enableMultiRowSelection: true,
     enableRowSelection: true,
     enableSubRowSelection: true, // Выбор вложенных строк
-    state: {rowSelection},
+    enableExpanding: true,
+    getSubRows: (row) => row.subRows,
+    state: {
+      rowSelection,
+      expanded,
+    },
     onRowSelectionChange: setRowSelection,
+    onExpandedChange: setExpanded,
+    getRowId: (row) => row.id,
   });
 
   return (
@@ -897,6 +1401,22 @@ function GroupSelection() {
 ```typescript jsx
 import React from 'react';
 import {Table, withTableActions} from '@gravity-ui/uikit';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const columns = [
+  {id: 'name', name: 'Name'},
+  {id: 'email', name: 'Email'},
+];
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com'},
+];
 
 const TableWithActions = withTableActions(Table);
 
@@ -928,8 +1448,60 @@ function MyTable() {
 ```typescript jsx
 import React from 'react';
 import {Table, useTable} from '@gravity-ui/table';
-import {Button, DropdownMenu} from '@gravity-ui/uikit';
+import {DropdownMenu} from '@gravity-ui/uikit';
 import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com'},
+];
+
+const getActionsColumns = (
+  handleEdit: (user: User) => void,
+  handleDelete: (user: User) => void
+): ColumnDef<User>[] => [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
+  {
+    id: 'actions',
+    header: 'Actions',
+    cell: ({row}) => {
+      const user = row.original;
+
+      return (
+        <DropdownMenu
+          items={[
+            {
+              text: 'Edit',
+              action: () => handleEdit(user),
+            },
+            {
+              text: 'Delete',
+              action: () => handleDelete(user),
+              theme: 'danger',
+            },
+          ]}
+        />
+      );
+    },
+    size: 100,
+    enableSorting: false,
+  },
+];
 
 function MyTable() {
     const handleEdit = (user: User) => {
@@ -940,47 +1512,7 @@ function MyTable() {
         console.log('Delete', user);
     };
 
-  const columns: ColumnDef<User>[] = [
-    {
-      id: 'name',
-      header: 'Name',
-      accessorKey: 'name',
-    },
-    {
-      id: 'email',
-      header: 'Email',
-      accessorKey: 'email',
-    },
-    {
-      id: 'actions',
-      header: 'Actions',
-      cell: ({row}) => {
-        const user = row.original;
-
-        return (
-          <DropdownMenu
-            items={[
-              {
-                text: 'Edit',
-                action: () => handleEdit(user),
-              },
-              {
-                text: 'Delete',
-                action: () => handleDelete(user),
-                theme: 'danger',
-              },
-            ]}
-          >
-            <Button view="flat" size="s">
-              Actions
-            </Button>
-          </DropdownMenu>
-        );
-      },
-      size: 100,
-      enableSorting: false,
-    },
-  ];
+  const columns = getActionsColumns(handleEdit, handleDelete);
 
   const table = useTable({
     data,
@@ -1002,21 +1534,41 @@ function MyTable() {
 ```typescript jsx
 import React from 'react';
 import {Table, withTableSettings} from '@gravity-ui/uikit';
+import type {WithTableSettingsProps} from '@gravity-ui/uikit';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+}
+
+const columns = [
+  {id: 'name', name: 'Name'},
+  {id: 'email', name: 'Email'},
+  {id: 'phone', name: 'Phone'},
+];
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com', phone: '+1234567890'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com', phone: '+0987654321'},
+];
 
 const TableWithSettings = withTableSettings(Table);
 
 function MyTable() {
-  const [settings, setSettings] = React.useState({
-    visibleColumns: ['name', 'email'],
-    columnOrder: ['name', 'email', 'phone'],
-  });
+  const [settings, setSettings] = React.useState<WithTableSettingsProps['settings']>([
+    {id: 'name', isSelected: true},
+    {id: 'email', isSelected: true},
+    {id: 'phone', isSelected: false},
+  ]);
 
   return (
     <TableWithSettings
       data={data}
       columns={columns}
       settings={settings}
-      onSettingsChange={setSettings}
+      updateSettings={setSettings}
     />
   );
 }
@@ -1026,8 +1578,41 @@ function MyTable() {
 
 ```typescript jsx
 import React from 'react';
-import {Table, useTable} from '@gravity-ui/table';
+import {Table, useTable, getSettingsColumn} from '@gravity-ui/table';
 import type {ColumnDef, VisibilityState, ColumnOrderState} from '@gravity-ui/table/tanstack';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+}
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com', phone: '+1234567890'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com', phone: '+0987654321'},
+];
+
+const settingsColumns: ColumnDef<User>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
+  {
+    id: 'phone',
+    header: 'Phone',
+    accessorKey: 'phone',
+    enableHiding: true, // Можно скрыть
+  },
+  // Добавить колонку настроек с помощью вспомогательной функции
+  getSettingsColumn<User>(),
+];
 
 function MyTable() {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
@@ -1040,28 +1625,9 @@ function MyTable() {
     'phone',
   ]);
 
-  const columns: ColumnDef<User>[] = [
-    {
-      id: 'name',
-      header: 'Name',
-      accessorKey: 'name',
-    },
-    {
-      id: 'email',
-      header: 'Email',
-      accessorKey: 'email',
-    },
-    {
-      id: 'phone',
-      header: 'Phone',
-      accessorKey: 'phone',
-      enableHiding: true, // Можно скрыть
-    },
-  ];
-
   const table = useTable({
     data,
-    columns,
+    columns: settingsColumns,
     enableHiding: true, // Включить возможность скрытия
     state: {
       columnVisibility,
@@ -1069,175 +1635,10 @@ function MyTable() {
     },
     onColumnVisibilityChange: setColumnVisibility,
     onColumnOrderChange: setColumnOrder,
+    getRowId: (row) => row.id,
   });
 
-  return (
-    <>
-      {/* Панель настроек */}
-      <div>
-        <h4>Show/Hide Columns:</h4>
-        {columns.map((column) => (
-          <label key={column.id}>
-            <input
-              type="checkbox"
-              checked={columnVisibility[column.id!] !== false}
-              onChange={(e) => {
-                setColumnVisibility(prev => ({
-                  ...prev,
-                  [column.id!]: e.target.checked,
-                }));
-              }}
-            />
-            {column.header as string}
-          </label>
-        ))}
-      </div>
-
-      <Table table={table} />
-    </>
-  );
-}
-```
-
-**🎉 Расширенные настройки колонок:**
-
-```typescript jsx
-// Полная панель управления колонками
-import React from 'react';
-import {Table, useTable} from '@gravity-ui/table';
-import {Button, Popover, Checkbox, Flex, Icon} from '@gravity-ui/uikit';
-import {Gear} from '@gravity-ui/icons';
-import type {ColumnDef, VisibilityState, ColumnOrderState} from '@gravity-ui/table/tanstack';
-
-function TableWithFullSettings() {
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>([]);
-  const [columnSizing, setColumnSizing] = React.useState({});
-
-  const table = useTable({
-    data,
-    columns,
-    enableHiding: true,
-    enableColumnResizing: true, // Изменение размеров
-    columnResizeMode: 'onChange',
-    state: {
-      columnVisibility,
-      columnOrder,
-      columnSizing,
-    },
-    onColumnVisibilityChange: setColumnVisibility,
-    onColumnOrderChange: setColumnOrder,
-    onColumnSizingChange: setColumnSizing,
-  });
-
-  return (
-    <div>
-      <Flex justifyContent="space-between" gap={2}>
-        <h2>Users Table</h2>
-
-        {/* Кнопка настроек */}
-        <Popover
-          content={
-            <ColumnSettingsPanel
-              columns={columns}
-              columnVisibility={columnVisibility}
-              onVisibilityChange={setColumnVisibility}
-              columnOrder={columnOrder}
-              onOrderChange={setColumnOrder}
-            />
-          }
-        >
-          <Button view="outlined" size="m">
-            <Icon data={Gear} /> Settings
-          </Button>
-        </Popover>
-      </Flex>
-
-      <Table table={table} />
-    </div>
-  );
-}
-
-// Компонент панели настроек с Drag & Drop
-import {DndContext, closestCenter} from '@dnd-kit/core';
-import {SortableContext, verticalListSortingStrategy, useSortable} from '@dnd-kit/sortable';
-
-type ColumnSettingsPanelProps = {
-  columns: ColumnDef<User>[];
-  columnVisibility: VisibilityState;
-  onVisibilityChange: (visibility: VisibilityState) => void;
-  columnOrder: ColumnOrderState;
-  onOrderChange: (order: ColumnOrderState) => void;
-}
-
-function ColumnSettingsPanel({
-  columns,
-  columnVisibility,
-  onVisibilityChange,
-  columnOrder,
-  onOrderChange,
-}: ColumnSettingsPanelProps) {
-  const handleDragEnd = (event: any) => {
-    const {active, over} = event;
-    if (active.id !== over.id) {
-      const oldIndex = columnOrder.indexOf(active.id);
-      const newIndex = columnOrder.indexOf(over.id);
-      const newOrder = [...columnOrder];
-      newOrder.splice(oldIndex, 1);
-      newOrder.splice(newIndex, 0, active.id);
-      onOrderChange(newOrder);
-    }
-  };
-
-  return (
-    <div style={{padding: '16px', minWidth: '250px'}}>
-      <h4>Column Settings</h4>
-
-      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={columnOrder} strategy={verticalListSortingStrategy}>
-          {columnOrder.map((columnId) => {
-            const column = columns.find(c => c.id === columnId);
-            if (!column) return null;
-
-            return (
-              <SortableColumnItem
-                key={columnId}
-                id={columnId}
-                label={column.header as string}
-                visible={columnVisibility[columnId] !== false}
-                onVisibilityChange={(visible) => {
-                  onVisibilityChange({
-                    ...columnVisibility,
-                    [columnId]: visible,
-                  });
-                }}
-              />
-            );
-          })}
-        </SortableContext>
-      </DndContext>
-    </div>
-  );
-}
-
-function SortableColumnItem({id, label, visible, onVisibilityChange}: any) {
-  const {attributes, listeners, setNodeRef, transform, transition} = useSortable({id});
-
-  const style = {
-    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
-    transition,
-  };
-
-  return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <Checkbox
-        checked={visible}
-        onChange={(e) => onVisibilityChange(e.target.checked)}
-      >
-        {label}
-      </Checkbox>
-    </div>
-  );
+  return <Table table={table} />;
 }
 ```
 
@@ -1292,7 +1693,7 @@ function MyTable() {
       <Table
         data={data}
         columns={visibleColumns}
-        getRowId={(item) => item.id}
+        getRowDescriptor={(item) => ({id: item.id})}
       />
     </>
   );
@@ -1304,9 +1705,19 @@ function MyTable() {
 ```typescript jsx
 import React from 'react';
 import {Table, useTable, TableSettings} from '@gravity-ui/table';
-import {Button, Icon} from '@gravity-ui/uikit';
-import {Gear} from '@gravity-ui/icons';
 import type {ColumnDef, VisibilityState, ColumnOrderState} from '@gravity-ui/table/tanstack';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+}
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com', phone: '+1234567890'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com', phone: '+0987654321'},
+];
 
 function MyTable() {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
@@ -1341,7 +1752,6 @@ function MyTable() {
     data,
     columns,
     enableHiding: true,
-    enableColumnOrdering: true,
     state: {
       columnVisibility,
       columnOrder,
@@ -1364,7 +1774,7 @@ function MyTable() {
 
   return (
     <>
-      <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '16px'}}>
+      <div style={{display: 'flex', justifyContent: 'flex-start', marginBottom: '16px'}}>
         <TableSettings
           table={table}
           sortable={true}
@@ -1388,147 +1798,6 @@ function MyTable() {
 - **Поддержка вложенных колонок**: Работает с группами заголовков
 - **Применить/Отменить**: Предпросмотр изменений перед применением
 
-**Кастомная кнопка:**
-
-```typescript jsx
-import React from 'react';
-import {Table, useTable, TableSettings} from '@gravity-ui/table';
-import {Button, Icon, Popup} from '@gravity-ui/uikit';
-import {Gear} from '@gravity-ui/icons';
-
-function MyTable() {
-  const table = useTable({
-    data,
-    columns,
-    enableHiding: true,
-    enableColumnOrdering: true,
-  });
-
-  const [settingsOpen, setSettingsOpen] = React.useState(false);
-  const anchorRef = React.useRef<HTMLButtonElement>(null);
-
-  return (
-    <>
-      <Button
-        ref={anchorRef}
-        view="outlined"
-        onClick={() => setSettingsOpen(!settingsOpen)}
-      >
-        <Icon data={Gear} /> Настройки колонок
-      </Button>
-
-      <Popup
-        anchorRef={anchorRef}
-        open={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        placement="bottom-end"
-      >
-        <TableSettings
-          table={table}
-          sortable={true}
-          filterable={true}
-          enableSearch={true}
-          onSettingsApply={() => {
-            setSettingsOpen(false);
-          }}
-        />
-      </Popup>
-
-      <Table table={table} />
-    </>
-  );
-}
-```
-
-### 4.2. Использование вспомогательной функции `getSettingsColumn`
-
-```typescript jsx
-import React from 'react';
-import {Table, useTable, getSettingsColumn} from '@gravity-ui/table';
-import type {ColumnDef, VisibilityState, ColumnOrderState} from '@gravity-ui/table/tanstack';
-
-function MyTable() {
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
-    phone: false,
-  });
-  const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>([
-    'name',
-    'email',
-    'phone',
-  ]);
-
-  const columns: ColumnDef<User>[] = [
-    {
-      id: 'name',
-      header: 'Name',
-      accessorKey: 'name',
-    },
-    {
-      id: 'email',
-      header: 'Email',
-      accessorKey: 'email',
-    },
-    {
-      id: 'phone',
-      header: 'Phone',
-      accessorKey: 'phone',
-      enableHiding: true,
-    },
-    // Добавить колонку настроек с помощью вспомогательной функции
-    getSettingsColumn<User>(),
-  ];
-
-  const table = useTable({
-    data,
-    columns,
-    enableHiding: true,
-    enableColumnOrdering: true,
-    state: {
-      columnVisibility,
-      columnOrder,
-    },
-    onColumnVisibilityChange: setColumnVisibility,
-    onColumnOrderChange: setColumnOrder,
-  });
-
-  return <Table table={table} />;
-}
-```
-
-**С кастомными опциями:**
-
-```typescript jsx
-import React from 'react';
-import {Table, useTable, getSettingsColumn} from '@gravity-ui/table';
-import type {ColumnDef} from '@gravity-ui/table/tanstack';
-
-function MyTable() {
-  const columns: ColumnDef<User>[] = [
-    // ... другие колонки
-    // Добавить колонку настроек с кастомными опциями
-    getSettingsColumn<User>('_custom-settings-id', {
-      sortable: true,
-      filterable: true,
-      enableSearch: true,
-      searchPlaceholder: 'Поиск колонок...',
-      onSettingsApply: ({visibilityState, columnOrder}) => {
-        // Обработка применения настроек
-        console.log('Настройки применены', {visibilityState, columnOrder});
-      },
-    }),
-  ];
-
-  const table = useTable({
-    data,
-    columns,
-    enableHiding: true,
-    enableColumnOrdering: true,
-  });
-
-  return <Table table={table} />;
-}
-```
-
 ---
 
 ### 5. `withTableCopy` — Копирование данных
@@ -1539,6 +1808,22 @@ function MyTable() {
 import React from 'react';
 import {Table, withTableCopy} from '@gravity-ui/uikit';
 
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const columns = [
+  {id: 'name', name: 'Name'},
+  {id: 'email', name: 'Email'},
+];
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com', meta: {copy: true}},
+];
+
 const TableWithCopy = withTableCopy(Table);
 
 function MyTable() {
@@ -1546,8 +1831,7 @@ function MyTable() {
     <TableWithCopy
       data={data}
       columns={columns}
-      getRowId={(item) => item.id}
-      allowCopy={true}
+      getRowDescriptor={(item) => ({id: item.id})}
     />
   );
 }
@@ -1562,7 +1846,48 @@ import {Button, Toaster, Flex, Icon} from '@gravity-ui/uikit';
 import {Copy} from '@gravity-ui/icons';
 import type {ColumnDef} from '@gravity-ui/table/tanstack';
 
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com'},
+];
+
 const toaster = new Toaster();
+
+const getCopyColumns = (
+  copyToClipboard: (text: string) => Promise<void>
+): ColumnDef<User>[] => [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+    cell: ({getValue}) => {
+      const email = getValue<string>();
+      return (
+        <Flex gap={2} alignItems="center">
+          <span>{email}</span>
+          <Button
+            view="flat"
+            size="xs"
+            onClick={() => copyToClipboard(email)}
+          >
+            <Icon data={Copy} size={14} />
+          </Button>
+        </Flex>
+      );
+    },
+  },
+];
 
 function MyTable() {
   // Функция копирования в буфер обмена
@@ -1583,56 +1908,15 @@ function MyTable() {
     }
   };
 
-  const columns: ColumnDef<User>[] = [
-    {
-      id: 'name',
-      header: 'Name',
-      accessorKey: 'name',
-    },
-    {
-      id: 'email',
-      header: 'Email',
-      accessorKey: 'email',
-      cell: ({getValue}) => {
-        const email = getValue<string>();
-        return (
-          <Flex gap={2} alignItems="center">
-            <span>{email}</span>
-            <Button
-              view="flat"
-              size="xs"
-              onClick={() => copyToClipboard(email)}
-            >
-              <Icon data={Copy} size={14} />
-            </Button>
-          </Flex>
-        );
-      },
-    },
-  ];
-
-  // Копирование всей таблицы
-  const handleCopyAllData = () => {
-    const csv = data
-      .map(row => `${row.name}\t${row.email}`)
-      .join('\n');
-    copyToClipboard(csv);
-  };
+  const columns = getCopyColumns(copyToClipboard);
 
   const table = useTable({
     data,
     columns,
+    getRowId: (row) => row.id,
   });
 
-  return (
-    <>
-      <Button onClick={handleCopyAllData}>
-        Copy All Data
-      </Button>
-
-      <Table table={table} />
-    </>
-  );
+  return <Table table={table} />;
 }
 ```
 
@@ -1685,56 +1969,57 @@ const data: FileSystemItem[] = [
   },
 ];
 
+const treeColumns: ColumnDef<FileSystemItem>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+    cell: ({row, getValue}) => (
+      <div
+        style={{
+          paddingLeft: `${row.depth * 20}px`,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+        }}
+      >
+        {row.getCanExpand() ? (
+          <button
+            onClick={row.getToggleExpandedHandler()}
+            style={{cursor: 'pointer'}}
+          >
+            {row.getIsExpanded() ? '📂' : '📁'}
+          </button>
+        ) : (
+          <span>📄</span>
+        )}
+        {getValue()}
+      </div>
+    ),
+  },
+  {
+    id: 'type',
+    header: 'Type',
+    accessorKey: 'type',
+  },
+  {
+    id: 'size',
+    header: 'Size',
+    accessorKey: 'size',
+    cell: ({getValue}) => {
+      const size = getValue<number>();
+      return size ? `${size} KB` : '-';
+    },
+  },
+];
+
 function TreeTable() {
   const [expanded, setExpanded] = React.useState({});
 
-  const columns: ColumnDef<FileSystemItem>[] = [
-    {
-      id: 'name',
-      header: 'Name',
-      accessorKey: 'name',
-      cell: ({row, getValue}) => (
-        <div
-          style={{
-            paddingLeft: `${row.depth * 20}px`,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-          }}
-        >
-          {row.getCanExpand() ? (
-            <button
-              onClick={row.getToggleExpandedHandler()}
-              style={{cursor: 'pointer'}}
-            >
-              {row.getIsExpanded() ? '📂' : '📁'}
-            </button>
-          ) : (
-            <span>📄</span>
-          )}
-          {getValue()}
-        </div>
-      ),
-    },
-    {
-      id: 'type',
-      header: 'Type',
-      accessorKey: 'type',
-    },
-    {
-      id: 'size',
-      header: 'Size',
-      accessorKey: 'size',
-      cell: ({getValue}) => {
-        const size = getValue<number>();
-        return size ? `${size} KB` : '-';
-      },
-    },
-  ];
-
   const table = useTable({
     data,
-    columns,
+    columns: treeColumns,
+    getRowId: (row) => row.id,
     enableExpanding: true, // Включить раскрытие строк
     getSubRows: (row) => row.subRows, // Получить вложенные строки
     state: {
@@ -1761,13 +2046,21 @@ import {Table, useTable} from '@gravity-ui/table';
 import {Button} from '@gravity-ui/uikit';
 import type {ColumnDef, ColumnPinningState} from '@gravity-ui/table/tanstack';
 
-function PinnedColumnsTable() {
-  const [columnPinning, setColumnPinning] = React.useState<ColumnPinningState>({
-    left: ['select', 'name'], // Закрепить слева
-    right: ['actions'], // Закрепить справа
-  });
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  department: string;
+  position: string;
+}
 
-  const columns: ColumnDef<User>[] = [
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com', department: 'Engineering', position: 'Developer'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com', department: 'Marketing', position: 'Manager'},
+  {id: '3', name: 'Bob Johnson', email: 'bob@example.com', department: 'Sales', position: 'Representative'},
+];
+
+const pinnedColumns: ColumnDef<User>[] = [
     {
       id: 'select',
       header: '☑',
@@ -1806,14 +2099,21 @@ function PinnedColumnsTable() {
     },
   ];
 
+function PinnedColumnsTable() {
+  const [columnPinning, setColumnPinning] = React.useState<ColumnPinningState>({
+    left: ['select', 'name'], // Закрепить слева
+    right: ['actions'], // Закрепить справа
+  });
+
   const table = useTable({
     data,
-    columns,
+    columns: pinnedColumns,
     enableColumnPinning: true, // Включить закрепление
     state: {
       columnPinning,
     },
     onColumnPinningChange: setColumnPinning,
+    getRowId: (row) => row.id,
   });
 
   return (
@@ -1829,18 +2129,59 @@ import React from 'react';
 import {Table, useTable} from '@gravity-ui/table';
 import type {ColumnDef} from '@gravity-ui/table/tanstack';
 
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  department: string;
+}
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com', department: 'Engineering'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com', department: 'Marketing'},
+  {id: '3', name: 'Bob Johnson', email: 'bob@example.com', department: 'Sales'},
+];
+
+const resizableColumns: ColumnDef<User>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+    size: 200,
+    minSize: 100,
+    maxSize: 400,
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+    size: 250,
+    minSize: 150,
+    maxSize: 500,
+  },
+  {
+    id: 'department',
+    header: 'Department',
+    accessorKey: 'department',
+    size: 150,
+    minSize: 100,
+    maxSize: 300,
+  },
+];
+
 function ResizableTable() {
   const [columnSizing, setColumnSizing] = React.useState({});
 
   const table = useTable({
     data,
-    columns,
+    columns: resizableColumns,
     enableColumnResizing: true, // Включить изменение размера
     columnResizeMode: 'onChange', // 'onChange' | 'onEnd'
     state: {
       columnSizing,
     },
     onColumnSizingChange: setColumnSizing,
+    getRowId: (row) => row.id,
   });
 
   return (
@@ -1856,6 +2197,26 @@ function ResizableTable() {
 ```typescript jsx
 import React from 'react';
 import {Table, useTable, useRowVirtualizer} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const virtualizedColumns: ColumnDef<User>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
+];
 
 function VirtualizedTable() {
   // Огромный датасет
@@ -1870,7 +2231,7 @@ function VirtualizedTable() {
 
   const table = useTable({
     data,
-    columns,
+    columns: virtualizedColumns,
     getRowId: (row) => row.id,
   });
 
@@ -1898,6 +2259,26 @@ function VirtualizedTable() {
 ```typescript jsx
 import React from 'react';
 import {Table, useTable, useWindowRowVirtualizer} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const windowVirtualizedColumns: ColumnDef<User>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
+];
 
 function WindowVirtualizedTable() {
   const data = React.useMemo(
@@ -1911,7 +2292,7 @@ function WindowVirtualizedTable() {
 
   const table = useTable({
     data,
-    columns,
+    columns: windowVirtualizedColumns,
     getRowId: (row) => row.id,
   });
 
@@ -1942,31 +2323,40 @@ function WindowVirtualizedTable() {
 ```typescript jsx
 import React from 'react';
 import {Table, useTable, ReorderingProvider, dragHandleColumn} from '@gravity-ui/table';
-import type {ReorderingProviderProps, ColumnDef} from '@gravity-ui/table';
+import type {ReorderingProviderProps} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const initialData: User[] = [
+  {id: '1', name: 'John', email: 'john@example.com'},
+  {id: '2', name: 'Jane', email: 'jane@example.com'},
+  {id: '3', name: 'Bob', email: 'bob@example.com'},
+];
+
+const reorderableColumns: ColumnDef<User>[] = [
+  dragHandleColumn as ColumnDef<User>, // Колонка с ручкой для перетаскивания
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
+];
 
 function ReorderableTable() {
-  const [data, setData] = React.useState<User[]>([
-    {id: '1', name: 'John', email: 'john@example.com'},
-    {id: '2', name: 'Jane', email: 'jane@example.com'},
-    {id: '3', name: 'Bob', email: 'bob@example.com'},
-  ]);
-
-  const columns: ColumnDef<User>[] = [
-    dragHandleColumn as ColumnDef<User>, // Колонка с ручкой для перетаскивания
-    {
-      id: 'name',
-      header: 'Name',
-      accessorKey: 'name',
-    },
-    {
-      id: 'email',
-      header: 'Email',
-      accessorKey: 'email',
-    },
-  ];
+  const [data, setData] = React.useState<User[]>(initialData);
 
   const table = useTable({
-    columns,
+    columns: reorderableColumns,
     data,
     getRowId: (row) => row.id,
   });
@@ -2008,11 +2398,32 @@ function ReorderableTable() {
 ```typescript jsx
 import React from 'react';
 import {Table, useTable, useWindowRowVirtualizer, ReorderingProvider, dragHandleColumn, getVirtualRowRangeExtractor} from '@gravity-ui/table';
-import type {ReorderingProviderProps, ColumnDef} from '@gravity-ui/table';
+import type {ReorderingProviderProps} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const reorderableVirtualizedColumns: ColumnDef<User>[] = [
+  dragHandleColumn as ColumnDef<User>,
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
+];
 
 function ReorderableVirtualizedTable() {
   const tableRef = React.useRef<HTMLTableElement>(null);
-  const [data, setData] = React.useState(() =>
+  const [data, setData] = React.useState<User[]>(() =>
     Array.from({length: 1000}, (_, i) => ({
       id: `${i}`,
       name: `User ${i}`,
@@ -2020,22 +2431,8 @@ function ReorderableVirtualizedTable() {
     }))
   );
 
-  const columns: ColumnDef<User>[] = [
-    dragHandleColumn as ColumnDef<User>,
-    {
-      id: 'name',
-      header: 'Name',
-      accessorKey: 'name',
-    },
-    {
-      id: 'email',
-      header: 'Email',
-      accessorKey: 'email',
-    },
-  ];
-
   const table = useTable({
-    columns,
+    columns: reorderableVirtualizedColumns,
     data,
     getRowId: (row) => row.id,
   });
@@ -2093,10 +2490,22 @@ import React from 'react';
 import {Table, useTable} from '@gravity-ui/table';
 import type {ColumnDef, GroupingState} from '@gravity-ui/table/tanstack';
 
-function GroupedTable() {
-  const [grouping, setGrouping] = React.useState<GroupingState>(['department']);
+type User = {
+  id: string;
+  name: string;
+  department: string;
+  position: string;
+}
 
-  const columns: ColumnDef<User>[] = [
+const data: User[] = [
+  {id: '1', name: 'John Doe', department: 'Engineering', position: 'Developer'},
+  {id: '2', name: 'Jane Smith', department: 'Engineering', position: 'Senior Developer'},
+  {id: '3', name: 'Bob Johnson', department: 'Marketing', position: 'Manager'},
+  {id: '4', name: 'Alice Brown', department: 'Marketing', position: 'Specialist'},
+  {id: '5', name: 'Charlie Wilson', department: 'Sales', position: 'Representative'},
+];
+
+const groupedColumns: ColumnDef<User>[] = [
     {
       id: 'department',
       header: 'Department',
@@ -2134,14 +2543,18 @@ function GroupedTable() {
     },
   ];
 
+function GroupedTable() {
+  const [grouping, setGrouping] = React.useState<GroupingState>(['department']);
+
   const table = useTable({
     data,
-    columns,
+    columns: groupedColumns,
     enableGrouping: true,
     state: {
       grouping,
     },
     onGroupingChange: setGrouping,
+    getRowId: (row) => row.id,
   });
 
   return (
@@ -2157,40 +2570,22 @@ import React from 'react';
 import {Table, useTable} from '@gravity-ui/table';
 import type {ColumnDef, ColumnFiltersState} from '@gravity-ui/table/tanstack';
 
-function FilterableTable() {
-  const [globalFilter, setGlobalFilter] = React.useState('');
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-
-  const table = useTable({
-    data,
-    columns,
-    enableGlobalFilter: true, // Глобальный поиск
-    enableColumnFilters: true, // Фильтры по колонкам
-    state: {
-      globalFilter,
-      columnFilters,
-    },
-    onGlobalFilterChange: setGlobalFilter,
-    onColumnFiltersChange: setColumnFilters,
-  });
-
-  return (
-    <>
-      {/* Глобальный поиск */}
-      <input
-        type="text"
-        placeholder="Search all columns..."
-        value={globalFilter}
-        onChange={(e) => setGlobalFilter(e.target.value)}
-      />
-
-      <Table table={table} />
-    </>
-  );
+type User = {
+  id: string;
+  name: string;
+  status: string;
+  email: string;
 }
 
+const data: User[] = [
+  {id: '1', name: 'John Doe', status: 'active', email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', status: 'inactive', email: 'jane@example.com'},
+  {id: '3', name: 'Bob Johnson', status: 'active', email: 'bob@example.com'},
+  {id: '4', name: 'Alice Brown', status: 'pending', email: 'alice@example.com'},
+];
+
 // Фильтры в заголовках колонок
-const columns: ColumnDef<User>[] = [
+const filterableColumns: ColumnDef<User>[] = [
   {
     id: 'name',
     header: ({column}) => (
@@ -2216,7 +2611,45 @@ const columns: ColumnDef<User>[] = [
       return row.getValue(columnId) === filterValue;
     },
   },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
 ];
+
+function FilterableTable() {
+  const [globalFilter, setGlobalFilter] = React.useState('');
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+
+  const table = useTable({
+    data,
+    columns: filterableColumns,
+    enableGlobalFilter: true, // Глобальный поиск
+    enableColumnFilters: true, // Фильтры по колонкам
+    state: {
+      globalFilter,
+      columnFilters,
+    },
+    onGlobalFilterChange: setGlobalFilter,
+    onColumnFiltersChange: setColumnFilters,
+    getRowId: (row) => row.id,
+  });
+
+  return (
+    <>
+      {/* Глобальный поиск */}
+      <input
+        type="text"
+        placeholder="Search all columns..."
+        value={globalFilter}
+        onChange={(e) => setGlobalFilter(e.target.value)}
+      />
+
+      <Table table={table} />
+    </>
+  );
+}
 ```
 
 ### 7. 📄 Расширяемые строки (Expanding Rows)
@@ -2226,34 +2659,63 @@ import React from 'react';
 import {Table, useTable} from '@gravity-ui/table';
 import type {ColumnDef} from '@gravity-ui/table/tanstack';
 
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  department: string;
+}
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com', phone: '+1234567890', department: 'Engineering'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com', phone: '+0987654321', department: 'Marketing'},
+  {id: '3', name: 'Bob Johnson', email: 'bob@example.com', phone: '+1122334455', department: 'Sales'},
+];
+
+const expandableColumns: ColumnDef<User>[] = [
+  {
+    id: 'expander',
+    header: '',
+    cell: ({row}) => (
+      row.getCanExpand() ? (
+        <button onClick={row.getToggleExpandedHandler()}>
+          {row.getIsExpanded() ? '▼' : '▶'}
+        </button>
+      ) : null
+    ),
+    size: 50,
+  },
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
+  {
+    id: 'department',
+    header: 'Department',
+    accessorKey: 'department',
+  },
+];
+
 function ExpandableRowsTable() {
   const [expanded, setExpanded] = React.useState({});
 
-  const columns: ColumnDef<User>[] = [
-    {
-      id: 'expander',
-      header: '',
-      cell: ({row}) => (
-        row.getCanExpand() ? (
-          <button onClick={row.getToggleExpandedHandler()}>
-            {row.getIsExpanded() ? '▼' : '▶'}
-          </button>
-        ) : null
-      ),
-      size: 50,
-    },
-    // ... остальные колонки
-  ];
-
   const table = useTable({
     data,
-    columns,
+    columns: expandableColumns,
     enableExpanding: true,
     getRowCanExpand: () => true, // Все строки могут раскрываться
     state: {
       expanded,
     },
     onExpandedChange: setExpanded,
+    getRowId: (row) => row.id,
   });
 
   return (
@@ -2261,7 +2723,7 @@ function ExpandableRowsTable() {
       table={table}
       getIsCustomRow={(row) => row.getIsExpanded() && !row.getIsGrouped()}
       renderCustomRowContent={({row, Cell}) => (
-        <Cell colSpan={columns.length} style={{padding: '16px', backgroundColor: '#f5f5f5'}}>
+        <Cell colSpan={expandableColumns.length} style={{padding: '16px', backgroundColor: '#f5f5f5'}}>
           <h4>Details for {row.original.name}</h4>
           <p>Email: {row.original.email}</p>
           <p>Phone: {row.original.phone}</p>
@@ -2280,11 +2742,46 @@ function ExpandableRowsTable() {
 ```typescript jsx
 import React from 'react';
 import {Table, useTable} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  department: string;
+}
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com', department: 'Engineering'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com', department: 'Marketing'},
+  {id: '3', name: 'Bob Johnson', email: 'bob@example.com', department: 'Sales'},
+  {id: '4', name: 'Alice Brown', email: 'alice@example.com', department: 'Engineering'},
+  {id: '5', name: 'Charlie Wilson', email: 'charlie@example.com', department: 'Marketing'},
+];
+
+const stickyHeaderColumns: ColumnDef<User>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
+  {
+    id: 'department',
+    header: 'Department',
+    accessorKey: 'department',
+  },
+];
 
 function StickyHeaderTable() {
   const table = useTable({
     data,
-    columns,
+    columns: stickyHeaderColumns,
+    getRowId: (row) => row.id,
   });
 
   return (
@@ -2302,11 +2799,44 @@ function StickyHeaderTable() {
 ```typescript jsx
 import React from 'react';
 import {Table, useTable} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  department: string;
+}
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com', department: 'Engineering'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com', department: 'Marketing'},
+  {id: '3', name: 'Bob Johnson', email: 'bob@example.com', department: 'Sales'},
+];
+
+const sizedColumns: ColumnDef<User>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
+  {
+    id: 'department',
+    header: 'Department',
+    accessorKey: 'department',
+  },
+];
 
 function SizedTable() {
   const table = useTable({
     data,
-    columns,
+    columns: sizedColumns,
+    getRowId: (row) => row.id,
   });
 
   return (
@@ -2330,28 +2860,41 @@ import React from 'react';
 import {Table, useTable, ExperimentalRowLink} from '@gravity-ui/table';
 import type {ColumnDef} from '@gravity-ui/table/tanstack';
 
-function TableWithRowLinks() {
-  const columns: ColumnDef<User>[] = [
-    {
-      id: 'name',
-      header: 'Name',
-      accessorFn: (item) => (
-        <ExperimentalRowLink href={`/users/${item.id}`}>
-          {item.name}
-        </ExperimentalRowLink>
-      ),
-      cell: (info) => info.getValue(),
-    },
-    {
-      id: 'email',
-      header: 'Email',
-      accessorKey: 'email',
-    },
-  ];
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
 
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com'},
+  {id: '3', name: 'Bob Johnson', email: 'bob@example.com'},
+];
+
+const rowLinkColumns: ColumnDef<User>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorFn: (item) => (
+      <ExperimentalRowLink href={`/users/${item.id}`}>
+        {item.name}
+      </ExperimentalRowLink>
+    ),
+    cell: (info) => info.getValue(),
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
+];
+
+function TableWithRowLinks() {
   const table = useTable({
     data,
-    columns,
+    columns: rowLinkColumns,
+    getRowId: (row) => row.id,
   });
 
   return <Table table={table} />;
@@ -2365,11 +2908,32 @@ function TableWithRowLinks() {
 ```typescript jsx
 import React from 'react';
 import {Table, useTable} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const emptyColumns: ColumnDef<User>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
+];
 
 function TableWithEmptyContent() {
   const table = useTable({
     data: [], // Пустые данные
-    columns,
+    columns: emptyColumns,
+    getRowId: (row) => row.id,
   });
 
   return (
@@ -2390,50 +2954,63 @@ import React from 'react';
 import {Table, useTable} from '@gravity-ui/table';
 import type {ColumnDef} from '@gravity-ui/table/tanstack';
 
-function TableWithHeaderGroups() {
-  const columns: ColumnDef<User>[] = [
-    {
-      id: 'id',
-      header: 'ID',
-      accessorKey: 'id',
-    },
-    {
-      id: 'personal-info',
-      header: 'Personal Information',
-      columns: [
-        {
-          id: 'name',
-          header: 'Name',
-          accessorKey: 'name',
-        },
-        {
-          id: 'email',
-          header: 'Email',
-          accessorKey: 'email',
-        },
-      ],
-    },
-    {
-      id: 'actions',
-      header: 'Actions',
-      columns: [
-        {
-          id: 'edit',
-          header: 'Edit',
-          accessorKey: 'id',
-        },
-        {
-          id: 'delete',
-          header: 'Delete',
-          accessorKey: 'id',
-        },
-      ],
-    },
-  ];
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
 
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com'},
+  {id: '3', name: 'Bob Johnson', email: 'bob@example.com'},
+];
+
+const headerGroupColumns: ColumnDef<User>[] = [
+  {
+    id: 'id',
+    header: 'ID',
+    accessorKey: 'id',
+  },
+  {
+    id: 'personal-info',
+    header: 'Personal Information',
+    columns: [
+      {
+        id: 'name',
+        header: 'Name',
+        accessorKey: 'name',
+      },
+      {
+        id: 'email',
+        header: 'Email',
+        accessorKey: 'email',
+      },
+    ],
+  },
+  {
+    id: 'actions',
+    header: 'Actions',
+    columns: [
+      {
+        id: 'edit',
+        header: 'Edit',
+        accessorKey: 'id',
+      },
+      {
+        id: 'delete',
+        header: 'Delete',
+        accessorKey: 'id',
+      },
+    ],
+  },
+];
+
+function TableWithHeaderGroups() {
   const table = useTable({
     data,
-    columns,
+    columns: headerGroupColumns,
+    getRowId: (row) => row.id,
   });
 
   return <Table table={table} />;
@@ -2447,11 +3024,38 @@ function TableWithHeaderGroups() {
 ```typescript jsx
 import React from 'react';
 import {Table, useTable} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com'},
+  {id: '3', name: 'Bob Johnson', email: 'bob@example.com'},
+];
+
+const noHeaderColumns: ColumnDef<User>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
+];
 
 function TableWithoutHeader() {
   const table = useTable({
     data,
-    columns,
+    columns: noHeaderColumns,
+    getRowId: (row) => row.id,
   });
 
   return (
@@ -2472,18 +3076,99 @@ import React from 'react';
 import {Table, useTable, useRowVirtualizer} from '@gravity-ui/table';
 import type {ColumnDef, ExpandedState} from '@gravity-ui/table/tanstack';
 
+type FileSystemItem = {
+  id: string;
+  name: string;
+  type: 'file' | 'folder';
+  size?: number;
+  subRows?: FileSystemItem[];
+}
+
+const data: FileSystemItem[] = [
+  {
+    id: '1',
+    name: 'Documents',
+    type: 'folder',
+    subRows: [
+      {
+        id: '1-1',
+        name: 'Work',
+        type: 'folder',
+        subRows: [
+          {id: '1-1-1', name: 'Report.pdf', type: 'file', size: 1024},
+          {id: '1-1-2', name: 'Presentation.pptx', type: 'file', size: 2048},
+        ],
+      },
+      {id: '1-2', name: 'Personal', type: 'folder', subRows: []},
+    ],
+  },
+  {
+    id: '2',
+    name: 'Downloads',
+    type: 'folder',
+    subRows: [
+      {id: '2-1', name: 'Image.png', type: 'file', size: 512},
+    ],
+  },
+];
+
+const virtualizedTreeColumns: ColumnDef<FileSystemItem>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+    cell: ({row, getValue}) => (
+      <div
+        style={{
+          paddingLeft: `${row.depth * 20}px`,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+        }}
+      >
+        {row.getCanExpand() ? (
+          <button
+            onClick={row.getToggleExpandedHandler()}
+            style={{cursor: 'pointer'}}
+          >
+            {row.getIsExpanded() ? '📂' : '📁'}
+          </button>
+        ) : (
+          <span>📄</span>
+        )}
+        {getValue()}
+      </div>
+    ),
+  },
+  {
+    id: 'type',
+    header: 'Type',
+    accessorKey: 'type',
+  },
+  {
+    id: 'size',
+    header: 'Size',
+    accessorKey: 'size',
+    cell: ({getValue}) => {
+      const size = getValue<number>();
+      return size ? `${size} KB` : '-';
+    },
+  },
+];
+
 function VirtualizedTreeTable() {
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
 
   const table = useTable({
     data,
-    columns,
+    columns: virtualizedTreeColumns,
     getSubRows: (row) => row.subRows,
     enableExpanding: true,
     state: {
       expanded,
     },
     onExpandedChange: setExpanded,
+    getRowId: (row) => row.id,
   });
 
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -2519,11 +3204,38 @@ function VirtualizedTreeTable() {
 ```typescript jsx
 import React from 'react';
 import {Table, useTable} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+type Item = {
+  id: string;
+  name: string;
+  amount: number;
+}
+
+const data: Item[] = [
+  {id: '1', name: 'Item 1', amount: 100},
+  {id: '2', name: 'Item 2', amount: 200},
+  {id: '3', name: 'Item 3', amount: 150},
+];
+
+const footerColumns: ColumnDef<Item>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'amount',
+    header: 'Amount',
+    accessorKey: 'amount',
+  },
+];
 
 function TableWithFooter() {
   const table = useTable({
     data,
-    columns,
+    columns: footerColumns,
+    getRowId: (row) => row.id,
   });
 
   return (
@@ -2532,7 +3244,7 @@ function TableWithFooter() {
       withFooter={true}
       renderCustomFooterContent={({footerGroups, cellClassName, rowClassName}) => (
         <tr className={rowClassName}>
-          <td colSpan={columns.length} className={cellClassName}>
+          <td colSpan={footerColumns.length} className={cellClassName}>
             <div style={{display: 'flex', justifyContent: 'space-between', padding: '8px'}}>
               <span>Total: {data.length} items</span>
               <span>Sum: {data.reduce((sum, item) => sum + (item.amount || 0), 0)}</span>
@@ -2553,11 +3265,38 @@ function TableWithFooter() {
 ```typescript jsx
 import React from 'react';
 import {Table, useTable} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com'},
+  {id: '3', name: 'Bob Johnson', email: 'bob@example.com'},
+];
+
+const stickyFooterColumns: ColumnDef<User>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
+  },
+];
 
 function TableWithStickyFooter() {
   const table = useTable({
     data,
-    columns,
+    columns: stickyFooterColumns,
+    getRowId: (row) => row.id,
   });
 
   return (
@@ -2568,7 +3307,7 @@ function TableWithStickyFooter() {
         stickyFooter={true}
         renderCustomFooterContent={({cellClassName, rowClassName}) => (
           <tr className={rowClassName}>
-            <td colSpan={columns.length} className={cellClassName}>
+            <td colSpan={stickyFooterColumns.length} className={cellClassName}>
               Footer content
             </td>
           </tr>
@@ -2588,34 +3327,44 @@ import React from 'react';
 import {Table, useTable, experimentalUseColumnsAutoSize} from '@gravity-ui/table';
 import type {ColumnDef} from '@gravity-ui/table/tanstack';
 
-function AutoSizedTable() {
-  const columns: ColumnDef<User>[] = React.useMemo(
-    () => [
-      {
-        accessorKey: 'name',
-        header: 'Name',
-      },
-      {
-        accessorKey: 'email',
-        header: 'Email',
-      },
-      {
-        id: 'status',
-        accessorFn: (row) => row.status,
-        header: 'Status',
-        cell: (info) => (
-          <div className={`status-badge status-${info.getValue()}`}>
-            {info.getValue()}
-          </div>
-        ),
-      },
-    ],
-    []
-  );
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  status: string;
+}
 
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com', status: 'active'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com', status: 'inactive'},
+  {id: '3', name: 'Bob Johnson', email: 'bob@example.com', status: 'active'},
+];
+
+const autoSizeColumns: ColumnDef<User>[] = [
+  {
+    accessorKey: 'name',
+    header: 'Name',
+  },
+  {
+    accessorKey: 'email',
+    header: 'Email',
+  },
+  {
+    id: 'status',
+    accessorFn: (row) => row.status,
+    header: 'Status',
+    cell: (info) => (
+      <div className={`status-badge status-${info.getValue()}`}>
+        {info.getValue()}
+      </div>
+    ),
+  },
+];
+
+function AutoSizedTable() {
   // Вычисление ширины колонок
   const {setTableInstance, columnsWithAutoSizes, isMeasuring} = experimentalUseColumnsAutoSize({
-    columns,
+    columns: autoSizeColumns,
     options: {
       minWidth: 80,
       maxWidth: 300,
@@ -2634,6 +3383,7 @@ function AutoSizedTable() {
     columns: columnsWithAutoSizes,
     enableColumnResizing: true,
     columnResizeMode: 'onChange',
+    getRowId: (row) => row.id,
   });
 
   // Обновление ссылки на экземпляр таблицы
@@ -2659,27 +3409,40 @@ import React from 'react';
 import {Table, useTable, experimentalUseColumnsAutoSize} from '@gravity-ui/table';
 import type {ColumnDef} from '@gravity-ui/table/tanstack';
 
-function AutoSizedTableWithPredefinedWidths() {
-  const columns: ColumnDef<User>[] = [
-    {
-      accessorKey: 'name',
-      header: 'Name',
-      // Автоматический размер
-    },
-    {
-      accessorKey: 'age',
-      header: 'Age',
-      size: 100, // Фиксированная ширина - будет сохранена
-    },
-    {
-      accessorKey: 'email',
-      header: 'Email',
-      // Автоматический размер
-    },
-  ];
+type User = {
+  id: string;
+  name: string;
+  age: number;
+  email: string;
+}
 
+const data: User[] = [
+  {id: '1', name: 'John Doe', age: 30, email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', age: 25, email: 'jane@example.com'},
+  {id: '3', name: 'Bob Johnson', age: 35, email: 'bob@example.com'},
+];
+
+const predefinedWidthColumns: ColumnDef<User>[] = [
+  {
+    accessorKey: 'name',
+    header: 'Name',
+    // Автоматический размер
+  },
+  {
+    accessorKey: 'age',
+    header: 'Age',
+    size: 100, // Фиксированная ширина - будет сохранена
+  },
+  {
+    accessorKey: 'email',
+    header: 'Email',
+    // Автоматический размер
+  },
+];
+
+function AutoSizedTableWithPredefinedWidths() {
   const {setTableInstance, columnsWithAutoSizes, isMeasuring} = experimentalUseColumnsAutoSize({
-    columns,
+    columns: predefinedWidthColumns,
     options: {
       respectExistingWidths: true, // Сохранять предопределенные ширины
     },
@@ -2689,6 +3452,7 @@ function AutoSizedTableWithPredefinedWidths() {
     data,
     columns: columnsWithAutoSizes,
     enableColumnResizing: true,
+    getRowId: (row) => row.id,
   });
 
   React.useEffect(() => {
@@ -2712,9 +3476,32 @@ import React from 'react';
 import {Table, useTable, experimentalUseColumnsAutoSize} from '@gravity-ui/table';
 import type {ColumnDef} from '@gravity-ui/table/tanstack';
 
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com'},
+  {id: '3', name: 'Bob Johnson', email: 'bob@example.com'},
+];
+
+const customLimitsColumns: ColumnDef<User>[] = [
+  {
+    accessorKey: 'name',
+    header: 'Name',
+  },
+  {
+    accessorKey: 'email',
+    header: 'Email',
+  },
+];
+
 function AutoSizedTableWithCustomLimits() {
   const {setTableInstance, columnsWithAutoSizes, isMeasuring} = experimentalUseColumnsAutoSize({
-    columns,
+    columns: customLimitsColumns,
     options: {
       minWidth: 100, // Минимальная ширина 100px
       maxWidth: 250, // Максимальная ширина 250px
@@ -2726,6 +3513,7 @@ function AutoSizedTableWithCustomLimits() {
     data,
     columns: columnsWithAutoSizes,
     enableColumnResizing: true,
+    getRowId: (row) => row.id,
   });
 
   React.useEffect(() => {
@@ -2749,9 +3537,33 @@ import React from 'react';
 import {Table, useTable, experimentalUseColumnsAutoSize} from '@gravity-ui/table';
 import type {ColumnDef} from '@gravity-ui/table/tanstack';
 
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+// Генерируем большой датасет
+const largeDataset: User[] = Array.from({length: 10000}, (_, i) => ({
+  id: String(i + 1),
+  name: `User ${i + 1}`,
+  email: `user${i + 1}@example.com`,
+}));
+
+const optimizedColumns: ColumnDef<User>[] = [
+  {
+    accessorKey: 'name',
+    header: 'Name',
+  },
+  {
+    accessorKey: 'email',
+    header: 'Email',
+  },
+];
+
 function AutoSizedTableOptimized() {
   const {setTableInstance, columnsWithAutoSizes, isMeasuring} = experimentalUseColumnsAutoSize({
-    columns,
+    columns: optimizedColumns,
     options: {
       sampleSize: 20, // Измеряем только первые 20 строк вместо всех
       minWidth: 80,
@@ -2760,8 +3572,9 @@ function AutoSizedTableOptimized() {
   });
 
   const table = useTable({
-    data: largeDataset, // Огромный датасет
+    data: largeDataset,
     columns: columnsWithAutoSizes,
+    getRowId: (row) => row.id,
   });
 
   React.useEffect(() => {
@@ -2786,6 +3599,29 @@ import {Table, useTable, experimentalUseColumnsAutoSize, experimentalRenderEleme
 import type {ColumnDef} from '@gravity-ui/table/tanstack';
 import {Provider} from 'react-redux';
 
+type User = {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', email: 'john@example.com'},
+  {id: '2', name: 'Jane Smith', email: 'jane@example.com'},
+  {id: '3', name: 'Bob Johnson', email: 'bob@example.com'},
+];
+
+const customRendererColumns: ColumnDef<User>[] = [
+  {
+    accessorKey: 'name',
+    header: 'Name',
+  },
+  {
+    accessorKey: 'email',
+    header: 'Email',
+  },
+];
+
 function AutoSizedTableWithProvider() {
   // Кастомный рендерер с провайдером
   const experimentalRenderElementForMeasure = React.useCallback(
@@ -2800,7 +3636,7 @@ function AutoSizedTableWithProvider() {
   );
 
   const {setTableInstance, columnsWithAutoSizes, isMeasuring} = experimentalUseColumnsAutoSize({
-    columns,
+    columns: customRendererColumns,
     experimentalRenderElementForMeasure,
     options: {
       minWidth: 80,
@@ -2811,6 +3647,7 @@ function AutoSizedTableWithProvider() {
   const table = useTable({
     data,
     columns: columnsWithAutoSizes,
+    getRowId: (row) => row.id,
   });
 
   React.useEffect(() => {
@@ -2832,7 +3669,25 @@ import React from 'react';
 import {Table, useTable} from '@gravity-ui/table';
 import type {ColumnDef} from '@gravity-ui/table/tanstack';
 
+type User = {
+  id: string;
+  name: string;
+  status: 'active' | 'inactive' | 'pending';
+  isVIP: boolean;
+}
+
+const data: User[] = [
+  {id: '1', name: 'John Doe', status: 'active', isVIP: true},
+  {id: '2', name: 'Jane Smith', status: 'inactive', isVIP: false},
+  {id: '3', name: 'Bob Johnson', status: 'pending', isVIP: true},
+];
+
 const columns: ColumnDef<User>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+  },
   {
     id: 'status',
     header: 'Status',
@@ -2867,6 +3722,7 @@ function StyledTable() {
   const table = useTable({
     data,
     columns,
+    getRowId: (row) => row.id,
   });
 
   return (
