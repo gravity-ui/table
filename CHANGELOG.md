@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.0](https://github.com/gravity-ui/table/compare/v1.14.0...v1.15.0) (2025-12-15)
+
+
+### Features
+
+* **docs:** add TableColumnSetup migration to the migration guide ([#133](https://github.com/gravity-ui/table/issues/133)) ([b6c6ee8](https://github.com/gravity-ui/table/commit/b6c6ee8d8dd2ec45588c8e27f89a9ae2f3cb3916))
+
 ## [1.14.0](https://github.com/gravity-ui/table/compare/v1.13.0...v1.14.0) (2025-11-25)
 
 
