@@ -560,3 +560,58 @@ const TableSettingsDemo = () => {
 ```
 
 Подробности о свойствах изменения размера таблиц и их столбцов и можно найти в [статье об API для изменения размера столбцов](https://tanstack.com/table/v8/docs/api/features/column-sizing) документации библиотеки React Table.
+
+## Известные проблемы и совместимость
+
+### Совместимость с React 19 + React Compiler
+
+**⚠️ Известная проблема:** Существует известная проблема совместимости с React 19 и React Compiler при использовании `@gravity-ui/table` (который построен на базе TanStack Table). Таблица может не перерисовываться при изменении данных. Подробности см. в [TanStack Table issue #5567](https://github.com/TanStack/table/issues/5567).
+
+**Обходное решение:**
+
+Если вы используете React 19 с React Compiler и сталкиваетесь с проблемами перерисовки таблицы, вы можете использовать директиву `'use no memo'` в коде вашего компонента:
+
+```tsx
+import React from 'react';
+import {Table, useTable} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+function MyTable() {
+  'use no memo'; // Отключить мемоизацию React Compiler для этого компонента
+
+  const [data, setData] = React.useState<Person[]>([]);
+
+  const table = useTable({
+    data,
+    columns,
+  });
+
+  return <Table table={table} />;
+}
+```
+
+**Альтернативное решение:**
+
+Вы также можете явно мемоизировать экземпляр таблицы или данные, чтобы обеспечить правильную перерисовку:
+
+```tsx
+import React from 'react';
+import {Table, useTable} from '@gravity-ui/table';
+import type {ColumnDef} from '@gravity-ui/table/tanstack';
+
+function MyTable() {
+  const [data, setData] = React.useState<Person[]>([]);
+
+  // Явно мемоизировать данные для обеспечения перерисовки
+  const memoizedData = React.useMemo(() => data, [data]);
+
+  const table = useTable({
+    data: memoizedData,
+    columns,
+  });
+
+  return <Table table={table} />;
+}
+```
+
+**Примечание:** Эта проблема находится в базовой библиотеке TanStack Table и должна быть исправлена там. Приведенные выше обходные решения должны помочь до тех пор, пока не будет доступно исправление.
