@@ -36,6 +36,8 @@ export function useColumnsAutoSize<TData extends unknown>({
     const sampledRows = rows.slice(0, options?.sampleSize ?? 100);
     const columnSizing = tableInstance?.getState().columnSizing ?? emptyColumnSizing;
 
+    const rowsDataKey = sampledRows.map((row) => row.id).join(',');
+
     const measureCellWidth = useMeasureCellWidth({
         renderElementForMeasure,
     });
@@ -153,7 +155,7 @@ export function useColumnsAutoSize<TData extends unknown>({
             tableInstance,
             ...options,
         });
-    }, [columnSizing, sampledRows]);
+    }, [columnSizing, rowsDataKey]);
 
     const columnsWithAutoSizes = React.useMemo(
         () => setColumnAutoSizes(columns, columnWidths, columnSizing),
