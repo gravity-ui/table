@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.15.0](https://github.com/gravity-ui/table/compare/v1.14.0...v1.15.0) (2026-01-12)
+
+
+### Features
+
+* **docs:** add TableColumnSetup migration to the migration guide ([#133](https://github.com/gravity-ui/table/issues/133)) ([b6c6ee8](https://github.com/gravity-ui/table/commit/b6c6ee8d8dd2ec45588c8e27f89a9ae2f3cb3916))
+
+
+### Bug Fixes
+
+* **useColumnsAutoSize:** use rows ids as dependency at effect ([#135](https://github.com/gravity-ui/table/issues/135)) ([3585453](https://github.com/gravity-ui/table/commit/35854535bc9dc8ab7e35d22eb538afaaf8a23060))
+
 ## [1.14.0](https://github.com/gravity-ui/table/compare/v1.13.0...v1.14.0) (2025-11-25)
 
 
