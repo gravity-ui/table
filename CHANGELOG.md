@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.1](https://github.com/gravity-ui/table/compare/v1.15.0...v1.15.1) (2026-01-16)
+
+
+### Bug Fixes
+
+* **BaseRow:** do not trigger row click event handler for selection events ([#136](https://github.com/gravity-ui/table/issues/136)) ([9bff751](https://github.com/gravity-ui/table/commit/9bff7517c32d2449401b51b575517b9ed636163e))
+
 ## [1.15.0](https://github.com/gravity-ui/table/compare/v1.14.0...v1.15.0) (2026-01-12)
 
 
