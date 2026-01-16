@@ -75,6 +75,12 @@ export const BaseRow = React.forwardRef(
 
         const handleClick = React.useCallback(
             (event: React.MouseEvent<HTMLTableRowElement>) => {
+                const selection = window.getSelection();
+                if (selection?.toString()) {
+                    // don't trigger click handler if user selected row contents
+                    return;
+                }
+
                 onClick?.(row, event);
             },
             [onClick, row],
