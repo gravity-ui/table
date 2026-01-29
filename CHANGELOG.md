@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.2](https://github.com/gravity-ui/table/compare/v1.15.1...v1.15.2) (2026-01-29)
+
+
+### Bug Fixes
+
+* use getFilteredRowModel when filtering is enabled ([#141](https://github.com/gravity-ui/table/issues/141)) ([7aeff2a](https://github.com/gravity-ui/table/commit/7aeff2ab0eb582a957ae6c2de68f451ca6747375))
+
 ## [1.15.1](https://github.com/gravity-ui/table/compare/v1.15.0...v1.15.1) (2026-01-16)
 
 
