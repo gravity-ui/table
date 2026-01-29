@@ -1,0 +1,29 @@
+.filtering-story {
+    &__controls {
+        margin-block-end: 20px;
+    }
+
+    &__global-search {
+        margin-block-end: 20px;
+    }
+
+    &__title {
+        margin-block-end: 12px;
+        font-weight: 500;
+    }
+
+    &__input {
+        max-inline-size: 400px;
+    }
+
+    &__info {
+        margin-block-start: 12px;
+        font-size: 13px;
+        opacity: 0.7;
+    }
+
+    &__column-header {
+        margin-block-end: 8px;
+        font-weight: bold;
+    }
+}

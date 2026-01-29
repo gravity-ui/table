@@ -6,6 +6,7 @@ import {ColumnPinningStory} from './stories/ColumnPinningStory';
 import {CustomRowStory} from './stories/CustomRowStory';
 import {DefaultStory} from './stories/DefaultStory';
 import {EmptyContentStory} from './stories/EmptyContentStory';
+import {FilteringStory} from './stories/FilteringStory';
 import {GroupingStory} from './stories/GroupingStory';
 import {GroupingStory2} from './stories/GroupingStory2';
 import {GroupingWithSelectionStory} from './stories/GroupingWithSelectionStory';
@@ -49,6 +50,10 @@ export const WithSelection: StoryObj<typeof WithSelectionStory> = {
 
 export const Sorting: StoryObj<typeof SortingStory> = {
     render: SortingStory,
+};
+
+export const Filtering: StoryObj<typeof FilteringStory> = {
+    render: FilteringStory,
 };
 
 export const Grouping: StoryObj<typeof GroupingStory> = {
