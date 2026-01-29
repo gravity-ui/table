@@ -3,6 +3,7 @@ import type {Meta, StoryObj} from '@storybook/react';
 import {Table} from '../index';
 
 import {DefaultStory} from './stories/DefaultStory';
+import {FilteringStory} from './stories/FilteringStory';
 import {GroupingStory} from './stories/GroupingStory';
 import {GroupingWithSelectionStory} from './stories/GroupingWithSelectionStory';
 import {ReorderingStory} from './stories/ReorderingStory';
@@ -60,6 +61,10 @@ export const WithSelection: StoryObj<typeof WithSelectionStory> = {
 
 export const Sorting: StoryObj<typeof SortingStory> = {
     render: SortingStory,
+};
+
+export const Filtering: StoryObj<typeof FilteringStory> = {
+    render: FilteringStory,
 };
 
 export const Reordering: StoryObj<typeof ReorderingStory> = {

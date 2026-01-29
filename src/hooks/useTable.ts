@@ -2,6 +2,7 @@ import type {TableOptions} from '@tanstack/react-table';
 import {
     getCoreRowModel,
     getExpandedRowModel,
+    getFilteredRowModel,
     getGroupedRowModel,
     getSortedRowModel,
     useReactTable,
@@ -19,6 +20,8 @@ export const useTable = <TData>(options: UseTableOptions<TData>) => {
         enableMultiRowSelection: options.enableMultiRowSelection ?? false,
         enableRowSelection: options.enableRowSelection ?? false,
         enableSorting: options.enableSorting ?? false,
+        enableColumnFilters: options.enableColumnFilters ?? false,
+        enableGlobalFilter: options.enableGlobalFilter ?? false,
         getCoreRowModel: options.getCoreRowModel ?? getCoreRowModel(),
         getExpandedRowModel: options.enableExpanding
             ? (options.getExpandedRowModel ?? getExpandedRowModel())
@@ -29,8 +32,13 @@ export const useTable = <TData>(options: UseTableOptions<TData>) => {
         getSortedRowModel: options.enableSorting
             ? (options.getSortedRowModel ?? getSortedRowModel())
             : undefined,
+        getFilteredRowModel:
+            options.enableColumnFilters || options.enableGlobalFilter
+                ? (options.getFilteredRowModel ?? getFilteredRowModel())
+                : undefined,
         manualGrouping: options.manualGrouping ?? false,
         manualSorting: options.manualSorting ?? false,
+        manualFiltering: options.manualFiltering ?? false,
     };
 
     return useReactTable(tableOptions);
