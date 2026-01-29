@@ -1,6 +1,6 @@
 {
   "name": "@gravity-ui/table",
-  "version": "1.15.1",
+  "version": "1.15.2",
   "description": "",
   "license": "MIT",
   "main": "./build/cjs/index.js",
