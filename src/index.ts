@@ -39,6 +39,7 @@ export {
     useColumnsAutoSize as experimentalUseColumnsAutoSize,
     renderElementForMeasure as experimentalRenderElementForMeasure,
     useToggleRangeSelectionHandler,
+    useRowSelectionFixedHandler,
 } from './hooks';
 
 export type {
