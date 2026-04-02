@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.3](https://github.com/gravity-ui/table/compare/v1.15.2...v1.15.3) (2026-04-02)
+
+
+### Bug Fixes
+
+* added export useRowSelectionFixedHandler ([#144](https://github.com/gravity-ui/table/issues/144)) ([39546d4](https://github.com/gravity-ui/table/commit/39546d4a179b0a5ff1c67f2c3b90478db5900253))
+
 ## [1.15.2](https://github.com/gravity-ui/table/compare/v1.15.1...v1.15.2) (2026-01-29)
 
 
