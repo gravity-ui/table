@@ -6,12 +6,15 @@ import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 import type {HeaderGroup} from '../../types/base';
 import {getAriaMultiselectable, getAriaRowIndexMap, shouldRenderFooterRow} from '../../utils';
 import {BaseDraggableRow} from '../BaseDraggableRow';
+import {MemoBaseDraggableRow} from '../BaseDraggableRow/BaseDraggableRow.memo';
 import type {BaseFooterRowProps} from '../BaseFooterRow';
 import {BaseFooterRow} from '../BaseFooterRow';
 import type {BaseHeaderRowProps} from '../BaseHeaderRow';
 import {BaseHeaderRow} from '../BaseHeaderRow';
 import type {BaseRowProps} from '../BaseRow';
 import {BaseRow} from '../BaseRow';
+import type {MemoBaseRowProps} from '../BaseRow/BaseRow.memo';
+import {MemoBaseRow} from '../BaseRow/BaseRow.memo';
 import {LastSelectedRowContextProvider} from '../LastSelectedRowContext';
 import {SortableListContext} from '../SortableListContext';
 
@@ -111,6 +114,17 @@ export interface BaseTableProps<TData, TScrollElement extends Element | Window =
     withFooter?: boolean;
     /** Determines whether the `<thead>` element should be rendered */
     withHeader?: boolean;
+    /**
+     * EXPERIMENTAL. Enables React.memo on rows and cells to avoid full-table
+     * re-renders when expansion / selection / sort state changes. Default: false.
+     * For memoization to be effective, all function props (rowClassName, cellClassName,
+     * rowAttributes, cellAttributes, onRowClick, getIsCustomRow, renderCustomRowContent, etc.)
+     * must be stable references (useCallback / useMemo). Custom cells that call
+     * row.getIsExpanded() or row.getIsSelected() directly should migrate to the
+     * useIsExpanded() / useRowState() hooks exported from this library.
+     * API is subject to change before stabilization.
+     */
+    experimentalMemoization?: boolean;
 }
 
 export const BaseTable = React.forwardRef(
@@ -159,10 +173,14 @@ export const BaseTable = React.forwardRef(
             stickyHeader = false,
             withFooter = false,
             withHeader = true,
+            experimentalMemoization = false,
         }: BaseTableProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableElement>,
     ) => {
         const draggableContext = React.useContext(SortableListContext);
+        // Stable style objects keyed by "(depth)-(lastNested)" — avoids allocating new objects
+        // on every render, which would defeat React.memo comparators on row components.
+        const memoStyleCache = React.useRef<Map<string, React.CSSProperties>>(new Map());
         const draggingRowIndex = draggableContext?.activeItemIndex ?? -1;
 
         const {rows, rowsById} = table.getRowModel();
@@ -255,11 +273,43 @@ export const BaseTable = React.forwardRef(
                         : undefined,
                 };
 
-                if (draggableContext) {
-                    return <BaseDraggableRow key={key} {...rowProps} />;
+                if (!experimentalMemoization) {
+                    if (draggableContext) {
+                        return <BaseDraggableRow key={key} {...rowProps} />;
+                    }
+                    return <BaseRow key={key} {...rowProps} />;
                 }
 
-                return <BaseRow key={key} {...rowProps} />;
+                // Memo path: compute explicit state props and use stable style refs
+                const isSelected = table.options.enableRowSelection ? row.getIsSelected() : false;
+                const isExpanded = row.getIsExpanded();
+
+                const memoStyle = (() => {
+                    if (row.depth === 0) return undefined;
+                    const lastNested = rows[rowIndex + 1]?.depth === 0 ? 1 : 0;
+                    const cacheKey = `${row.depth}-${lastNested}`;
+                    if (!memoStyleCache.current.has(cacheKey)) {
+                        memoStyleCache.current.set(cacheKey, {
+                            '--_--tree-depth': row.depth,
+                            '--_--last-nested': lastNested,
+                        } as React.CSSProperties);
+                    }
+                    return memoStyleCache.current.get(cacheKey);
+                })();
+
+                const memoRowProps: MemoBaseRowProps<TData, TScrollElement> = {
+                    ...rowProps,
+                    style: memoStyle,
+                    isSelected,
+                    isExpanded,
+                    'aria-selected': table.options.enableRowSelection ? isSelected : undefined,
+                };
+
+                if (draggableContext) {
+                    return <MemoBaseDraggableRow key={key} {...memoRowProps} />;
+                }
+
+                return <MemoBaseRow key={key} {...memoRowProps} />;
             });
         };
 

@@ -10,6 +10,8 @@ import type {BaseGroupHeaderProps} from '../BaseGroupHeader';
 import {BaseGroupHeader} from '../BaseGroupHeader';
 import {b} from '../BaseTable/BaseTable.classname';
 
+import {RowStateContext} from './RowStateContext';
+
 export interface BaseRowProps<TData, TScrollElement extends Element | Window = HTMLDivElement>
     extends Omit<React.HTMLAttributes<HTMLTableRowElement>, 'className' | 'onClick'> {
     cellClassName?: BaseCellProps<TData>['className'];
@@ -40,6 +42,10 @@ export interface BaseRowProps<TData, TScrollElement extends Element | Window = H
         | React.HTMLAttributes<HTMLTableRowElement>
         | ((row: Row<TData>) => React.HTMLAttributes<HTMLTableRowElement>);
     cellAttributes?: BaseCellProps<TData>['attributes'];
+    /** When provided, overrides row.getIsSelected() for the selected CSS modifier. Used by MemoBaseRow. */
+    isSelected?: boolean;
+    /** When provided, is supplied to RowStateContext for expansion-aware cells. Used by MemoBaseRow. */
+    isExpanded?: boolean;
 }
 
 export const BaseRow = React.forwardRef(
@@ -62,11 +68,21 @@ export const BaseRow = React.forwardRef(
             attributes: attributesProp,
             cellAttributes,
             table: _,
+            isSelected: isSelectedProp,
+            isExpanded: isExpandedProp,
             ...restProps
         }: BaseRowProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableRowElement>,
     ) => {
         const rowRef = useForkRef(rowVirtualizer?.measureElement, ref);
+
+        const isSelected = isSelectedProp ?? row.getIsSelected();
+        const isExpanded = isExpandedProp ?? row.getIsExpanded();
+
+        const rowState = React.useMemo(
+            () => ({isSelected, isExpanded, depth: row.depth}),
+            [isSelected, isExpanded, row.depth],
+        );
 
         const attributes =
             typeof attributesProp === 'function' ? attributesProp(row) : attributesProp;
@@ -137,31 +153,33 @@ export const BaseRow = React.forwardRef(
         };
 
         return (
-            <tr
-                ref={rowRef}
-                className={b(
-                    'row',
-                    {
-                        selected: row.getIsSelected(),
-                        interactive: Boolean(onClick),
-                    },
-                    className,
-                )}
-                onClick={handleClick}
-                data-index={virtualItem?.index}
-                {...restProps}
-                {...attributes}
-                style={{
-                    top:
-                        rowVirtualizer && virtualItem
-                            ? virtualItem.start - rowVirtualizer.options.scrollMargin
-                            : undefined,
-                    ...style,
-                    ...attributes?.style,
-                }}
-            >
-                {renderRowContent()}
-            </tr>
+            <RowStateContext.Provider value={rowState}>
+                <tr
+                    ref={rowRef}
+                    className={b(
+                        'row',
+                        {
+                            selected: isSelected,
+                            interactive: Boolean(onClick),
+                        },
+                        className,
+                    )}
+                    onClick={handleClick}
+                    data-index={virtualItem?.index}
+                    {...restProps}
+                    {...attributes}
+                    style={{
+                        top:
+                            rowVirtualizer && virtualItem
+                                ? virtualItem.start - rowVirtualizer.options.scrollMargin
+                                : undefined,
+                        ...style,
+                        ...attributes?.style,
+                    }}
+                >
+                    {renderRowContent()}
+                </tr>
+            </RowStateContext.Provider>
         );
     },
 ) as (<TData, TScrollElement extends Element | Window = HTMLDivElement>(

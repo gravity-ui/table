@@ -40,6 +40,7 @@ export {
     renderElementForMeasure as experimentalRenderElementForMeasure,
     useToggleRangeSelectionHandler,
     useRowSelectionFixedHandler,
+    useRenderCount as experimentalUseRenderCount,
 } from './hooks';
 
 export type {
@@ -50,6 +51,16 @@ export type {
     UseColumnsAutoSizeOptions,
     UseColumnsAutoSizeProps,
 } from './hooks';
+
+export {
+    MemoBaseRow,
+    MemoBaseCell,
+    MemoBaseDraggableRow,
+    RowStateContext,
+    useRowState,
+    useIsExpanded,
+} from './components';
+export type {MemoBaseRowProps, MemoBaseDraggableRowProps} from './components';
 
 export {getVirtualRowRangeExtractor} from './utils';
 

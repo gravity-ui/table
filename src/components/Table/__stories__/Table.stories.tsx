@@ -6,6 +6,7 @@ import {DefaultStory} from './stories/DefaultStory';
 import {FilteringStory} from './stories/FilteringStory';
 import {GroupingStory} from './stories/GroupingStory';
 import {GroupingWithSelectionStory} from './stories/GroupingWithSelectionStory';
+import {RenderCountTreeStory} from './stories/RenderCountTreeStory';
 import {ReorderingStory} from './stories/ReorderingStory';
 import {ReorderingWithVirtualizationStory} from './stories/ReorderingWithVirtualizationStory';
 import {RowLinkStory} from './stories/RowLinkStory';
@@ -107,4 +108,9 @@ export const Grouping: StoryObj<typeof GroupingStory> = {
 
 export const GroupingWithSelection: StoryObj<typeof GroupingWithSelectionStory> = {
     render: GroupingWithSelectionStory,
+};
+
+export const RenderCountTree: StoryObj<typeof RenderCountTreeStory> = {
+    render: RenderCountTreeStory,
+    name: 'Experimental: Render Count (memoization demo)',
 };

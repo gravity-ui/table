@@ -1,6 +1,8 @@
-import type * as React from 'react';
+import * as React from 'react';
 
 import type {Row} from '@tanstack/react-table';
+
+import {useIsExpanded} from '../BaseRow/RowStateContext';
 
 import {b} from './BaseGroupHeader.classname';
 
@@ -17,11 +19,12 @@ export const BaseGroupHeader = <TData,>({
     className,
     getGroupTitle,
 }: BaseGroupHeaderProps<TData>) => {
+    const isExpanded = useIsExpanded(row);
     return (
         <h2 className={b(null, className)}>
             <button className={b('button')} onClick={row.getToggleExpandedHandler()}>
                 <svg
-                    className={b('icon', {expanded: row.getIsExpanded()})}
+                    className={b('icon', {expanded: isExpanded})}
                     viewBox="0 0 16 16"
                     width="16"
                     height="16"

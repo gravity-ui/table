@@ -8,3 +8,4 @@ export * from './useTableSettings';
 export * from './useWindowRowVirtualizer';
 export * from './useColumnsAutoSize';
 export * from './useRowSelectionFixedHandler';
+export * from './useRenderCount';
