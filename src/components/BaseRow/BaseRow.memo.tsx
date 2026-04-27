@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import {MemoBaseCell} from '../BaseCell/BaseCell.memo';
+
 import type {BaseRowProps} from './BaseRow';
 import {BaseRow} from './BaseRow';
 
@@ -41,7 +43,16 @@ function areEqual<TData, TScrollElement extends Element | Window>(
     );
 }
 
-export const MemoBaseRow = React.memo(BaseRow, areEqual) as (<
+const BaseRowWithMemoCell = React.forwardRef(function BaseRowWithMemoCellRender<
+    TData,
+    TScrollElement extends Element | Window,
+>(props: BaseRowProps<TData, TScrollElement>, ref: React.Ref<HTMLTableRowElement>) {
+    return <BaseRow {...props} Cell={MemoBaseCell} ref={ref} />;
+}) as <TData, TScrollElement extends Element | Window = HTMLDivElement>(
+    props: BaseRowProps<TData, TScrollElement> & {ref?: React.Ref<HTMLTableRowElement>},
+) => React.ReactElement;
+
+export const MemoBaseRow = React.memo(BaseRowWithMemoCell, areEqual) as (<
     TData,
     TScrollElement extends Element | Window = HTMLDivElement,
 >(

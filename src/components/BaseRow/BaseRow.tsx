@@ -46,6 +46,13 @@ export interface BaseRowProps<TData, TScrollElement extends Element | Window = H
     isSelected?: boolean;
     /** When provided, is supplied to RowStateContext for expansion-aware cells. Used by MemoBaseRow. */
     isExpanded?: boolean;
+    /**
+     * @internal
+     * Cell component to render. Defaults to `BaseCell`. `MemoBaseRow` passes
+     * `MemoBaseCell` so that cell-level memoization is active when
+     * experimentalMemoization is enabled. Not part of the public API.
+     */
+    Cell?: React.FunctionComponent<BaseCellProps<TData>>;
 }
 
 export const BaseRow = React.forwardRef(
@@ -67,6 +74,7 @@ export const BaseRow = React.forwardRef(
             virtualItem,
             attributes: attributesProp,
             cellAttributes,
+            Cell = BaseCell,
             table: _,
             isSelected: isSelectedProp,
             isExpanded: isExpandedProp,
@@ -112,7 +120,7 @@ export const BaseRow = React.forwardRef(
                         getGroupTitle,
                     })
                 ) : (
-                    <BaseCell
+                    <Cell
                         className={cellClassName}
                         colSpan={row.getVisibleCells().length}
                         attributes={cellAttributes}
@@ -131,7 +139,7 @@ export const BaseRow = React.forwardRef(
                                 getGroupTitle={getGroupTitle}
                             />
                         )}
-                    </BaseCell>
+                    </Cell>
                 );
             }
 
@@ -142,7 +150,7 @@ export const BaseRow = React.forwardRef(
             return row
                 .getVisibleCells()
                 .map((cell) => (
-                    <BaseCell
+                    <Cell
                         key={cell.id}
                         cell={cell}
                         className={cellClassName}
