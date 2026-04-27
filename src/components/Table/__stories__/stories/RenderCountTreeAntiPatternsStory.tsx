@@ -96,11 +96,9 @@ const NameCellWithFanout = <TData extends Item>({row, value}: {row: Row<TData>; 
     return <CellBody row={row} value={value} isExpanded={isExpanded} />;
 };
 
-const stableRowAttributes = () => ({});
-
 export const RenderCountTreeAntiPatternsStory = (props: Partial<TableProps<Item>>) => {
     const [experimentalMemoization, setExperimentalMemoization] = React.useState(true);
-    const [unstableRowAttributes, setUnstableRowAttributes] = React.useState(false);
+    const [unstableCellAttributes, setUnstableCellAttributes] = React.useState(false);
     const [customContextFanout, setCustomContextFanout] = React.useState(false);
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
 
@@ -130,9 +128,11 @@ export const RenderCountTreeAntiPatternsStory = (props: Partial<TableProps<Item>
         state: {expanded},
     });
 
-    // Inline `rowAttributes` is the anti-pattern; module-level is the fix.
-    const inlineRowAttributes = (_row: Row<Item>) => ({});
-    const rowAttributes = unstableRowAttributes ? inlineRowAttributes : stableRowAttributes;
+    // Inline cellAttributes is the anti-pattern — fresh object ref on every render defeats
+    // MemoBaseCell.areCellPropsEqual. Note: unstable rowAttributes causes row-level re-renders
+    // (visible in React DevTools Profiler) but MemoBaseCell still skips cell renders, so the
+    // counter stays green. Use cellAttributes to see cell-level impact in the counter.
+    const cellAttributes = unstableCellAttributes ? () => ({}) : undefined;
 
     const fanoutValue = React.useMemo(() => ({expanded}), [expanded]);
 
@@ -163,11 +163,11 @@ export const RenderCountTreeAntiPatternsStory = (props: Partial<TableProps<Item>
                     <label>
                         <input
                             type="checkbox"
-                            checked={unstableRowAttributes}
-                            onChange={(e) => setUnstableRowAttributes(e.target.checked)}
+                            checked={unstableCellAttributes}
+                            onChange={(e) => setUnstableCellAttributes(e.target.checked)}
                             style={{marginRight: 6}}
                         />
-                        unstableRowAttributes (anti-pattern)
+                        unstableCellAttributes (anti-pattern)
                     </label>
                     <label>
                         <input
@@ -189,7 +189,7 @@ export const RenderCountTreeAntiPatternsStory = (props: Partial<TableProps<Item>
                         {...props}
                         table={table}
                         experimentalMemoization={experimentalMemoization}
-                        rowAttributes={rowAttributes}
+                        cellAttributes={cellAttributes}
                     />
                 </div>
             </div>

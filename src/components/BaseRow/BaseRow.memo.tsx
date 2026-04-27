@@ -38,7 +38,6 @@ function areEqual<TData, TScrollElement extends Element | Window>(
         prev.attributes === next.attributes &&
         prev.cellAttributes === next.cellAttributes &&
         prev.rowVirtualizer === next.rowVirtualizer &&
-        prev['aria-rowindex'] === next['aria-rowindex'] &&
         prev['aria-selected'] === next['aria-selected']
     );
 }
