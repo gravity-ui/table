@@ -24,10 +24,7 @@ The flag **does not help** if:
 - Function or object props (`rowAttributes`, `cellAttributes`, `rowClassName`,
   `cellClassName`, `onRowClick`, `renderCustomRowContent`, etc.) change
   identity between renders. The comparator does referential equality.
-- Cells call `row.getIsExpanded()` / `row.getIsSelected()` directly. Those
-  read live state from the table; when memo skips re-render, the displayed
-  value goes stale. Use the `useIsExpanded(row)` / `useRowState()` hooks
-  instead.
+- Cells call `row.getIsExpanded()` / `row.getIsSelected()` directly inside a memoized render path. Use `TreeExpandableCell` for tree chevrons, or `useIsExpanded(row)` for custom row-state-aware components — see anti-pattern #3.
 
 When `experimentalMemoization` is on in development mode, the library emits a
 `console.warn` the first time it detects an unstable prop reference, naming the
@@ -99,36 +96,47 @@ const ExpandCell = ({row}) => {
 };
 ```
 
-### 3. `row.getIsExpanded()` / `row.getIsSelected()` in custom cells
+### 3. Reading row state inside cells
 
-**Wrong:**
+For tree expansion, **use `TreeExpandableCell` from the library**. It encapsulates
+the chevron button + the row-state subscription in one component:
 
 ```tsx
-const NameCell = ({row}) => {
-  const expanded = row.getIsExpanded(); // ← reads live state; stale after memo skip
-  return (
-    <span>
-      {expanded ? '▼' : '▶'} {row.original.name}
-    </span>
-  );
-};
+import {TreeExpandableCell} from '@gravity-ui/table';
+
+const columns: ColumnDef<Item>[] = [
+  {
+    accessorKey: 'name',
+    cell: (info) => (
+      <TreeExpandableCell row={info.row}>{info.getValue<string>()}</TreeExpandableCell>
+    ),
+  },
+];
 ```
 
-**Fix:** use `useIsExpanded(row)` (subscribes to `RowStateContext` provided by
-`MemoBaseRow`, falls back to `row.getIsExpanded()` outside the memo path):
+Your code uses only TanStack API (`info.row`, `info.getValue`) plus this one
+component. No extra hooks to import.
+
+#### Building your own analogue (advanced)
+
+If `TreeExpandableCell`'s default chevron styling doesn't fit your design and
+you need a custom row-state-aware component, import `useIsExpanded(row)`. It
+subscribes to the same `RowStateContext` that `TreeExpandableCell` uses
+internally — without it, `row.getIsExpanded()` is not re-called after a memo skip, because the cell render function never runs again, so the displayed value goes stale:
 
 ```tsx
+import type {Row} from '@tanstack/react-table';
 import {useIsExpanded} from '@gravity-ui/table';
 
-const NameCell = ({row}) => {
-  const expanded = useIsExpanded(row);
-  return (
-    <span>
-      {expanded ? '▼' : '▶'} {row.original.name}
-    </span>
-  );
+const MyChevron = ({row}: {row: Row<Item>}) => {
+  const expanded = useIsExpanded(row); // memo-safe; stays in sync after toggles
+  return <CustomIcon direction={expanded ? 'down' : 'right'} />;
 };
 ```
+
+**Do not** call `row.getIsExpanded()` directly inside a cell render fn under
+`experimentalMemoization` — `MemoBaseRow` skips re-rendering on row state
+changes, so the displayed value goes stale after a toggle.
 
 ### 4. Fresh `state` object in `useTable`
 
@@ -181,9 +189,9 @@ Before:
 ```
 
 ```tsx
-// TreeExpandableCell.tsx (anti-pattern #2)
-const expanded = useRowExpandedState(rowId); // subscribes to fanout context
-const toggleExpanded = useToggleRowState(rowId); // ditto
+// Local TreeExpandableCell (subscribes to a fanout context, anti-pattern #2)
+const expanded = useRowExpandedState(rowId);
+const toggleExpanded = useToggleRowState(rowId);
 ```
 
 After:
@@ -198,11 +206,14 @@ const rowAttributesHandler = (row: Row<QuotasTable3Row>) => getRowAttributes(row
 ```
 
 ```tsx
-// TreeExpandableCell.tsx — library hooks
-import {useIsExpanded} from '@gravity-ui/table';
+// Column def — use the library's TreeExpandableCell directly
+import {TreeExpandableCell} from '@gravity-ui/table';
 
-const expanded = useIsExpanded(row);
-const handleButtonClick = React.useCallback(() => row.toggleExpanded(), [row]);
+{
+  cell: (info) => (
+    <TreeExpandableCell row={info.row}>{info.getValue<string>()}</TreeExpandableCell>
+  ),
+}
 ```
 
 ```tsx
@@ -218,4 +229,6 @@ const table = useTable({
 The custom `CollapsibleStateContext` still owns the persisted expansion map
 (used by expand-all / collapse-all buttons elsewhere on the page), but cells
 no longer subscribe to it — its value invalidations only re-render the table
-container, which has to re-render anyway when expansion changes.
+container, which has to re-render anyway when expansion changes. The local
+`TreeExpandableCell` and the `useRowExpandedState` / `useToggleRowState`
+hooks are gone; the library component handles the chevron + subscription.
