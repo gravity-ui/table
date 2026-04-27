@@ -3,6 +3,7 @@ import * as React from 'react';
 import type {Row, Table} from '@tanstack/react-table';
 import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 
+import {useStableRefWarning} from '../../hooks/useStableRefWarning';
 import type {HeaderGroup} from '../../types/base';
 import {getAriaMultiselectable, getAriaRowIndexMap, shouldRenderFooterRow} from '../../utils';
 import {BaseDraggableRow} from '../BaseDraggableRow';
@@ -181,6 +182,28 @@ export const BaseTable = React.forwardRef(
         // Stable style objects keyed by "(depth)-(lastNested)" — avoids allocating new objects
         // on every render, which would defeat React.memo comparators on row components.
         const memoStyleCache = React.useRef<Map<string, React.CSSProperties>>(new Map());
+
+        // Dev-only: warn once when memoization-sensitive props change ref between renders.
+        useStableRefWarning('rowAttributes', rowAttributes, experimentalMemoization);
+        useStableRefWarning('cellAttributes', cellAttributes, experimentalMemoization);
+        useStableRefWarning('cellClassName', cellClassName, experimentalMemoization);
+        useStableRefWarning('rowClassName', rowClassName, experimentalMemoization);
+        useStableRefWarning('onRowClick', onRowClick, experimentalMemoization);
+        useStableRefWarning('getIsCustomRow', getIsCustomRow, experimentalMemoization);
+        useStableRefWarning('getIsGroupHeaderRow', getIsGroupHeaderRow, experimentalMemoization);
+        useStableRefWarning(
+            'renderCustomRowContent',
+            renderCustomRowContent,
+            experimentalMemoization,
+        );
+        useStableRefWarning('renderGroupHeader', renderGroupHeader, experimentalMemoization);
+        useStableRefWarning(
+            'renderGroupHeaderRowContent',
+            renderGroupHeaderRowContent,
+            experimentalMemoization,
+        );
+        useStableRefWarning('getGroupTitle', getGroupTitle, experimentalMemoization);
+        useStableRefWarning('groupHeaderClassName', groupHeaderClassName, experimentalMemoization);
         const draggingRowIndex = draggableContext?.activeItemIndex ?? -1;
 
         const {rows, rowsById} = table.getRowModel();
