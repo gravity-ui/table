@@ -35,25 +35,16 @@ interface FanoutContextShape {
 }
 const FanoutContext = React.createContext<FanoutContextShape | undefined>(undefined);
 
-const NameCell = <TData extends Item>({
+function CellBody<TData extends Item>({
     row,
     value,
-    customContextFanout,
+    isExpanded,
 }: {
     row: Row<TData>;
     value: string;
-    customContextFanout: boolean;
-}) => {
-    // Subscribe via library hook (memo-friendly).
-    const isExpandedFromLibrary = useIsExpanded(row);
-
-    // Subscribe via custom context (memo-defeating). Read but don't use the value,
-    // to demonstrate that mere subscription causes re-renders when the value flips.
-    const fanoutCtx = React.useContext(FanoutContext);
-    const isExpanded = customContextFanout ? Boolean(fanoutCtx) : isExpandedFromLibrary;
-
+    isExpanded: boolean;
+}) {
     const renderCount = useRenderCount();
-
     return (
         <div
             style={{
@@ -89,6 +80,20 @@ const NameCell = <TData extends Item>({
             </span>
         </div>
     );
+}
+
+// No context subscription — memo-friendly.
+const NameCell = <TData extends Item>({row, value}: {row: Row<TData>; value: string}) => {
+    const isExpanded = useIsExpanded(row);
+    return <CellBody row={row} value={value} isExpanded={isExpanded} />;
+};
+
+// Subscribes to FanoutContext — every expand toggle invalidates the context value,
+// re-rendering ALL instances of this cell regardless of row memoization.
+const NameCellWithFanout = <TData extends Item>({row, value}: {row: Row<TData>; value: string}) => {
+    React.useContext(FanoutContext); // subscription is the anti-pattern; value is unused
+    const isExpanded = useIsExpanded(row);
+    return <CellBody row={row} value={value} isExpanded={isExpanded} />;
 };
 
 const stableRowAttributes = () => ({});
@@ -105,13 +110,11 @@ export const RenderCountTreeAntiPatternsStory = (props: Partial<TableProps<Item>
                 accessorKey: 'name',
                 header: 'Name',
                 size: 400,
-                cell: (info) => (
-                    <NameCell
-                        row={info.row}
-                        value={info.getValue<string>()}
-                        customContextFanout={customContextFanout}
-                    />
-                ),
+                cell: customContextFanout
+                    ? (info) => (
+                          <NameCellWithFanout row={info.row} value={info.getValue<string>()} />
+                      )
+                    : (info) => <NameCell row={info.row} value={info.getValue<string>()} />,
             },
             {accessorKey: 'id', header: 'ID', size: 120},
         ],
