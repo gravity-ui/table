@@ -40,6 +40,24 @@ The local `TreeExpandableCell` (`components/TreeExpandableCell/TreeExpandableCel
 - `cellClassName`, `rowClassName`, `headerClassName` in QuotasTable3 are module-level constants. Already stable.
 - `getSubRows`, `getRowId` are module-level. Stable.
 
+## Discovered during implementation
+
+### `aria-rowindex` defeats memoization on tree expansion
+
+`MemoBaseRow.areEqual` originally included `prev['aria-rowindex'] === next['aria-rowindex']`. The `ariaRowIndexMap` in `BaseTable` assigns sequential positions to all visible rows (`useMemo`'d on `[rows]`). When a tree row expands, new rows are inserted, shifting every subsequent row's position by the number of newly visible children. This caused all rows below the expanded point to fail the comparator and re-render — defeating the optimization entirely on tree tables.
+
+**Fix:** removed `'aria-rowindex'` from `areEqual`. The attribute still updates whenever the row re-renders for a legitimate reason (its own state change). The tradeoff is that a screen reader may read a stale position for a row that didn't re-render; this is an acceptable compromise for the `experimental` flag.
+
+### `unstableRowAttributes` is invisible in the cell counter with `MemoBaseCell` wired
+
+After Task L1.1 (wiring `MemoBaseCell`), an inline `rowAttributes` function causes `MemoBaseRow.areEqual` to fail (`prev.attributes !== next.attributes`), making the `<tr>` re-render. However, `MemoBaseCell.areCellPropsEqual` still passes because `cell` refs are stable — so the cell render function is skipped and the render counter (which lives in the cell) stays green.
+
+The cell-visible anti-pattern is **`cellAttributes`** (not `rowAttributes`): an inline `cellAttributes` function defeats `MemoBaseCell.areCellPropsEqual`, causing cell re-renders that are visible in the counter.
+
+Note: `rowAttributes` instability is still wasteful at the row level (React re-renders the `<tr>`, applies DOM diffing) and is visible in React DevTools Profiler — it just doesn't show in the cell counter. The `useStableRefWarning` hook fires for both.
+
+The storybook anti-pattern story was updated to use `unstableCellAttributes` for the counter-visible demo.
+
 ## Approach
 
 Five-phase plan, library-first then consumer. Each library phase is independently shippable.
