@@ -154,6 +154,15 @@ export interface BaseTableProps<TData, TScrollElement extends Element | Window =
     withHeader?: boolean;
     /** EXPERIMENTAL. Enables React.memo on rows and cells to avoid full-table re-renders */
     experimentalMemoization?: boolean;
+    /**
+     * EXPERIMENTAL. Snapshot of row state used by the memo comparator.
+     * Only relevant when `experimentalMemoization` is true. Returned values
+     * are compared element-wise via Object.is — anything your custom cells
+     * read from the row (or external state keyed by row id) should appear here.
+     *
+     * Default: (row) => [row.getIsSelected(), row.getIsExpanded()]
+     */
+    getRowVersion?: (row: Row<TData>) => readonly unknown[];
 }
 
 export const BaseTable = React.forwardRef(
