@@ -10,8 +10,6 @@ import type {BaseGroupHeaderProps} from '../BaseGroupHeader';
 import {BaseGroupHeader} from '../BaseGroupHeader';
 import {b} from '../BaseTable/BaseTable.classname';
 
-import {RowStateContext} from './RowStateContext';
-
 export interface BaseRowProps<TData, TScrollElement extends Element | Window = HTMLDivElement>
     extends Omit<React.HTMLAttributes<HTMLTableRowElement>, 'className' | 'onClick'> {
     cellClassName?: BaseCellProps<TData>['className'];
@@ -44,7 +42,7 @@ export interface BaseRowProps<TData, TScrollElement extends Element | Window = H
     cellAttributes?: BaseCellProps<TData>['attributes'];
     /** When provided, overrides row.getIsSelected() for the selected CSS modifier. Used by MemoBaseRow. */
     isSelected?: boolean;
-    /** When provided, is supplied to RowStateContext for expansion-aware cells. Used by MemoBaseRow. */
+    /** When provided, overrides row.getIsExpanded() and is passed to all Cell call sites. Used by MemoBaseRow. */
     isExpanded?: boolean;
     /**
      * @internal
@@ -87,11 +85,6 @@ export const BaseRow = React.forwardRef(
         const isSelected = isSelectedProp ?? row.getIsSelected();
         const isExpanded = isExpandedProp ?? row.getIsExpanded();
 
-        const rowState = React.useMemo(
-            () => ({isSelected, isExpanded, depth: row.depth}),
-            [isSelected, isExpanded, row.depth],
-        );
-
         const attributes =
             typeof attributesProp === 'function' ? attributesProp(row) : attributesProp;
 
@@ -125,6 +118,8 @@ export const BaseRow = React.forwardRef(
                         colSpan={row.getVisibleCells().length}
                         attributes={cellAttributes}
                         aria-colindex={1}
+                        isExpanded={isExpanded}
+                        isSelected={isSelected}
                     >
                         {renderGroupHeader ? (
                             renderGroupHeader({
@@ -156,38 +151,38 @@ export const BaseRow = React.forwardRef(
                         className={cellClassName}
                         attributes={cellAttributes}
                         aria-colindex={cell.column.getIndex() + 1}
+                        isExpanded={isExpanded}
+                        isSelected={isSelected}
                     />
                 ));
         };
 
         return (
-            <RowStateContext.Provider value={rowState}>
-                <tr
-                    ref={rowRef}
-                    className={b(
-                        'row',
-                        {
-                            selected: isSelected,
-                            interactive: Boolean(onClick),
-                        },
-                        className,
-                    )}
-                    onClick={handleClick}
-                    data-index={virtualItem?.index}
-                    {...restProps}
-                    {...attributes}
-                    style={{
-                        top:
-                            rowVirtualizer && virtualItem
-                                ? virtualItem.start - rowVirtualizer.options.scrollMargin
-                                : undefined,
-                        ...style,
-                        ...attributes?.style,
-                    }}
-                >
-                    {renderRowContent()}
-                </tr>
-            </RowStateContext.Provider>
+            <tr
+                ref={rowRef}
+                className={b(
+                    'row',
+                    {
+                        selected: isSelected,
+                        interactive: Boolean(onClick),
+                    },
+                    className,
+                )}
+                onClick={handleClick}
+                data-index={virtualItem?.index}
+                {...restProps}
+                {...attributes}
+                style={{
+                    top:
+                        rowVirtualizer && virtualItem
+                            ? virtualItem.start - rowVirtualizer.options.scrollMargin
+                            : undefined,
+                    ...style,
+                    ...attributes?.style,
+                }}
+            >
+                {renderRowContent()}
+            </tr>
         );
     },
 ) as (<TData, TScrollElement extends Element | Window = HTMLDivElement>(

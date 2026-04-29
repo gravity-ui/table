@@ -3,7 +3,6 @@ import * as React from 'react';
 import {ArrowToggle, Button, Flex} from '@gravity-ui/uikit';
 import type {Row} from '@tanstack/react-table';
 
-import {useIsExpanded} from '../BaseRow/RowStateContext';
 import {b} from '../Table/Table.classname';
 
 export interface TreeExpandableCellProps<TData> extends React.PropsWithChildren {
@@ -11,7 +10,7 @@ export interface TreeExpandableCellProps<TData> extends React.PropsWithChildren 
 }
 
 export const TreeExpandableCell = <TData,>({row, children}: TreeExpandableCellProps<TData>) => {
-    const isExpanded = useIsExpanded(row);
+    const isExpanded = row.getIsExpanded();
     return (
         <Flex>
             <Button

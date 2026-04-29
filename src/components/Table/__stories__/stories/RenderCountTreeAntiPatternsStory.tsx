@@ -3,7 +3,6 @@ import * as React from 'react';
 import type {ColumnDef, ExpandedState, Row} from '@tanstack/react-table';
 
 import {useRenderCount, useTable} from '../../../../hooks';
-import {useIsExpanded} from '../../../BaseRow/RowStateContext';
 import {Table} from '../../Table';
 import type {TableProps} from '../../Table';
 
@@ -84,7 +83,7 @@ function CellBody<TData extends Item>({
 
 // No context subscription — memo-friendly.
 const NameCell = <TData extends Item>({row, value}: {row: Row<TData>; value: string}) => {
-    const isExpanded = useIsExpanded(row);
+    const isExpanded = row.getIsExpanded();
     return <CellBody row={row} value={value} isExpanded={isExpanded} />;
 };
 
@@ -92,7 +91,7 @@ const NameCell = <TData extends Item>({row, value}: {row: Row<TData>; value: str
 // re-rendering ALL instances of this cell regardless of row memoization.
 const NameCellWithFanout = <TData extends Item>({row, value}: {row: Row<TData>; value: string}) => {
     React.useContext(FanoutContext); // subscription is the anti-pattern; value is unused
-    const isExpanded = useIsExpanded(row);
+    const isExpanded = row.getIsExpanded();
     return <CellBody row={row} value={value} isExpanded={isExpanded} />;
 };
 

@@ -120,9 +120,9 @@ export interface BaseTableProps<TData, TScrollElement extends Element | Window =
      * re-renders when expansion / selection / sort state changes. Default: false.
      * For memoization to be effective, all function props (rowClassName, cellClassName,
      * rowAttributes, cellAttributes, onRowClick, getIsCustomRow, renderCustomRowContent, etc.)
-     * must be stable references (useCallback / useMemo). Custom cells that call
-     * row.getIsExpanded() or row.getIsSelected() directly should migrate to the
-     * useIsExpanded() / useRowState() hooks exported from this library.
+     * must be stable references (useCallback / useMemo). Custom cells may call
+     * row.getIsExpanded() or row.getIsSelected() directly — row state is threaded
+     * as props so MemoBaseCell's comparator detects changes without context.
      * API is subject to change before stabilization.
      */
     experimentalMemoization?: boolean;

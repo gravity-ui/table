@@ -3,7 +3,6 @@ import * as React from 'react';
 import type {ColumnDef, ExpandedState} from '@tanstack/react-table';
 
 import {useRenderCount, useTable} from '../../../../hooks';
-import {useIsExpanded} from '../../../BaseRow/RowStateContext';
 import {Table} from '../../Table';
 import type {TableProps} from '../../Table';
 
@@ -36,7 +35,7 @@ const NameCell = <TData extends Item>({
     row: import('@tanstack/react-table').Row<TData>;
     value: string;
 }) => {
-    const isExpanded = useIsExpanded(row);
+    const isExpanded = row.getIsExpanded();
     const renderCount = useRenderCount();
     return (
         <div

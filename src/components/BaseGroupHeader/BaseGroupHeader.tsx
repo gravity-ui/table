@@ -2,8 +2,6 @@ import * as React from 'react';
 
 import type {Row} from '@tanstack/react-table';
 
-import {useIsExpanded} from '../BaseRow/RowStateContext';
-
 import {b} from './BaseGroupHeader.classname';
 
 import './BaseGroupHeader.scss';
@@ -19,7 +17,7 @@ export const BaseGroupHeader = <TData,>({
     className,
     getGroupTitle,
 }: BaseGroupHeaderProps<TData>) => {
-    const isExpanded = useIsExpanded(row);
+    const isExpanded = row.getIsExpanded();
     return (
         <h2 className={b(null, className)}>
             <button className={b('button')} onClick={row.getToggleExpandedHandler()}>
