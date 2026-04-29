@@ -24,7 +24,6 @@ The flag **does not help** if:
 - Function or object props (`rowAttributes`, `cellAttributes`, `rowClassName`,
   `cellClassName`, `onRowClick`, `renderCustomRowContent`, etc.) change
   identity between renders. The comparator does referential equality.
-- Cells call `row.getIsExpanded()` / `row.getIsSelected()` directly inside a memoized render path — both work correctly. Use `TreeExpandableCell` for a ready-made chevron, or call `row.getIsExpanded()` directly in a custom cell — see anti-pattern #3.
 
 When `experimentalMemoization` is on in development mode, the library emits a
 `console.warn` the first time it detects an unstable prop reference, naming the
