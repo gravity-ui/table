@@ -561,6 +561,36 @@ const TableSettingsDemo = () => {
 
 Learn more about the table and the column resizing properties in the react-table [docs](https://tanstack.com/table/v8/docs/api/features/column-sizing)
 
+## Memoization (experimental)
+
+Pass `experimentalMemoization` on `Table` / `BaseTable` to enable
+`React.memo` on rows and cells. This avoids re-rendering every row and cell
+when one row's state changes. The flag is opt-in; without it the rendering
+behavior is unchanged.
+
+```tsx
+<Table table={table} experimentalMemoization />
+```
+
+By default, the memo comparator tracks `row.getIsSelected()` and
+`row.getIsExpanded()`. If your custom cells read other row state (or external
+state keyed by row id), declare it via `getRowVersion`:
+
+```tsx
+const getRowVersion = (row: Row<MyData>) =>
+  [row.getIsSelected(), row.getIsExpanded(), row.getIsPinned()] as const;
+
+<Table table={table} experimentalMemoization getRowVersion={getRowVersion} />;
+```
+
+`getRowVersion` is called once per row per parent render. Returned values are
+compared element-wise with `Object.is` — any change invalidates the row's memo
+and re-renders only that row's cells.
+
+See [`docs/MIGRATION-experimentalMemoization.md`](docs/MIGRATION-experimentalMemoization.md)
+for anti-patterns that defeat memoization, the verification recipe, and a
+worked migration example.
+
 ## Known Issues and Compatibility
 
 ### React 19 + React Compiler Compatibility
