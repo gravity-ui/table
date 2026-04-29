@@ -18,6 +18,7 @@ export const BaseGroupHeader = <TData,>({
     getGroupTitle,
 }: BaseGroupHeaderProps<TData>) => {
     const isExpanded = row.getIsExpanded();
+
     return (
         <h2 className={b(null, className)}>
             <button className={b('button')} onClick={row.getToggleExpandedHandler()}>

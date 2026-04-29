@@ -10,7 +10,6 @@ export interface MemoBaseDraggableRowProps<
     TData,
     TScrollElement extends Element | Window = HTMLDivElement,
 > extends BaseDraggableRowProps<TData, TScrollElement> {
-    /** @internal Snapshot of row state — required so the comparator can detect state changes. */
     _rowVersion: readonly unknown[];
 }
 

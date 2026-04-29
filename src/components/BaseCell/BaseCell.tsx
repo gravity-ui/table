@@ -13,7 +13,6 @@ export interface BaseCellProps<TData>
     attributes?:
         | React.TdHTMLAttributes<HTMLTableCellElement>
         | ((cell?: Cell<TData, unknown>) => React.TdHTMLAttributes<HTMLTableCellElement>);
-    /** @internal Snapshot of row state for the MemoBaseCell comparator. Discarded in render. */
     _rowVersion?: readonly unknown[];
 }
 

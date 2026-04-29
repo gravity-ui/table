@@ -40,15 +40,8 @@ export interface BaseRowProps<TData, TScrollElement extends Element | Window = H
         | React.HTMLAttributes<HTMLTableRowElement>
         | ((row: Row<TData>) => React.HTMLAttributes<HTMLTableRowElement>);
     cellAttributes?: BaseCellProps<TData>['attributes'];
-    /** @internal Snapshot of row state for the memo comparators. Discarded in render. */
-    _rowVersion?: readonly unknown[];
-    /**
-     * @internal
-     * Cell component to render. Defaults to `BaseCell`. `MemoBaseRow` passes
-     * `MemoBaseCell` so that cell-level memoization is active when
-     * experimentalMemoization is enabled. Not part of the public API.
-     */
     Cell?: React.FunctionComponent<BaseCellProps<TData>>;
+    _rowVersion?: readonly unknown[];
 }
 
 export const BaseRow = React.forwardRef(

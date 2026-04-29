@@ -36,9 +36,11 @@ const NameCell = <TData extends Item>({
     value: string;
 }) => {
     const isExpanded = row.getIsExpanded();
+
     const renderCountRef = React.useRef(0);
     renderCountRef.current += 1;
     const renderCount = renderCountRef.current;
+
     return (
         <div
             style={{

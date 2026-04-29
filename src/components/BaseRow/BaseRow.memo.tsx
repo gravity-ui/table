@@ -8,7 +8,6 @@ import {BaseRow} from './BaseRow';
 
 export interface MemoBaseRowProps<TData, TScrollElement extends Element | Window = HTMLDivElement>
     extends BaseRowProps<TData, TScrollElement> {
-    /** @internal Snapshot of row state — required so the comparator can detect state changes. */
     _rowVersion: readonly unknown[];
 }
 
