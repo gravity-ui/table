@@ -11,6 +11,7 @@ export interface TreeExpandableCellProps<TData> extends React.PropsWithChildren 
 
 export const TreeExpandableCell = <TData,>({row, children}: TreeExpandableCellProps<TData>) => {
     const isExpanded = row.getIsExpanded();
+
     return (
         <Flex>
             <Button

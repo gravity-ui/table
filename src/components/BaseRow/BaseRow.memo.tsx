@@ -52,11 +52,9 @@ const BaseRowWithMemoCell = React.forwardRef(function BaseRowWithMemoCellRender<
     props: BaseRowProps<TData, TScrollElement> & {ref?: React.Ref<HTMLTableRowElement>},
 ) => React.ReactElement;
 
-export const MemoBaseRow = React.memo(BaseRowWithMemoCell, areEqual) as (<
+export const MemoBaseRow = React.memo(BaseRowWithMemoCell, areEqual) as <
     TData,
     TScrollElement extends Element | Window = HTMLDivElement,
 >(
     props: MemoBaseRowProps<TData, TScrollElement> & {ref?: React.Ref<HTMLTableRowElement>},
-) => React.ReactElement) & {displayName?: string};
-
-MemoBaseRow.displayName = 'MemoBaseRow';
+) => React.ReactElement;

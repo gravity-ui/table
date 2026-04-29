@@ -18,5 +18,3 @@ function areCellPropsEqual<TData>(prev: BaseCellProps<TData>, next: BaseCellProp
 }
 
 export const MemoBaseCell = React.memo(BaseCell, areCellPropsEqual) as typeof BaseCell;
-
-(MemoBaseCell as {displayName?: string}).displayName = 'MemoBaseCell';
