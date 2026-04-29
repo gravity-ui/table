@@ -5,6 +5,8 @@ import {BaseCell} from './BaseCell';
 
 function areCellPropsEqual<TData>(prev: BaseCellProps<TData>, next: BaseCellProps<TData>): boolean {
     return (
+        prev.isExpanded === next.isExpanded &&
+        prev.isSelected === next.isSelected &&
         prev.cell === next.cell &&
         prev.className === next.className &&
         prev.attributes === next.attributes &&

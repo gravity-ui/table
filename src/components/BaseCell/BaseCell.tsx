@@ -13,6 +13,10 @@ export interface BaseCellProps<TData>
     attributes?:
         | React.TdHTMLAttributes<HTMLTableCellElement>
         | ((cell?: Cell<TData, unknown>) => React.TdHTMLAttributes<HTMLTableCellElement>);
+    /** @internal Used by MemoBaseCell comparator. Discarded in render. */
+    isExpanded?: boolean;
+    /** @internal Used by MemoBaseCell comparator. Discarded in render. */
+    isSelected?: boolean;
 }
 
 export const BaseCell = <TData,>({
@@ -21,6 +25,8 @@ export const BaseCell = <TData,>({
     className: classNameProp,
     style,
     attributes: attributesProp,
+    isExpanded: _isExpanded,
+    isSelected: _isSelected,
     ...restProps
 }: BaseCellProps<TData>) => {
     const attributes = typeof attributesProp === 'function' ? attributesProp(cell) : attributesProp;
