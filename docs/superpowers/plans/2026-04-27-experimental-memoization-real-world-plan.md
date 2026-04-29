@@ -502,7 +502,7 @@ import * as React from 'react';
 
 import type {ColumnDef, ExpandedState, Row} from '@tanstack/react-table';
 
-import {useRenderCount, useTable} from '../../../../hooks';
+import {useTable} from '../../../../hooks';
 import {useIsExpanded} from '../../../BaseRow/RowStateContext';
 import {Table} from '../../Table';
 import type {TableProps} from '../../Table';
@@ -551,8 +551,6 @@ const NameCell = <TData extends Item>({
   // demonstrate that mere subscription causes re-renders when the value flips.
   const fanoutCtx = React.useContext(FanoutContext);
   const isExpanded = customContextFanout ? Boolean(fanoutCtx) : isExpandedFromLibrary;
-
-  const renderCount = useRenderCount();
 
   return (
     <div

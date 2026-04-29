@@ -13,6 +13,7 @@ export interface MemoBaseRowProps<TData, TScrollElement extends Element | Window
     isExpanded: boolean;
 }
 
+// eslint-disable-next-line complexity
 function areEqual<TData, TScrollElement extends Element | Window>(
     prev: Readonly<BaseRowProps<TData, TScrollElement>>,
     next: Readonly<BaseRowProps<TData, TScrollElement>>,

@@ -3,7 +3,6 @@ import * as React from 'react';
 import type {Row, Table} from '@tanstack/react-table';
 import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 
-import {useStableRefWarning} from '../../hooks/useStableRefWarning';
 import type {HeaderGroup} from '../../types/base';
 import {getAriaMultiselectable, getAriaRowIndexMap, shouldRenderFooterRow} from '../../utils';
 import {BaseDraggableRow} from '../BaseDraggableRow';
@@ -22,6 +21,44 @@ import {SortableListContext} from '../SortableListContext';
 import {b} from './BaseTable.classname';
 
 import './BaseTable.scss';
+
+function resolveBodyRow<TData, TScrollElement extends Element | Window>(
+    virtualItemOrRow: VirtualItem | Row<TData>,
+    rows: Row<TData>[],
+    rowVirtualizer: Virtualizer<TScrollElement, HTMLTableRowElement> | undefined,
+    index: number,
+) {
+    const isVirtual = Boolean(rowVirtualizer);
+
+    const row = isVirtual
+        ? rows[(virtualItemOrRow as VirtualItem).index]
+        : (virtualItemOrRow as Row<TData>);
+    const rowIndex = isVirtual ? (virtualItemOrRow as VirtualItem).index : index;
+
+    const virtualItem = isVirtual ? (virtualItemOrRow as VirtualItem) : undefined;
+
+    return {row, rowIndex, virtualItem, key: virtualItem?.key ?? row.id};
+}
+
+function getTreeStyle<TData>(
+    row: Row<TData>,
+    nextRow: Row<TData> | undefined,
+    cache: Map<string, React.CSSProperties>,
+): React.CSSProperties | undefined {
+    if (row.depth === 0) return undefined;
+
+    const lastNested = nextRow?.depth === 0 ? 1 : 0;
+    const cacheKey = `${row.depth}-${lastNested}`;
+
+    if (!cache.has(cacheKey)) {
+        cache.set(cacheKey, {
+            '--_--tree-depth': row.depth,
+            '--_--last-nested': lastNested,
+        } as React.CSSProperties);
+    }
+
+    return cache.get(cacheKey);
+}
 
 export interface BaseTableProps<TData, TScrollElement extends Element | Window = HTMLDivElement> {
     /** The table instance returned from the `useTable` hook */
@@ -115,16 +152,7 @@ export interface BaseTableProps<TData, TScrollElement extends Element | Window =
     withFooter?: boolean;
     /** Determines whether the `<thead>` element should be rendered */
     withHeader?: boolean;
-    /**
-     * EXPERIMENTAL. Enables React.memo on rows and cells to avoid full-table
-     * re-renders when expansion / selection / sort state changes. Default: false.
-     * For memoization to be effective, all function props (rowClassName, cellClassName,
-     * rowAttributes, cellAttributes, onRowClick, getIsCustomRow, renderCustomRowContent, etc.)
-     * must be stable references (useCallback / useMemo). Custom cells may call
-     * row.getIsExpanded() or row.getIsSelected() directly — row state is threaded
-     * as props so MemoBaseCell's comparator detects changes without context.
-     * API is subject to change before stabilization.
-     */
+    /** EXPERIMENTAL. Enables React.memo on rows and cells to avoid full-table re-renders */
     experimentalMemoization?: boolean;
 }
 
@@ -179,31 +207,8 @@ export const BaseTable = React.forwardRef(
         ref: React.Ref<HTMLTableElement>,
     ) => {
         const draggableContext = React.useContext(SortableListContext);
-        // Stable style objects keyed by "(depth)-(lastNested)" — avoids allocating new objects
-        // on every render, which would defeat React.memo comparators on row components.
         const memoStyleCache = React.useRef<Map<string, React.CSSProperties>>(new Map());
 
-        // Dev-only: warn once when memoization-sensitive props change ref between renders.
-        useStableRefWarning('rowAttributes', rowAttributes, experimentalMemoization);
-        useStableRefWarning('cellAttributes', cellAttributes, experimentalMemoization);
-        useStableRefWarning('cellClassName', cellClassName, experimentalMemoization);
-        useStableRefWarning('rowClassName', rowClassName, experimentalMemoization);
-        useStableRefWarning('onRowClick', onRowClick, experimentalMemoization);
-        useStableRefWarning('getIsCustomRow', getIsCustomRow, experimentalMemoization);
-        useStableRefWarning('getIsGroupHeaderRow', getIsGroupHeaderRow, experimentalMemoization);
-        useStableRefWarning(
-            'renderCustomRowContent',
-            renderCustomRowContent,
-            experimentalMemoization,
-        );
-        useStableRefWarning('renderGroupHeader', renderGroupHeader, experimentalMemoization);
-        useStableRefWarning(
-            'renderGroupHeaderRowContent',
-            renderGroupHeaderRowContent,
-            experimentalMemoization,
-        );
-        useStableRefWarning('getGroupTitle', getGroupTitle, experimentalMemoization);
-        useStableRefWarning('groupHeaderClassName', groupHeaderClassName, experimentalMemoization);
         const draggingRowIndex = draggableContext?.activeItemIndex ?? -1;
 
         const {rows, rowsById} = table.getRowModel();
@@ -255,24 +260,16 @@ export const BaseTable = React.forwardRef(
 
         const renderBodyRows = () => {
             return bodyRows.map((virtualItemOrRow, index) => {
-                const row = rowVirtualizer
-                    ? rows[virtualItemOrRow.index]
-                    : (virtualItemOrRow as Row<TData>);
+                const {row, rowIndex, virtualItem, key} = resolveBodyRow(
+                    virtualItemOrRow,
+                    rows,
+                    rowVirtualizer,
+                    index,
+                );
 
-                const rowIndex = rowVirtualizer ? virtualItemOrRow.index : index;
+                const isSelected = table.options.enableRowSelection ? row.getIsSelected() : false;
 
-                const style =
-                    row.depth > 0
-                        ? {
-                              '--_--tree-depth': row.depth,
-                              '--_--last-nested': rows[rowIndex + 1]?.depth === 0 ? 1 : 0,
-                          }
-                        : undefined;
-
-                const virtualItem = rowVirtualizer ? (virtualItemOrRow as VirtualItem) : undefined;
-                const key = virtualItem?.key ?? row.id;
-
-                const rowProps: BaseRowProps<TData, TScrollElement> = {
+                const baseProps: BaseRowProps<TData, TScrollElement> = {
                     cellClassName,
                     className: rowClassName,
                     getGroupTitle,
@@ -289,50 +286,35 @@ export const BaseTable = React.forwardRef(
                     rowVirtualizer,
                     table,
                     virtualItem,
-                    style,
+                    style:
+                        row.depth > 0
+                            ? {
+                                  '--_--tree-depth': row.depth,
+                                  '--_--last-nested': rows[rowIndex + 1]?.depth === 0 ? 1 : 0,
+                              }
+                            : undefined,
                     'aria-rowindex': headerRowCount + ariaRowIndexMap[row.id],
-                    'aria-selected': table.options.enableRowSelection
-                        ? row.getIsSelected()
-                        : undefined,
+                    'aria-selected': table.options.enableRowSelection ? isSelected : undefined,
                 };
 
                 if (!experimentalMemoization) {
                     if (draggableContext) {
-                        return <BaseDraggableRow key={key} {...rowProps} />;
+                        return <BaseDraggableRow key={key} {...baseProps} />;
                     }
-                    return <BaseRow key={key} {...rowProps} />;
+                    return <BaseRow key={key} {...baseProps} />;
                 }
 
-                // Memo path: compute explicit state props and use stable style refs
-                const isSelected = table.options.enableRowSelection ? row.getIsSelected() : false;
-                const isExpanded = row.getIsExpanded();
-
-                const memoStyle = (() => {
-                    if (row.depth === 0) return undefined;
-                    const lastNested = rows[rowIndex + 1]?.depth === 0 ? 1 : 0;
-                    const cacheKey = `${row.depth}-${lastNested}`;
-                    if (!memoStyleCache.current.has(cacheKey)) {
-                        memoStyleCache.current.set(cacheKey, {
-                            '--_--tree-depth': row.depth,
-                            '--_--last-nested': lastNested,
-                        } as React.CSSProperties);
-                    }
-                    return memoStyleCache.current.get(cacheKey);
-                })();
-
-                const memoRowProps: MemoBaseRowProps<TData, TScrollElement> = {
-                    ...rowProps,
-                    style: memoStyle,
+                const memoizedProps: MemoBaseRowProps<TData, TScrollElement> = {
+                    ...baseProps,
+                    style: getTreeStyle(row, rows[rowIndex + 1], memoStyleCache.current),
                     isSelected,
-                    isExpanded,
-                    'aria-selected': table.options.enableRowSelection ? isSelected : undefined,
+                    isExpanded: row.getIsExpanded(),
                 };
 
                 if (draggableContext) {
-                    return <MemoBaseDraggableRow key={key} {...memoRowProps} />;
+                    return <MemoBaseDraggableRow key={key} {...memoizedProps} />;
                 }
-
-                return <MemoBaseRow key={key} {...memoRowProps} />;
+                return <MemoBaseRow key={key} {...memoizedProps} />;
             });
         };
 

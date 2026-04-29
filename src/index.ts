@@ -40,7 +40,6 @@ export {
     renderElementForMeasure as experimentalRenderElementForMeasure,
     useToggleRangeSelectionHandler,
     useRowSelectionFixedHandler,
-    useRenderCount as experimentalUseRenderCount,
 } from './hooks';
 
 export type {
