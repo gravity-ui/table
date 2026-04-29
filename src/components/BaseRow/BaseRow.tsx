@@ -40,6 +40,8 @@ export interface BaseRowProps<TData, TScrollElement extends Element | Window = H
         | React.HTMLAttributes<HTMLTableRowElement>
         | ((row: Row<TData>) => React.HTMLAttributes<HTMLTableRowElement>);
     cellAttributes?: BaseCellProps<TData>['attributes'];
+    Cell?: React.FunctionComponent<BaseCellProps<TData>>;
+    _rowVersion?: readonly unknown[];
 }
 
 export const BaseRow = React.forwardRef(
@@ -61,12 +63,16 @@ export const BaseRow = React.forwardRef(
             virtualItem,
             attributes: attributesProp,
             cellAttributes,
+            Cell = BaseCell,
             table: _,
+            _rowVersion,
             ...restProps
         }: BaseRowProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableRowElement>,
     ) => {
         const rowRef = useForkRef(rowVirtualizer?.measureElement, ref);
+
+        const isSelected = row.getIsSelected();
 
         const attributes =
             typeof attributesProp === 'function' ? attributesProp(row) : attributesProp;
@@ -96,11 +102,12 @@ export const BaseRow = React.forwardRef(
                         getGroupTitle,
                     })
                 ) : (
-                    <BaseCell
+                    <Cell
                         className={cellClassName}
                         colSpan={row.getVisibleCells().length}
                         attributes={cellAttributes}
                         aria-colindex={1}
+                        _rowVersion={_rowVersion}
                     >
                         {renderGroupHeader ? (
                             renderGroupHeader({
@@ -115,7 +122,7 @@ export const BaseRow = React.forwardRef(
                                 getGroupTitle={getGroupTitle}
                             />
                         )}
-                    </BaseCell>
+                    </Cell>
                 );
             }
 
@@ -126,12 +133,13 @@ export const BaseRow = React.forwardRef(
             return row
                 .getVisibleCells()
                 .map((cell) => (
-                    <BaseCell
+                    <Cell
                         key={cell.id}
                         cell={cell}
                         className={cellClassName}
                         attributes={cellAttributes}
                         aria-colindex={cell.column.getIndex() + 1}
+                        _rowVersion={_rowVersion}
                     />
                 ));
         };
@@ -142,7 +150,7 @@ export const BaseRow = React.forwardRef(
                 className={b(
                     'row',
                     {
-                        selected: row.getIsSelected(),
+                        selected: isSelected,
                         interactive: Boolean(onClick),
                     },
                     className,

@@ -1,3 +1,4 @@
+export * from './arraysShallowEqual';
 export * from './cn';
 export * from './getAriaMultiselectable';
 export * from './getAriaRowIndexMap';

@@ -6,18 +6,63 @@ import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 import type {HeaderGroup} from '../../types/base';
 import {getAriaMultiselectable, getAriaRowIndexMap, shouldRenderFooterRow} from '../../utils';
 import {BaseDraggableRow} from '../BaseDraggableRow';
+import {MemoBaseDraggableRow} from '../BaseDraggableRow/BaseDraggableRow.memo';
 import type {BaseFooterRowProps} from '../BaseFooterRow';
 import {BaseFooterRow} from '../BaseFooterRow';
 import type {BaseHeaderRowProps} from '../BaseHeaderRow';
 import {BaseHeaderRow} from '../BaseHeaderRow';
 import type {BaseRowProps} from '../BaseRow';
 import {BaseRow} from '../BaseRow';
+import type {MemoBaseRowProps} from '../BaseRow/BaseRow.memo';
+import {MemoBaseRow} from '../BaseRow/BaseRow.memo';
 import {LastSelectedRowContextProvider} from '../LastSelectedRowContext';
 import {SortableListContext} from '../SortableListContext';
 
 import {b} from './BaseTable.classname';
 
 import './BaseTable.scss';
+
+function resolveBodyRow<TData, TScrollElement extends Element | Window>(
+    virtualItemOrRow: VirtualItem | Row<TData>,
+    rows: Row<TData>[],
+    rowVirtualizer: Virtualizer<TScrollElement, HTMLTableRowElement> | undefined,
+    index: number,
+) {
+    const isVirtual = Boolean(rowVirtualizer);
+
+    const row = isVirtual
+        ? rows[(virtualItemOrRow as VirtualItem).index]
+        : (virtualItemOrRow as Row<TData>);
+    const rowIndex = isVirtual ? (virtualItemOrRow as VirtualItem).index : index;
+
+    const virtualItem = isVirtual ? (virtualItemOrRow as VirtualItem) : undefined;
+
+    return {row, rowIndex, virtualItem, key: virtualItem?.key ?? row.id};
+}
+
+function getTreeStyle<TData>(
+    row: Row<TData>,
+    nextRow: Row<TData> | undefined,
+    cache: Map<string, React.CSSProperties>,
+): React.CSSProperties | undefined {
+    if (row.depth === 0) return undefined;
+
+    const lastNested = nextRow?.depth === 0 ? 1 : 0;
+    const cacheKey = `${row.depth}-${lastNested}`;
+
+    if (!cache.has(cacheKey)) {
+        cache.set(cacheKey, {
+            '--_--tree-depth': row.depth,
+            '--_--last-nested': lastNested,
+        } as React.CSSProperties);
+    }
+
+    return cache.get(cacheKey);
+}
+
+function defaultGetRowVersion<TData>(row: Row<TData>): readonly unknown[] {
+    return [row.getIsSelected(), row.getIsExpanded()];
+}
 
 export interface BaseTableProps<TData, TScrollElement extends Element | Window = HTMLDivElement> {
     /** The table instance returned from the `useTable` hook */
@@ -111,6 +156,17 @@ export interface BaseTableProps<TData, TScrollElement extends Element | Window =
     withFooter?: boolean;
     /** Determines whether the `<thead>` element should be rendered */
     withHeader?: boolean;
+    /** EXPERIMENTAL. Enables React.memo on rows and cells to avoid full-table re-renders */
+    experimentalMemoization?: boolean;
+    /**
+     * EXPERIMENTAL. Snapshot of row state used by the memo comparator.
+     * Only relevant when `experimentalMemoization` is true. Returned values
+     * are compared element-wise via Object.is — anything your custom cells
+     * read from the row (or external state keyed by row id) should appear here.
+     *
+     * Default: (row) => [row.getIsSelected(), row.getIsExpanded()]
+     */
+    getRowVersion?: (row: Row<TData>) => readonly unknown[];
 }
 
 export const BaseTable = React.forwardRef(
@@ -159,10 +215,14 @@ export const BaseTable = React.forwardRef(
             stickyHeader = false,
             withFooter = false,
             withHeader = true,
+            experimentalMemoization = false,
+            getRowVersion,
         }: BaseTableProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableElement>,
     ) => {
         const draggableContext = React.useContext(SortableListContext);
+        const memoStyleCache = React.useRef<Map<string, React.CSSProperties>>(new Map());
+
         const draggingRowIndex = draggableContext?.activeItemIndex ?? -1;
 
         const {rows, rowsById} = table.getRowModel();
@@ -212,26 +272,21 @@ export const BaseTable = React.forwardRef(
             );
         };
 
+        const resolveRowVersion: (row: Row<TData>) => readonly unknown[] =
+            getRowVersion ?? defaultGetRowVersion;
+
         const renderBodyRows = () => {
             return bodyRows.map((virtualItemOrRow, index) => {
-                const row = rowVirtualizer
-                    ? rows[virtualItemOrRow.index]
-                    : (virtualItemOrRow as Row<TData>);
+                const {row, rowIndex, virtualItem, key} = resolveBodyRow(
+                    virtualItemOrRow,
+                    rows,
+                    rowVirtualizer,
+                    index,
+                );
 
-                const rowIndex = rowVirtualizer ? virtualItemOrRow.index : index;
+                const isSelected = table.options.enableRowSelection ? row.getIsSelected() : false;
 
-                const style =
-                    row.depth > 0
-                        ? {
-                              '--_--tree-depth': row.depth,
-                              '--_--last-nested': rows[rowIndex + 1]?.depth === 0 ? 1 : 0,
-                          }
-                        : undefined;
-
-                const virtualItem = rowVirtualizer ? (virtualItemOrRow as VirtualItem) : undefined;
-                const key = virtualItem?.key ?? row.id;
-
-                const rowProps: BaseRowProps<TData, TScrollElement> = {
+                const baseProps: BaseRowProps<TData, TScrollElement> = {
                     cellClassName,
                     className: rowClassName,
                     getGroupTitle,
@@ -248,18 +303,34 @@ export const BaseTable = React.forwardRef(
                     rowVirtualizer,
                     table,
                     virtualItem,
-                    style,
+                    style:
+                        row.depth > 0
+                            ? {
+                                  '--_--tree-depth': row.depth,
+                                  '--_--last-nested': rows[rowIndex + 1]?.depth === 0 ? 1 : 0,
+                              }
+                            : undefined,
                     'aria-rowindex': headerRowCount + ariaRowIndexMap[row.id],
-                    'aria-selected': table.options.enableRowSelection
-                        ? row.getIsSelected()
-                        : undefined,
+                    'aria-selected': table.options.enableRowSelection ? isSelected : undefined,
+                };
+
+                if (!experimentalMemoization) {
+                    if (draggableContext) {
+                        return <BaseDraggableRow key={key} {...baseProps} />;
+                    }
+                    return <BaseRow key={key} {...baseProps} />;
+                }
+
+                const memoizedProps: MemoBaseRowProps<TData, TScrollElement> = {
+                    ...baseProps,
+                    style: getTreeStyle(row, rows[rowIndex + 1], memoStyleCache.current),
+                    _rowVersion: resolveRowVersion(row),
                 };
 
                 if (draggableContext) {
-                    return <BaseDraggableRow key={key} {...rowProps} />;
+                    return <MemoBaseDraggableRow key={key} {...memoizedProps} />;
                 }
-
-                return <BaseRow key={key} {...rowProps} />;
+                return <MemoBaseRow key={key} {...memoizedProps} />;
             });
         };
 

@@ -13,6 +13,7 @@ export interface BaseCellProps<TData>
     attributes?:
         | React.TdHTMLAttributes<HTMLTableCellElement>
         | ((cell?: Cell<TData, unknown>) => React.TdHTMLAttributes<HTMLTableCellElement>);
+    _rowVersion?: readonly unknown[];
 }
 
 export const BaseCell = <TData,>({
@@ -21,6 +22,7 @@ export const BaseCell = <TData,>({
     className: classNameProp,
     style,
     attributes: attributesProp,
+    _rowVersion: _rowVersionDiscarded,
     ...restProps
 }: BaseCellProps<TData>) => {
     const attributes = typeof attributesProp === 'function' ? attributesProp(cell) : attributesProp;

@@ -51,6 +51,9 @@ export type {
     UseColumnsAutoSizeProps,
 } from './hooks';
 
+export {MemoBaseRow, MemoBaseCell, MemoBaseDraggableRow} from './components';
+export type {MemoBaseRowProps, MemoBaseDraggableRowProps} from './components';
+
 export {getVirtualRowRangeExtractor} from './utils';
 
 export type {

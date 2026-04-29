@@ -10,6 +10,8 @@ export interface TreeExpandableCellProps<TData> extends React.PropsWithChildren 
 }
 
 export const TreeExpandableCell = <TData,>({row, children}: TreeExpandableCellProps<TData>) => {
+    const isExpanded = row.getIsExpanded();
+
     return (
         <Flex>
             <Button
@@ -19,7 +21,7 @@ export const TreeExpandableCell = <TData,>({row, children}: TreeExpandableCellPr
                 onClick={row.getToggleExpandedHandler()}
             >
                 <Button.Icon>
-                    <ArrowToggle direction={row.getIsExpanded() ? 'bottom' : 'right'} size={16} />
+                    <ArrowToggle direction={isExpanded ? 'bottom' : 'right'} size={16} />
                 </Button.Icon>
             </Button>
             {children}
