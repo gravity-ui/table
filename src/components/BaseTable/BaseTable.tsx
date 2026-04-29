@@ -60,6 +60,10 @@ function getTreeStyle<TData>(
     return cache.get(cacheKey);
 }
 
+function defaultGetRowVersion<TData>(row: Row<TData>): readonly unknown[] {
+    return [row.getIsSelected(), row.getIsExpanded()];
+}
+
 export interface BaseTableProps<TData, TScrollElement extends Element | Window = HTMLDivElement> {
     /** The table instance returned from the `useTable` hook */
     table: Table<TData>;
@@ -212,6 +216,7 @@ export const BaseTable = React.forwardRef(
             withFooter = false,
             withHeader = true,
             experimentalMemoization = false,
+            getRowVersion,
         }: BaseTableProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableElement>,
     ) => {
@@ -267,6 +272,9 @@ export const BaseTable = React.forwardRef(
             );
         };
 
+        const resolveRowVersion: (row: Row<TData>) => readonly unknown[] =
+            getRowVersion ?? defaultGetRowVersion;
+
         const renderBodyRows = () => {
             return bodyRows.map((virtualItemOrRow, index) => {
                 const {row, rowIndex, virtualItem, key} = resolveBodyRow(
@@ -316,8 +324,7 @@ export const BaseTable = React.forwardRef(
                 const memoizedProps: MemoBaseRowProps<TData, TScrollElement> = {
                     ...baseProps,
                     style: getTreeStyle(row, rows[rowIndex + 1], memoStyleCache.current),
-                    isSelected,
-                    isExpanded: row.getIsExpanded(),
+                    _rowVersion: resolveRowVersion(row),
                 };
 
                 if (draggableContext) {

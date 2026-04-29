@@ -1,12 +1,13 @@
 import * as React from 'react';
 
+import {arraysShallowEqual} from '../../utils';
+
 import type {BaseCellProps} from './BaseCell';
 import {BaseCell} from './BaseCell';
 
 function areCellPropsEqual<TData>(prev: BaseCellProps<TData>, next: BaseCellProps<TData>): boolean {
     return (
-        prev.isExpanded === next.isExpanded &&
-        prev.isSelected === next.isSelected &&
+        arraysShallowEqual(prev._rowVersion ?? [], next._rowVersion ?? []) &&
         prev.cell === next.cell &&
         prev.className === next.className &&
         prev.attributes === next.attributes &&

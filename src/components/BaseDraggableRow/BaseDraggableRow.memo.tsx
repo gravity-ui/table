@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import {arraysShallowEqual} from '../../utils';
 import {MemoBaseCell} from '../BaseCell/BaseCell.memo';
 
 import {BaseDraggableRow} from './BaseDraggableRow';
@@ -9,10 +10,8 @@ export interface MemoBaseDraggableRowProps<
     TData,
     TScrollElement extends Element | Window = HTMLDivElement,
 > extends BaseDraggableRowProps<TData, TScrollElement> {
-    /** Must be provided explicitly so the memo comparator can detect selection changes. */
-    isSelected: boolean;
-    /** Must be provided explicitly so the memo comparator can detect expansion changes. */
-    isExpanded: boolean;
+    /** @internal Snapshot of row state — required so the comparator can detect state changes. */
+    _rowVersion: readonly unknown[];
 }
 
 // eslint-disable-next-line complexity
@@ -22,8 +21,7 @@ function areEqual<TData, TScrollElement extends Element | Window>(
 ): boolean {
     return (
         prev.row === next.row &&
-        prev.isSelected === next.isSelected &&
-        prev.isExpanded === next.isExpanded &&
+        arraysShallowEqual(prev._rowVersion ?? [], next._rowVersion ?? []) &&
         prev.table === next.table &&
         prev.virtualItem?.start === next.virtualItem?.start &&
         prev.virtualItem?.size === next.virtualItem?.size &&

@@ -40,10 +40,8 @@ export interface BaseRowProps<TData, TScrollElement extends Element | Window = H
         | React.HTMLAttributes<HTMLTableRowElement>
         | ((row: Row<TData>) => React.HTMLAttributes<HTMLTableRowElement>);
     cellAttributes?: BaseCellProps<TData>['attributes'];
-    /** When provided, overrides row.getIsSelected() for the selected CSS modifier. Used by MemoBaseRow. */
-    isSelected?: boolean;
-    /** When provided, overrides row.getIsExpanded() and is passed to all Cell call sites. Used by MemoBaseRow. */
-    isExpanded?: boolean;
+    /** @internal Snapshot of row state for the memo comparators. Discarded in render. */
+    _rowVersion?: readonly unknown[];
     /**
      * @internal
      * Cell component to render. Defaults to `BaseCell`. `MemoBaseRow` passes
@@ -74,16 +72,14 @@ export const BaseRow = React.forwardRef(
             cellAttributes,
             Cell = BaseCell,
             table: _,
-            isSelected: isSelectedProp,
-            isExpanded: isExpandedProp,
+            _rowVersion,
             ...restProps
         }: BaseRowProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableRowElement>,
     ) => {
         const rowRef = useForkRef(rowVirtualizer?.measureElement, ref);
 
-        const isSelected = isSelectedProp ?? row.getIsSelected();
-        const isExpanded = isExpandedProp ?? row.getIsExpanded();
+        const isSelected = row.getIsSelected();
 
         const attributes =
             typeof attributesProp === 'function' ? attributesProp(row) : attributesProp;
@@ -118,8 +114,7 @@ export const BaseRow = React.forwardRef(
                         colSpan={row.getVisibleCells().length}
                         attributes={cellAttributes}
                         aria-colindex={1}
-                        isExpanded={isExpanded}
-                        isSelected={isSelected}
+                        _rowVersion={_rowVersion}
                     >
                         {renderGroupHeader ? (
                             renderGroupHeader({
@@ -151,8 +146,7 @@ export const BaseRow = React.forwardRef(
                         className={cellClassName}
                         attributes={cellAttributes}
                         aria-colindex={cell.column.getIndex() + 1}
-                        isExpanded={isExpanded}
-                        isSelected={isSelected}
+                        _rowVersion={_rowVersion}
                     />
                 ));
         };
