@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import type {QAProps} from '@gravity-ui/uikit';
 import type {Row, Table} from '@tanstack/react-table';
 import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 
@@ -19,7 +20,8 @@ import {b} from './BaseTable.classname';
 
 import './BaseTable.scss';
 
-export interface BaseTableProps<TData, TScrollElement extends Element | Window = HTMLDivElement> {
+export interface BaseTableProps<TData, TScrollElement extends Element | Window = HTMLDivElement>
+    extends QAProps {
     /** The table instance returned from the `useTable` hook */
     table: Table<TData>;
     /** HTML attributes for the `<table>` element */
@@ -154,6 +156,7 @@ export const BaseTable = React.forwardRef(
             rowAttributes,
             rowClassName,
             rowVirtualizer,
+            qa,
             sortIndicatorClassName,
             stickyFooter = false,
             stickyHeader = false,
@@ -272,6 +275,7 @@ export const BaseTable = React.forwardRef(
                     aria-colcount={colCount > 0 ? colCount : undefined}
                     aria-rowcount={rowCount > 0 ? rowCount : undefined}
                     aria-multiselectable={getAriaMultiselectable(table)}
+                    data-qa={qa}
                     {...attributes}
                 >
                     {withHeader && (
