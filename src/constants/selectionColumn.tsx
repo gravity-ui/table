@@ -4,19 +4,14 @@ import {getToggleAllEnabledRowsSelectedHandler} from '../utils';
 
 export const selectionColumn: ColumnDef<unknown> = {
     id: '_select',
-    header: ({table}) => {
-        const indeterminate = table.getIsSomeRowsSelected();
-        return (
-            <SelectionCheckbox
-                checked={table.getIsAllRowsSelected()}
-                disabled={
-                    !table.options.enableRowSelection || !table.options.enableMultiRowSelection
-                }
-                indeterminate={indeterminate}
-                onChange={getToggleAllEnabledRowsSelectedHandler(table, indeterminate)}
-            />
-        );
-    },
+    header: ({table}) => (
+        <SelectionCheckbox
+            checked={table.getIsAllRowsSelected()}
+            disabled={!table.options.enableRowSelection || !table.options.enableMultiRowSelection}
+            indeterminate={table.getIsSomeRowsSelected()}
+            onChange={getToggleAllEnabledRowsSelectedHandler(table)}
+        />
+    ),
     cell: (cellContext) => (
         <RangedSelectionCheckbox
             checked={cellContext.row.getIsSelected()}
