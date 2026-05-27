@@ -1,14 +1,15 @@
 import {RangedSelectionCheckbox, SelectionCheckbox} from '../components';
 import type {ColumnDef} from '../types/base';
+import {getToggleAllEnabledRowsSelectedHandler} from '../utils';
 
 export const selectionColumn: ColumnDef<unknown> = {
     id: '_select',
     header: ({table}) => (
         <SelectionCheckbox
             checked={table.getIsAllRowsSelected()}
-            disabled={!table.options.enableRowSelection}
+            disabled={!table.options.enableRowSelection || !table.options.enableMultiRowSelection}
             indeterminate={table.getIsSomeRowsSelected()}
-            onChange={table.getToggleAllRowsSelectedHandler()}
+            onChange={getToggleAllEnabledRowsSelectedHandler(table)}
         />
     ),
     cell: (cellContext) => (

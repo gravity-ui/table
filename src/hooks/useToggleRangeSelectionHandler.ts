@@ -35,7 +35,10 @@ export const useToggleRangeSelectionHandler = <TData extends RowData, TValue>(
         } else {
             const startIndex = Math.min(clickedRowIndex, lastSelectedRowIndexRef.current);
             const endIndex = Math.max(clickedRowIndex, lastSelectedRowIndexRef.current);
-            const rowsToSelect = table.getRowModel().rows.slice(startIndex, endIndex + 1);
+            const rowsToSelect = table
+                .getRowModel()
+                .rows.slice(startIndex, endIndex + 1)
+                .filter((rowToSelect) => rowToSelect.getCanSelect());
             const currentRowSelectionState = table.getState().rowSelection;
 
             const rangeAlreadySelected = rowsToSelect.every(({id}) => {
