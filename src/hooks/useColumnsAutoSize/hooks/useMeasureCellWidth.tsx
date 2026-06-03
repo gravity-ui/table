@@ -1,9 +1,8 @@
 import * as React from 'react';
 
-import {createRoot} from 'react-dom/client';
-import type {Root} from 'react-dom/client';
-
 import {cellDefaultWidth, headerDefaultWidth} from '../constants';
+import {createMeasureRoot} from '../utils/createMeasureRoot';
+import type {MeasureRoot} from '../utils/createMeasureRoot';
 import {renderElementForMeasure as defaultRenderElementForMeasure} from '../utils/renderElementForMeasure';
 
 export type UseMeasureCellWidthProps = {
@@ -13,7 +12,9 @@ export type UseMeasureCellWidthProps = {
 export function useMeasureCellWidth({
     renderElementForMeasure = defaultRenderElementForMeasure,
 }: UseMeasureCellWidthProps) {
-    const rootRef = React.useRef<Root | null>(null);
+    const rootRef = React.useRef<MeasureRoot | null>(null);
+    const rootPromiseRef = React.useRef<Promise<MeasureRoot> | null>(null);
+    const isUnmountedRef = React.useRef(false);
     const measureContainerRef = React.useRef<HTMLDivElement | null>(null);
     const lastMeasuredElementRef = React.useRef<{
         element: React.ReactNode;
@@ -21,11 +22,17 @@ export function useMeasureCellWidth({
     } | null>(null);
 
     React.useEffect(() => {
+        isUnmountedRef.current = false;
+
         return () => {
+            isUnmountedRef.current = true;
+
             if (rootRef.current) {
                 rootRef.current.unmount();
                 rootRef.current = null;
             }
+
+            rootPromiseRef.current = null;
 
             if (measureContainerRef.current) {
                 document.body.removeChild(measureContainerRef.current);
@@ -34,8 +41,32 @@ export function useMeasureCellWidth({
         };
     }, []);
 
+    const ensureRoot = React.useCallback((container: HTMLElement) => {
+        if (rootRef.current) {
+            return Promise.resolve(rootRef.current);
+        }
+
+        if (!rootPromiseRef.current) {
+            rootPromiseRef.current = createMeasureRoot(container).then((root) => {
+                // The hook may have unmounted while the React 18 client entry
+                // was being resolved; tear the orphan root down immediately.
+                if (isUnmountedRef.current) {
+                    root.unmount();
+
+                    return root;
+                }
+
+                rootRef.current = root;
+
+                return root;
+            });
+        }
+
+        return rootPromiseRef.current;
+    }, []);
+
     return React.useCallback(
-        (element: React.ReactNode, cellType: 'header' | 'cell' = 'cell') => {
+        async (element: React.ReactNode, cellType: 'header' | 'cell' = 'cell') => {
             if (element === null || element === undefined) {
                 return 0;
             }
@@ -52,7 +83,6 @@ export function useMeasureCellWidth({
 
                 document.body.appendChild(container);
                 measureContainerRef.current = container;
-                rootRef.current = createRoot(container);
             }
 
             if (
@@ -94,7 +124,9 @@ export function useMeasureCellWidth({
             }
 
             try {
-                rootRef.current!.render(renderElementForMeasure(element));
+                const root = await ensureRoot(measureContainerRef.current);
+
+                root.render(renderElementForMeasure(element));
 
                 return new Promise<number>((resolve) => {
                     setTimeout(() => {
@@ -129,6 +161,6 @@ export function useMeasureCellWidth({
                 return defaultWidth;
             }
         },
-        [renderElementForMeasure],
+        [ensureRoot, renderElementForMeasure],
     );
 }
