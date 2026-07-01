@@ -31,6 +31,8 @@ export function useColumnsAutoSize<TData extends unknown>({
         typeof useTable<TData>
     > | null>(null);
 
+    const hasMeasuredRef = React.useRef<boolean>(false);
+
     const rows = tableInstance?.getRowModel().rows ?? emptyRows;
 
     const sampledRows = rows.slice(0, options?.sampleSize ?? 100);
@@ -135,6 +137,7 @@ export function useColumnsAutoSize<TData extends unknown>({
 
                     setColumnWidths(newWidths);
                     setIsMeasuring(false);
+                    hasMeasuredRef.current = true;
                 },
                 100,
             ),
@@ -143,6 +146,10 @@ export function useColumnsAutoSize<TData extends unknown>({
 
     useDeepCompareEffect(() => {
         if (!sampledRows.length) {
+            return;
+        }
+
+        if (options?.measureOnce && hasMeasuredRef.current) {
             return;
         }
 

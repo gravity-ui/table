@@ -13,6 +13,7 @@ export type UseColumnsAutoSizeOptions = {
     measureHeaderText?: boolean;
     respectExistingWidths?: boolean;
     respectResizedWidths?: boolean;
+    measureOnce?: boolean;
 };
 
 export type CalculateColumnWidthsArgs<TData extends unknown> = UseColumnsAutoSizeOptions & {
