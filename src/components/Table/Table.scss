@@ -4,6 +4,8 @@
 $block: '.#{variables.$ns}styled-table';
 
 #{$block} {
+    --gt-table-reordering-insertion-line-color: var(--g-color-line-info);
+
     &__header {
         background: var(--g-color-base-background);
     }

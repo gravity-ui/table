@@ -3,6 +3,8 @@ import type {Meta, StoryObj} from '@storybook/react';
 import {BaseTable} from '../index';
 
 import {ColumnPinningStory} from './stories/ColumnPinningStory';
+import {ColumnReorderingStory} from './stories/ColumnReorderingStory';
+import {ColumnReorderingWithPinningStory} from './stories/ColumnReorderingWithPinningStory';
 import {CustomRowStory} from './stories/CustomRowStory';
 import {DefaultStory} from './stories/DefaultStory';
 import {EmptyContentStory} from './stories/EmptyContentStory';
@@ -82,6 +84,14 @@ export const Reordering: StoryObj<typeof ReorderingStory> = {
 
 export const ReorderingTree: StoryObj<typeof ReorderingTreeStory> = {
     render: ReorderingTreeStory,
+};
+
+export const ColumnReordering: StoryObj<typeof ColumnReorderingStory> = {
+    render: ColumnReorderingStory,
+};
+
+export const ColumnReorderingWithPinning: StoryObj<typeof ColumnReorderingWithPinningStory> = {
+    render: ColumnReorderingWithPinningStory,
 };
 
 export const Virtualization: StoryObj<typeof VirtualizationStory> = {

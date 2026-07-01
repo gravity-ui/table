@@ -35,81 +35,93 @@ export interface BaseHeaderCellProps<TData, TValue> {
           ) => React.ThHTMLAttributes<HTMLTableCellElement>);
 }
 
-export const BaseHeaderCell = <TData, TValue>({
-    className: classNameProp,
-    header,
-    parentHeader,
-    renderHeaderCellContent,
-    renderResizeHandle,
-    renderSortIndicator,
-    resizeHandleClassName,
-    sortIndicatorClassName,
-    attributes: attributesProp,
-}: BaseHeaderCellProps<TData, TValue>) => {
-    const attributes =
-        typeof attributesProp === 'function'
-            ? attributesProp(header, parentHeader)
-            : attributesProp;
+export const BaseHeaderCell = React.forwardRef(
+    <TData, TValue>(
+        {
+            className: classNameProp,
+            header,
+            parentHeader,
+            renderHeaderCellContent,
+            renderResizeHandle,
+            renderSortIndicator,
+            resizeHandleClassName,
+            sortIndicatorClassName,
+            attributes: attributesProp,
+        }: BaseHeaderCellProps<TData, TValue>,
+        ref: React.Ref<HTMLTableCellElement>,
+    ) => {
+        const attributes =
+            typeof attributesProp === 'function'
+                ? attributesProp(header, parentHeader)
+                : attributesProp;
 
-    const className =
-        typeof classNameProp === 'function' ? classNameProp(header, parentHeader) : classNameProp;
+        const className =
+            typeof classNameProp === 'function'
+                ? classNameProp(header, parentHeader)
+                : classNameProp;
 
-    const rowSpan = header.isPlaceholder ? header.getLeafHeaders().length : 1;
+        const rowSpan = header.isPlaceholder ? header.getLeafHeaders().length : 1;
 
-    const renderContent = () => {
-        if (renderHeaderCellContent) {
-            return renderHeaderCellContent({
-                header,
-            });
-        }
+        const renderContent = () => {
+            if (renderHeaderCellContent) {
+                return renderHeaderCellContent({
+                    header,
+                });
+            }
 
-        return (
-            <React.Fragment>
-                {header.column.getCanSort() ? (
-                    <BaseSort header={header}>
-                        {flexRender(header.column.columnDef.header, header.getContext())}{' '}
-                        {renderSortIndicator ? (
-                            renderSortIndicator({
-                                className: b('sort-indicator', sortIndicatorClassName),
+            return (
+                <React.Fragment>
+                    {header.column.getCanSort() ? (
+                        <BaseSort header={header}>
+                            {flexRender(header.column.columnDef.header, header.getContext())}{' '}
+                            {renderSortIndicator ? (
+                                renderSortIndicator({
+                                    className: b('sort-indicator', sortIndicatorClassName),
+                                    header,
+                                })
+                            ) : (
+                                <BaseSortIndicator
+                                    className={b('sort-indicator', sortIndicatorClassName)}
+                                    header={header}
+                                />
+                            )}
+                        </BaseSort>
+                    ) : (
+                        flexRender(header.column.columnDef.header, header.getContext())
+                    )}
+                    {header.column.getCanResize() &&
+                        (renderResizeHandle ? (
+                            renderResizeHandle({
+                                className: b('resize-handle', resizeHandleClassName),
                                 header,
                             })
                         ) : (
-                            <BaseSortIndicator
-                                className={b('sort-indicator', sortIndicatorClassName)}
+                            <BaseResizeHandle
+                                className={b('resize-handle', resizeHandleClassName)}
                                 header={header}
                             />
-                        )}
-                    </BaseSort>
-                ) : (
-                    flexRender(header.column.columnDef.header, header.getContext())
-                )}
-                {header.column.getCanResize() &&
-                    (renderResizeHandle ? (
-                        renderResizeHandle({
-                            className: b('resize-handle', resizeHandleClassName),
-                            header,
-                        })
-                    ) : (
-                        <BaseResizeHandle
-                            className={b('resize-handle', resizeHandleClassName)}
-                            header={header}
-                        />
-                    ))}
-            </React.Fragment>
-        );
-    };
+                        ))}
+                </React.Fragment>
+            );
+        };
 
-    return (
-        <th
-            className={b('header-cell', getHeaderCellClassModes(header), className)}
-            colSpan={header.colSpan > 1 ? header.colSpan : undefined}
-            rowSpan={rowSpan > 1 ? rowSpan : undefined}
-            aria-sort={getAriaSort(header.column.getIsSorted())}
-            aria-colindex={getHeaderCellAriaColIndex(header)}
-            {...attributes}
-            style={getCellStyles(header, attributes?.style)}
-        >
-            {renderContent()}
-        </th>
-    );
-};
+        return (
+            <th
+                ref={ref}
+                className={b('header-cell', getHeaderCellClassModes(header), className)}
+                colSpan={header.colSpan > 1 ? header.colSpan : undefined}
+                rowSpan={rowSpan > 1 ? rowSpan : undefined}
+                aria-sort={getAriaSort(header.column.getIsSorted())}
+                aria-colindex={getHeaderCellAriaColIndex(header)}
+                {...attributes}
+                style={getCellStyles(header, attributes?.style)}
+            >
+                {renderContent()}
+            </th>
+        );
+    },
+) as (<TData, TValue>(
+    props: BaseHeaderCellProps<TData, TValue> & {ref?: React.Ref<HTMLTableCellElement>},
+) => React.ReactElement) & {displayName: string};
+
+BaseHeaderCell.displayName = 'BaseHeaderCell';

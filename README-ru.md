@@ -392,6 +392,102 @@ const ReorderingExample = () => {
 };
 ```
 
+### Переупорядочивание столбцов
+
+Оберните таблицу в `ColumnReorderingProvider`, чтобы включить перетаскивание столбцов за их заголовки.
+
+```tsx
+import {ColumnReorderingProvider} from '@gravity-ui/table';
+
+const columns: ColumnDef<Person>[] = [
+  {accessorKey: 'name', header: 'Name', size: 100},
+  {accessorKey: 'age', header: 'Age', size: 100},
+];
+
+const ColumnReorderingExample = () => {
+  const table = useTable({
+    columns,
+    data,
+    getRowId: (item) => item.id,
+  });
+
+  return (
+    <ColumnReorderingProvider table={table}>
+      <Table table={table} />
+    </ColumnReorderingProvider>
+  );
+};
+```
+
+Если вы управляете `columnOrder` самостоятельно (например, чтобы сохранять его), передайте `onReorder` и примените полученный порядок:
+
+```tsx
+const [columnOrder, setColumnOrder] = React.useState<string[]>([]);
+
+const table = useTable({
+  columns,
+  data,
+  state: {columnOrder},
+  onColumnOrderChange: setColumnOrder,
+});
+
+return (
+  <ColumnReorderingProvider
+    table={table}
+    onReorder={({columnOrder}) => setColumnOrder(columnOrder)}
+  >
+    <Table table={table} />
+  </ColumnReorderingProvider>
+);
+```
+
+Во время перетаскивания:
+
+- плавающее превью столбца (его заголовок и первые строки) следует за курсором;
+- перетаскиваемый столбец становится полупрозрачным;
+- в месте вставки рисуется синяя линия;
+
+```tsx
+<ColumnReorderingProvider
+  table={table}
+  autoScroll
+  dragOverlayRowCount={20}
+  renderDragOverlay={({columnId}) => <CustomColumnPreview columnId={columnId} />}
+>
+  <Table table={table} />
+</ColumnReorderingProvider>
+```
+
+CSS API:
+
+| CSS-переменная                               | Значение по умолчанию         | Описание                              |
+| -------------------------------------------- | ----------------------------- | ------------------------------------- |
+| `--gt-table-reordering-insertion-line-color` | `#4d8bff`                     | Цвет линии вставки                    |
+| `--gt-table-reordering-insertion-line-width` | `2px`                         | Толщина линии вставки                 |
+| `--gt-table-reordering-dragged-opacity`      | `0.4`                         | Прозрачность перетаскиваемого столбца |
+| `--gt-table-drag-overlay-background`         | `#fff`                        | Фон превью                            |
+| `--gt-table-drag-overlay-shadow`             | `0 3px 12px rgba(0,0,0,0.15)` | Тень превью                           |
+| `--gt-table-drag-overlay-border-radius`      | `6px`                         | Скругление превью                     |
+
+Чтобы запретить переупорядочивание конкретного столбца, задайте `enableColumnReordering: false` в его определении. Плейсхолдерные (сгруппированные) столбцы перетаскивать нельзя. Параметр `activationDistance` (по умолчанию `8`) задаёт, на сколько должен сдвинуться курсор перед началом перетаскивания, что сохраняет работу кликов по заголовку (например, сортировки).
+
+Закреплённые (pinned) столбцы тоже можно переупорядочивать, но только внутри своей группы: столбец перемещается в пределах левой закреплённой группы, правой закреплённой группы или центральной (незакреплённой) группы — перетаскиванием он никогда не пересекает границу закрепления.
+
+```tsx
+<ColumnReorderingProvider
+  table={table}
+  onReorder={({columnOrder, columnPinning, pinned}) => {
+    if (pinned) {
+      setColumnPinning(columnPinning);
+    } else {
+      setColumnOrder(columnOrder);
+    }
+  }}
+>
+  <Table table={table} />
+</ColumnReorderingProvider>
+```
+
 ### Виртуализация
 
 Если необходимо настроить контейнер сетки в качестве элемента прокрутки, используйте виртуализацию. Обязательно задайте контейнеру фиксированную высоту, иначе виртуализация работать не будет.

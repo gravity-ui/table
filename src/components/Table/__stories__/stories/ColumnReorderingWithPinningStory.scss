@@ -1,0 +1,29 @@
+.table-column-reordering-with-pinning-story {
+    display: flex;
+    flex-direction: column;
+    row-gap: var(--g-spacing-3);
+
+    &__hint {
+        color: var(--g-color-text-secondary);
+    }
+
+    &__scroll {
+        width: 900px;
+        overflow: auto;
+    }
+
+    .gt-styled-table__cell,
+    .gt-styled-table__header-cell {
+        background: var(--g-color-base-background);
+    }
+
+    .gt-styled-table__header-cell_last-pinned-left,
+    .gt-styled-table__cell_last-pinned-left {
+        box-shadow: var(--g-color-line-generic-active) -2px 0 2px -2px inset;
+    }
+
+    .gt-styled-table__header-cell_first-pinned-right,
+    .gt-styled-table__cell_first-pinned-right {
+        box-shadow: var(--g-color-line-generic-active) 2px 0 2px -2px inset;
+    }
+}

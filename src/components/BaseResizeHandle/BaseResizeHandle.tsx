@@ -28,6 +28,7 @@ export const BaseResizeHandle = <TData, TValue>({
                 },
                 className,
             )}
+            data-role="resize-handle"
             onDoubleClick={() => header.column.resetSize()}
             onMouseDown={header.getResizeHandler()}
             onTouchStart={header.getResizeHandler()}

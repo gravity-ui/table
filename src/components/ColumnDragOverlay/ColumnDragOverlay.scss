@@ -1,0 +1,13 @@
+@use '../variables';
+
+$block: '.#{variables.$ns}drag-overlay';
+
+#{$block} {
+    overflow: hidden;
+
+    cursor: grabbing;
+
+    background: var(--gt-table-drag-overlay-background, #fff);
+    box-shadow: var(--gt-table-drag-overlay-shadow, 0 3px 12px rgba(0, 0, 0, 0.15));
+    border-radius: var(--gt-table-drag-overlay-border-radius, 6px);
+}
