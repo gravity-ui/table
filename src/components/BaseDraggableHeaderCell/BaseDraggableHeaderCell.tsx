@@ -3,6 +3,7 @@ import * as React from 'react';
 import type {Header} from '../../types/base';
 import type {BaseHeaderCellProps} from '../BaseHeaderCell';
 import {BaseHeaderCell} from '../BaseHeaderCell';
+import {b} from '../BaseTable/BaseTable.classname';
 import {ColumnReorderingContext} from '../ColumnReorderingContext';
 
 export interface BaseDraggableHeaderCellProps<TData, TValue>
@@ -19,23 +20,22 @@ export const BaseDraggableHeaderCell = <TData, TValue>({
 
     const isDragActive = Boolean(activeColumnId);
 
-    const handlePointerDown = React.useCallback(
-        (event: React.PointerEvent<HTMLTableCellElement>) => {
-            if ((event.target as HTMLElement).closest('[data-role="resize-handle"]')) {
-                return;
-            }
-
-            listeners?.onPointerDown?.(event);
-        },
-        [listeners],
-    );
-
     const getAttributes = React.useCallback(
         (cellHeader: Header<TData, TValue>, parentHeader?: Header<TData, unknown>) => {
             const resolvedAttributes =
                 typeof attributesProp === 'function'
                     ? attributesProp(cellHeader, parentHeader)
                     : attributesProp;
+
+            const handlePointerDown = (event: React.PointerEvent<HTMLTableCellElement>) => {
+                resolvedAttributes?.onPointerDown?.(event);
+
+                if ((event.target as HTMLElement).closest(`.${b('resize-handle')}`)) {
+                    return;
+                }
+
+                listeners?.onPointerDown?.(event);
+            };
 
             return {
                 ...resolvedAttributes,
@@ -46,7 +46,7 @@ export const BaseDraggableHeaderCell = <TData, TValue>({
                 'data-drag-active': isDragActive,
             };
         },
-        [attributesProp, handlePointerDown, isDragActive, isDragging, listeners],
+        [attributesProp, isDragActive, isDragging, listeners],
     );
 
     return (
