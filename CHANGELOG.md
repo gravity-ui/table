@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.16.0](https://github.com/gravity-ui/table/compare/v1.15.3...v1.16.0) (2026-07-06)
+
+
+### Features
+
+* **BaseTable:** add column reordering feature ([#155](https://github.com/gravity-ui/table/issues/155)) ([8755177](https://github.com/gravity-ui/table/commit/8755177ae183c468c4d861905b01861efdb3a3e4))
+* **BaseTable:** add qa prop ([#152](https://github.com/gravity-ui/table/issues/152)) ([1b110a5](https://github.com/gravity-ui/table/commit/1b110a57bf10ad2d5dcc333074e5ad9f117e3a0a))
+* **useColumnsAutoSize:** add possibility to not recalc column widths on data change ([#156](https://github.com/gravity-ui/table/issues/156)) ([13c5639](https://github.com/gravity-ui/table/commit/13c5639ce171e86fd893c1d1d82007c09433c71e))
+
+
+### Bug Fixes
+
+* **selectionColumn:** exclude disabled rows from selection ([#151](https://github.com/gravity-ui/table/issues/151)) ([641ef9d](https://github.com/gravity-ui/table/commit/641ef9d45fa2008d8055d563dcc8d9974aaeb1bf))
+* **useColumnsAutoSize:** support React 17 by lazy-loading react-dom/client ([#154](https://github.com/gravity-ui/table/issues/154)) ([70f9996](https://github.com/gravity-ui/table/commit/70f999637047c5495feffa18459a8a81d6fe01ec))
+
 ## [1.15.3](https://github.com/gravity-ui/table/compare/v1.15.2...v1.15.3) (2026-04-02)
 
 
