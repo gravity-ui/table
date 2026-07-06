@@ -30,6 +30,10 @@ export const BaseDraggableHeaderCell = <TData, TValue>({
             const handlePointerDown = (event: React.PointerEvent<HTMLTableCellElement>) => {
                 resolvedAttributes?.onPointerDown?.(event);
 
+                if (event.defaultPrevented) {
+                    return;
+                }
+
                 if ((event.target as HTMLElement).closest(`.${b('resize-handle')}`)) {
                     return;
                 }
