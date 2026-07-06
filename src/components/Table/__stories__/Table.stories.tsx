@@ -2,6 +2,8 @@ import type {Meta, StoryObj} from '@storybook/react';
 
 import {Table} from '../index';
 
+import {ColumnReorderingStory} from './stories/ColumnReorderingStory';
+import {ColumnReorderingWithPinningStory} from './stories/ColumnReorderingWithPinningStory';
 import {DefaultStory} from './stories/DefaultStory';
 import {FilteringStory} from './stories/FilteringStory';
 import {GroupingStory} from './stories/GroupingStory';
@@ -69,6 +71,14 @@ export const Filtering: StoryObj<typeof FilteringStory> = {
 
 export const Reordering: StoryObj<typeof ReorderingStory> = {
     render: ReorderingStory,
+};
+
+export const ColumnReordering: StoryObj<typeof ColumnReorderingStory> = {
+    render: ColumnReorderingStory,
+};
+
+export const ColumnReorderingWithPinning: StoryObj<typeof ColumnReorderingWithPinningStory> = {
+    render: ColumnReorderingWithPinningStory,
 };
 
 export const Virtualization: StoryObj<typeof VirtualizationStory> = {

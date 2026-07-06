@@ -1,6 +1,8 @@
 export {
     BaseTable,
     ReorderingProvider,
+    ColumnReorderingProvider,
+    ColumnReorderingContext,
     SortIndicator,
     Table,
     TableSettings,
@@ -12,6 +14,8 @@ export {
 export type {
     BaseTableProps,
     ReorderingProviderProps,
+    ColumnReorderingProviderProps,
+    ColumnReorderResult,
     SortIndicatorProps,
     TableProps,
     TableSettingsOptions,

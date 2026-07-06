@@ -1,11 +1,15 @@
-import type * as React from 'react';
+import * as React from 'react';
 
 import type {Header, HeaderGroup} from '../../types/base';
 import {shouldRenderHeaderCell} from '../../utils';
+import {BaseDraggableHeaderCell} from '../BaseDraggableHeaderCell';
 import type {BaseHeaderCellProps} from '../BaseHeaderCell';
 import {BaseHeaderCell} from '../BaseHeaderCell';
 import type {BaseResizeHandleProps} from '../BaseResizeHandle';
 import {b} from '../BaseTable/BaseTable.classname';
+import {ColumnReorderingContext} from '../ColumnReorderingContext';
+
+import {getCanReorderHeader} from './utils/getCanReorderHeader';
 
 export interface BaseHeaderRowProps<TData, TValue = unknown>
     extends Omit<React.HTMLAttributes<HTMLTableRowElement>, 'className'> {
@@ -43,6 +47,8 @@ export const BaseHeaderRow = <TData, TValue = unknown>({
     cellAttributes,
     ...restProps
 }: BaseHeaderRowProps<TData, TValue>) => {
+    const columnReordering = React.useContext(ColumnReorderingContext);
+
     const attributes =
         typeof attributesProp === 'function'
             ? attributesProp(headerGroup, parentHeaderGroup)
@@ -60,8 +66,17 @@ export const BaseHeaderRow = <TData, TValue = unknown>({
                     (item) => header.column.id === item.column.id,
                 );
 
-                return shouldRenderHeaderCell(header, parentHeader) ? (
-                    <BaseHeaderCell
+                if (!shouldRenderHeaderCell(header, parentHeader)) {
+                    return null;
+                }
+
+                const HeaderCellComponent =
+                    columnReordering && getCanReorderHeader(header)
+                        ? BaseDraggableHeaderCell
+                        : BaseHeaderCell;
+
+                return (
+                    <HeaderCellComponent
                         key={header.column.id}
                         className={cellClassName}
                         header={header as Header<TData, TValue>}
@@ -73,7 +88,7 @@ export const BaseHeaderRow = <TData, TValue = unknown>({
                         sortIndicatorClassName={sortIndicatorClassName}
                         attributes={cellAttributes}
                     />
-                ) : null;
+                );
             })}
         </tr>
     );

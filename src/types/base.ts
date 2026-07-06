@@ -13,6 +13,8 @@ export type ColumnDef<TData extends RowData, TValue = unknown> = BaseColumnDef<T
     withNestingStyles?: boolean;
     /* Show vertical lines indicating depth in tree */
     showTreeDepthIndicators?: boolean;
+    /* Set to `false` to forbid reordering this column via drag-and-drop (used with `ColumnReorderingProvider`) */
+    enableColumnReordering?: boolean;
 };
 
 export type DefinedColumnDef<TData extends RowData, TValue = unknown> = Omit<
