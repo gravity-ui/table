@@ -1,6 +1,8 @@
 # experimentalUseColumnsAutoSize
 
-A React hook for automatically calculating column widths based on content, while supporting:
+A React hook that automatically calculates column widths based on measured content, supporting primitives and React nodes, `accessorKey`/`accessorFn` columns, custom cell renderers, and respect for predefined or user-resized widths.
+
+It also handles:
 
 - Both primitive values and React nodes
 - Columns defined with accessorKey or accessorFn
@@ -84,7 +86,7 @@ const table = useTable({
 });
 ```
 
-## API Reference
+## Properties
 
 ### experimentalUseColumnsAutoSize
 
