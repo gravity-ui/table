@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.0](https://github.com/gravity-ui/table/compare/v1.16.0...v1.17.0) (2026-07-16)
+
+
+### Features
+
+* improve agent docs ([#159](https://github.com/gravity-ui/table/issues/159)) ([1388776](https://github.com/gravity-ui/table/commit/13887764162507d192b43234e0b1409227e6d9d2))
+
 ## [1.16.0](https://github.com/gravity-ui/table/compare/v1.15.3...v1.16.0) (2026-07-06)
 
 
