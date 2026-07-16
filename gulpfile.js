@@ -88,6 +88,11 @@ task('styles-components', () => {
         .pipe(dest(path.resolve(BUILD_DIR, 'cjs', 'components')));
 });
 
+task('copy-docs', (done) => {
+    utils.buildDocs();
+    done();
+});
+
 task(
     'build',
     series([
@@ -95,6 +100,7 @@ task(
         parallel(['compile-to-esm', 'compile-to-cjs']),
         'copy-i18n',
         parallel(['styles-components']),
+        'copy-docs',
     ]),
 );
 

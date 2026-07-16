@@ -1,5 +1,15 @@
 # BaseTable
 
+The unstyled, low-level table renderer — renders a `useTable` instance as raw `<table>` markup without Gravity UI styling, for full visual control.
+
+```tsx
+import {useTable, BaseTable} from '@gravity-ui/table';
+
+const table = useTable({columns, data});
+
+return <BaseTable table={table} />;
+```
+
 ## Properties
 
 | Name                        | Description                                                                                       | Type                                                                                                                                                                                                           |
