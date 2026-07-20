@@ -45,12 +45,12 @@ export const TableDndRoot = ({scopes, children}: TableDndRootProps) => {
     const modifiers = React.useMemo(() => createMergedModifiers(scopeList), [scopeList]);
 
     const autoScroll = React.useMemo<AutoScrollOptions | boolean>(() => {
-        if (!columnScope?.autoScroll) {
+        if (!scopeList.some((scope) => scope.autoScroll)) {
             return false;
         }
 
         return autoScrollConfig;
-    }, [columnScope?.autoScroll]);
+    }, [scopeList]);
 
     const dispatchToScope = React.useCallback(
         (

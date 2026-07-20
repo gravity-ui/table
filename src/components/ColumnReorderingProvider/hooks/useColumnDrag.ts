@@ -174,7 +174,11 @@ export function useColumnDrag<TData>({
                     }
                 };
 
-                React.startTransition(applyReorder);
+                if (typeof React.startTransition === 'function') {
+                    React.startTransition(applyReorder);
+                } else {
+                    applyReorder();
+                }
             },
             onDragCancel: () => {
                 resetState();

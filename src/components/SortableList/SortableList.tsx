@@ -57,6 +57,7 @@ export const SortableList = ({
         () => ({
             type: 'row' as const,
             modifiers: dndModifiers,
+            autoScroll: true,
             handlers,
         }),
         [dndModifiers, handlers],
