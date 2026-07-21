@@ -1,6 +1,7 @@
 import type {Meta, StoryObj} from '@storybook/react';
 
 import {AutoSizedTable} from './AutoSizedTable';
+import {MeasureOnceColumnsChangeTable} from './MeasureOnceColumnsChangeTable';
 import {TableWithDynamicData} from './TableWithDynamicData';
 import {columns} from './constants/columns';
 import {columnsWithComplexComponents} from './constants/columnsWithComplexComponents';
@@ -164,6 +165,17 @@ export const LongText: Story = {
         docs: {
             description: {
                 story: 'This example shows how the hook handles very long text content in cells.',
+            },
+        },
+    },
+};
+
+export const MeasureOnceColumnsChange: Story = {
+    render: MeasureOnceColumnsChangeTable,
+    parameters: {
+        docs: {
+            description: {
+                story: 'With measureOnce enabled, adding a previously unmeasured column increments the recalculation counter, while removing it does not.',
             },
         },
     },

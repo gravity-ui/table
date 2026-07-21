@@ -31,7 +31,7 @@ export function useColumnsAutoSize<TData extends unknown>({
         typeof useTable<TData>
     > | null>(null);
 
-    const hasMeasuredRef = React.useRef<boolean>(false);
+    const measuredColumnIdsRef = React.useRef<Set<string>>(new Set());
 
     const rows = tableInstance?.getRowModel().rows ?? emptyRows;
 
@@ -39,6 +39,10 @@ export function useColumnsAutoSize<TData extends unknown>({
     const columnSizing = tableInstance?.getState().columnSizing ?? emptyColumnSizing;
 
     const rowsDataKey = sampledRows.map((row) => row.id).join(',');
+    const columnIds = columns.map(
+        (column) => column.id || ('accessorKey' in column && String(column.accessorKey)) || '',
+    );
+    const columnsKey = JSON.stringify(columnIds);
 
     const measureCellWidth = useMeasureCellWidth({
         renderElementForMeasure,
@@ -137,7 +141,9 @@ export function useColumnsAutoSize<TData extends unknown>({
 
                     setColumnWidths(newWidths);
                     setIsMeasuring(false);
-                    hasMeasuredRef.current = true;
+                    Object.keys(newWidths).forEach((columnId) =>
+                        measuredColumnIdsRef.current.add(columnId),
+                    );
                 },
                 100,
             ),
@@ -149,11 +155,15 @@ export function useColumnsAutoSize<TData extends unknown>({
             return;
         }
 
-        if (options?.measureOnce && hasMeasuredRef.current) {
+        if (
+            options?.measureOnce &&
+            columnIds.every((columnId) => measuredColumnIdsRef.current.has(columnId))
+        ) {
             return;
         }
 
         calculateWidths.cancel();
+
         calculateWidths({
             columnSizing,
             columns,
@@ -162,7 +172,7 @@ export function useColumnsAutoSize<TData extends unknown>({
             tableInstance,
             ...options,
         });
-    }, [columnSizing, rowsDataKey]);
+    }, [columnSizing, rowsDataKey, columnsKey]);
 
     const columnsWithAutoSizes = React.useMemo(
         () => setColumnAutoSizes(columns, columnWidths, columnSizing),
