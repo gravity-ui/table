@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.18.0](https://github.com/gravity-ui/table/compare/v1.17.0...v1.18.0) (2026-07-21)
+
+
+### Features
+
+* adds ability to recalculate columns sizes on its amount change ([#163](https://github.com/gravity-ui/table/issues/163)) ([fd55464](https://github.com/gravity-ui/table/commit/fd55464d59150ede3b8764e20bc31a667be85cbb))
+
+
+### Bug Fixes
+
+* **RowActions:** clip menu content to popup border radius ([#161](https://github.com/gravity-ui/table/issues/161)) ([309879d](https://github.com/gravity-ui/table/commit/309879da70f7c84e7f8095d7989cca706a1570ef))
+
 ## [1.17.0](https://github.com/gravity-ui/table/compare/v1.16.0...v1.17.0) (2026-07-16)
 
 
