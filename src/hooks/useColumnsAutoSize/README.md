@@ -100,17 +100,17 @@ const table = useTable({
 
 #### Options
 
-| Name                    | Type      | Default | Description                                                                                                                                                                  |
-| ----------------------- | --------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `minWidth`              | `number`  | `50`    | Minimum width in pixels for any column                                                                                                                                       |
-| `maxWidth`              | `number`  | `500`   | Maximum width in pixels for any column                                                                                                                                       |
-| `padding`               | `number`  | `16`    | Padding in pixels to add to content width for cells                                                                                                                          |
-| `headerPadding`         | `number`  | `24`    | Padding in pixels to add to content width for headers                                                                                                                        |
-| `sampleSize`            | `number`  | `100`   | Number of rows to sample for width calculation (helps with performance)                                                                                                      |
-| `measureHeaderText`     | `boolean` | `true`  | Whether to include header text in width calculation                                                                                                                          |
-| `respectExistingWidths` | `boolean` | `true`  | Whether to preserve columns with predefined widths (size, width, or matching minSize/maxSize)                                                                                |
-| `respectResizedWidths`  | `boolean` | `true`  | Whether to preserve column widths that were resized by the user                                                                                                              |
-| `measureOnce`           | `boolean` | `false` | If `true`, widths are calculated only once (on first data render) and are NOT recalculated when data changes (e.g. sorting/filtering). Prevents columns from jumping on sort |
+| Name                    | Type      | Default | Description                                                                                                                                                           |
+| ----------------------- | --------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `minWidth`              | `number`  | `50`    | Minimum width in pixels for any column                                                                                                                                |
+| `maxWidth`              | `number`  | `500`   | Maximum width in pixels for any column                                                                                                                                |
+| `padding`               | `number`  | `16`    | Padding in pixels to add to content width for cells                                                                                                                   |
+| `headerPadding`         | `number`  | `24`    | Padding in pixels to add to content width for headers                                                                                                                 |
+| `sampleSize`            | `number`  | `100`   | Number of rows to sample for width calculation (helps with performance)                                                                                               |
+| `measureHeaderText`     | `boolean` | `true`  | Whether to include header text in width calculation                                                                                                                   |
+| `respectExistingWidths` | `boolean` | `true`  | Whether to preserve columns with predefined widths (size, width, or matching minSize/maxSize)                                                                         |
+| `respectResizedWidths`  | `boolean` | `true`  | Whether to preserve column widths that were resized by the user                                                                                                       |
+| `measureOnce`           | `boolean` | `false` | If `true`, widths are not recalculated when data changes, columns are removed, or columns are reordered. Adding a previously unmeasured column triggers recalculation |
 
 #### Returns
 
@@ -140,7 +140,7 @@ const {columnWidths, isMeasuring, columnsWithAutoSizes, setTableInstance} = useA
 2. **Sampling**: To optimize performance, it only samples a subset of rows (configurable via `sampleSize`).
 3. **Optimization**: Different measuring techniques are used for text vs React components.
 4. **Respect for User Actions**: Preserves user-resized column widths and pre-defined column widths.
-5. **Reactivity**: Automatically updates when table data or columns change (unless `measureOnce` is enabled).
+5. **Reactivity**: Automatically updates when table data or columns change. With `measureOnce`, only adding a previously unmeasured column triggers recalculation.
 
 ## Troubleshooting
 
@@ -187,13 +187,13 @@ experimentalUseColumnsAutoSize({
 
 ### Columns jump / resize when sorting or changing data
 
-By default the hook recalculates widths whenever the data changes (including sorting, since the sampled rows change). To measure widths only once and keep them stable afterwards, enable `measureOnce`:
+By default the hook recalculates widths whenever the data changes (including sorting, since the sampled rows change). To keep widths stable unless a previously unmeasured column is added, enable `measureOnce`:
 
 ```tsx
 experimentalUseColumnsAutoSize({
   columns,
   options: {
-    measureOnce: true, // calculate once, never recalc on data/sort changes
+    measureOnce: true, // recalculate only when a previously unmeasured column is added
   },
 });
 ```
