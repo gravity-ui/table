@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.1](https://github.com/gravity-ui/table/compare/v1.18.0...v1.18.1) (2026-07-22)
+
+
+### Bug Fixes
+
+* **ColumnReorderingProvider:** support using both row and column reordering ([#158](https://github.com/gravity-ui/table/issues/158)) ([5fb6c2d](https://github.com/gravity-ui/table/commit/5fb6c2ddb74fef6bbce4bc79a51082ef976a672b))
+
 ## [1.18.0](https://github.com/gravity-ui/table/compare/v1.17.0...v1.18.0) (2026-07-21)
 
 
