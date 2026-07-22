@@ -27,7 +27,7 @@ export interface ColumnDragOverlayProps<TData> {
     renderDragOverlay?: ColumnReorderingProviderProps<TData>['renderDragOverlay'];
 }
 
-export function ColumnDragOverlay<TData>({
+function ColumnDragOverlayInternal<TData>({
     table,
     activeColumnId,
     overlayClassNames,
@@ -101,3 +101,7 @@ export function ColumnDragOverlay<TData>({
         </table>
     );
 }
+
+export const ColumnDragOverlay = React.memo(
+    ColumnDragOverlayInternal,
+) as typeof ColumnDragOverlayInternal;

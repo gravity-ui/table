@@ -1,7 +1,9 @@
-import {useSortable} from '@dnd-kit/sortable';
+import * as React from 'react';
+
 import type {Row, Table} from '@tanstack/react-table';
 
 import {useDraggableRowDepth} from '../../../../hooks';
+import {SortableListContext} from '../../../SortableListContext';
 
 import {TreeNameCell} from './TreeNameCell';
 
@@ -16,9 +18,8 @@ export const DraggableTreeNameCell = <TData,>({
     table,
     value,
 }: DraggableTreeNameCellProps<TData>) => {
-    const {isDragging} = useSortable({
-        id: row.id,
-    });
+    const {useSortable} = React.useContext(SortableListContext) ?? {};
+    const {isDragging = false} = useSortable?.({id: row.id}) ?? {};
 
     const {depth} = useDraggableRowDepth({row, table, isDragging});
 

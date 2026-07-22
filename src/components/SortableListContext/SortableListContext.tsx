@@ -4,7 +4,8 @@ import type {useSortable} from '@dnd-kit/sortable';
 
 import type {useSortableList} from '../../hooks';
 
-export interface SortableListContextValue extends ReturnType<typeof useSortableList> {
+export interface SortableListContextValue
+    extends Omit<ReturnType<typeof useSortableList>, 'handlers'> {
     enableNesting?: boolean;
     useSortable?: typeof useSortable;
 }

@@ -18,6 +18,7 @@ import {ReorderingStory} from './stories/ReorderingStory';
 import {ReorderingTreeStory} from './stories/ReorderingTreeStory';
 import {ReorderingWithVirtualizationStory} from './stories/ReorderingWithVirtualizationStory';
 import {ResizingStory} from './stories/ResizingStory';
+import {RowAndColumnReorderingStory} from './stories/RowAndColumnReorderingStory';
 import {SortingStory} from './stories/SortingStory';
 import {StickyHeaderStory} from './stories/StickyHeaderStory';
 import {TreeStory} from './stories/TreeStory';
@@ -92,6 +93,10 @@ export const ColumnReordering: StoryObj<typeof ColumnReorderingStory> = {
 
 export const ColumnReorderingWithPinning: StoryObj<typeof ColumnReorderingWithPinningStory> = {
     render: ColumnReorderingWithPinningStory,
+};
+
+export const RowAndColumnReordering: StoryObj<typeof RowAndColumnReorderingStory> = {
+    render: RowAndColumnReorderingStory,
 };
 
 export const Virtualization: StoryObj<typeof VirtualizationStory> = {

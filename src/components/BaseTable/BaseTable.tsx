@@ -13,6 +13,7 @@ import type {BaseHeaderRowProps} from '../BaseHeaderRow';
 import {BaseHeaderRow} from '../BaseHeaderRow';
 import type {BaseRowProps} from '../BaseRow';
 import {BaseRow} from '../BaseRow';
+import {ColumnReorderingContext} from '../ColumnReorderingContext';
 import {LastSelectedRowContextProvider} from '../LastSelectedRowContext';
 import {SortableListContext} from '../SortableListContext';
 
@@ -166,7 +167,9 @@ export const BaseTable = React.forwardRef(
         ref: React.Ref<HTMLTableElement>,
     ) => {
         const draggableContext = React.useContext(SortableListContext);
+        const columnReorderingContext = React.useContext(ColumnReorderingContext);
         const draggingRowIndex = draggableContext?.activeItemIndex ?? -1;
+        const isColumnDragActive = Boolean(columnReorderingContext?.activeColumnId);
 
         const {rows, rowsById} = table.getRowModel();
 
@@ -272,6 +275,7 @@ export const BaseTable = React.forwardRef(
                     ref={ref}
                     className={b({'with-row-virtualization': Boolean(rowVirtualizer)}, className)}
                     data-dragging-row-index={draggingRowIndex > -1 ? draggingRowIndex : undefined}
+                    data-column-drag-active={isColumnDragActive || undefined}
                     aria-colcount={colCount > 0 ? colCount : undefined}
                     aria-rowcount={rowCount > 0 ? rowCount : undefined}
                     aria-multiselectable={getAriaMultiselectable(table)}

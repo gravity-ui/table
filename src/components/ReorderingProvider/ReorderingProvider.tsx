@@ -4,7 +4,6 @@ import type {Table} from '@tanstack/react-table';
 
 import type {SortableListProps} from '../SortableList';
 import {SortableList} from '../SortableList';
-import {SortableListDndContext} from '../SortableListDndContext';
 import type {SortableListDndContextProps} from '../SortableListDndContext';
 
 import './ReorderingProvider.scss';
@@ -33,10 +32,13 @@ export const ReorderingProvider = <TData,>({
     const rowIds = React.useMemo(() => rows.map((row) => row.id), [rows]);
 
     return (
-        <SortableListDndContext modifiers={dndModifiers}>
-            <SortableList items={rowIds} onDragEnd={onReorder} enableNesting={enableNesting}>
-                {children}
-            </SortableList>
-        </SortableListDndContext>
+        <SortableList
+            items={rowIds}
+            onDragEnd={onReorder}
+            enableNesting={enableNesting}
+            dndModifiers={dndModifiers}
+        >
+            {children}
+        </SortableList>
     );
 };

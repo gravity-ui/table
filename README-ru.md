@@ -419,6 +419,54 @@ const ColumnReorderingExample = () => {
 };
 ```
 
+### Переупорядочивание строк и столбцов вместе
+
+Вложите `ColumnReorderingProvider` и `ReorderingProvider`, чтобы включить обе оси перетаскивания. Порядок провайдеров не важен — внутри используется один общий dnd-kit-контекст.
+
+```tsx
+import type {ColumnReorderingProviderProps, ReorderingProviderProps} from '@gravity-ui/table';
+import {ColumnReorderingProvider, ReorderingProvider, dragHandleColumn} from '@gravity-ui/table';
+
+const columns: ColumnDef<Person>[] = [
+  dragHandleColumn,
+  {accessorKey: 'name', header: 'Name'},
+  {accessorKey: 'age', header: 'Age'},
+];
+
+const CombinedReorderingExample = () => {
+  const [data, setData] = React.useState(initialData);
+  const [columnOrder, setColumnOrder] = React.useState<string[]>([]);
+
+  const table = useTable({
+    columns,
+    data,
+    getRowId: (item) => item.id,
+    state: {columnOrder},
+    onColumnOrderChange: setColumnOrder,
+  });
+
+  const handleRowReorder = React.useCallback<
+    NonNullable<ReorderingProviderProps<Person>['onReorder']>
+  >(({draggedItemKey, baseItemKey}) => {
+    // обновить массив data
+  }, []);
+
+  const handleColumnReorder = React.useCallback<
+    NonNullable<ColumnReorderingProviderProps<Person>['onReorder']>
+  >(({columnOrder}) => {
+    setColumnOrder(columnOrder);
+  }, []);
+
+  return (
+    <ColumnReorderingProvider table={table} onReorder={handleColumnReorder}>
+      <ReorderingProvider table={table} onReorder={handleRowReorder}>
+        <Table table={table} />
+      </ReorderingProvider>
+    </ColumnReorderingProvider>
+  );
+};
+```
+
 Если вы управляете `columnOrder` самостоятельно (например, чтобы сохранять его), передайте `onReorder` и примените полученный порядок:
 
 ```tsx

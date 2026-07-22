@@ -3,6 +3,8 @@ import {Grip as GripIcon} from '@gravity-ui/icons';
 import {Icon} from '@gravity-ui/uikit';
 import type {Row} from '@tanstack/react-table';
 
+import {REORDER_TYPE_ROW, toRowSortableId} from '../TableDndRoot';
+
 import {b} from './DragHandle.classname';
 
 import './DragHandle.scss';
@@ -13,7 +15,8 @@ export interface DragHandleProps<TData> {
 
 export const DragHandle = <TData,>({row}: DragHandleProps<TData>) => {
     const {attributes, listeners} = useSortable({
-        id: row.id,
+        id: toRowSortableId(row.id),
+        data: {reorderType: REORDER_TYPE_ROW},
     });
 
     return (

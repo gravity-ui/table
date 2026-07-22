@@ -1,8 +1,16 @@
 import * as React from 'react';
 
-import {useDndMonitor} from '@dnd-kit/core';
+import type {
+    DragCancelEvent,
+    DragEndEvent,
+    DragMoveEvent,
+    DragOverEvent,
+    DragStartEvent,
+} from '@dnd-kit/core';
 
 import type {SortableListDragResult} from '../components';
+import {REORDER_TYPE_ROW, fromRowSortableId, getReorderType} from '../components/TableDndRoot';
+import type {TableDndScopeHandlers} from '../components/TableDndRoot';
 
 export interface UseSortableListParams {
     items: string[];
@@ -27,6 +35,14 @@ export const useSortableList = ({
     const [isChildMode, setIsChildMode] = React.useState(false);
     const [isNextChildMode, setIsNextChildMode] = React.useState(false);
 
+    const isParentModeRef = React.useRef(isParentMode);
+    const isChildModeRef = React.useRef(isChildMode);
+    const isNextChildModeRef = React.useRef(isNextChildMode);
+
+    isParentModeRef.current = isParentMode;
+    isChildModeRef.current = isChildMode;
+    isNextChildModeRef.current = isNextChildMode;
+
     const itemIndexMap = React.useMemo(() => {
         const map = new Map<string, number>();
 
@@ -37,101 +53,137 @@ export const useSortableList = ({
         return map;
     }, [items]);
 
-    const getItemIndex = (item?: string | null) => {
-        if (typeof item !== 'undefined' && item !== null) {
-            return itemIndexMap.get(item) ?? -1;
-        }
+    const getItemIndex = React.useCallback(
+        (item?: string | null) => {
+            if (typeof item !== 'undefined' && item !== null) {
+                return itemIndexMap.get(item) ?? -1;
+            }
 
-        return -1;
-    };
+            return -1;
+        },
+        [itemIndexMap],
+    );
 
-    const resetState = () => {
+    const resetState = React.useCallback(() => {
         setActiveItemKey(null);
         setTargetItemIndex(-1);
         setIsParentMode(false);
         setIsChildMode(false);
         setIsNextChildMode(false);
-    };
+    }, []);
 
-    const getTargetItemKey = (activeId: string, overId?: string) => {
-        if (overId) {
-            const overItemIndex = getItemIndex(overId);
-            const activeItemIndex = getItemIndex(activeId);
+    const getTargetItemKey = React.useCallback(
+        (activeId: string, overId?: string) => {
+            if (overId) {
+                const overItemIndex = getItemIndex(overId);
+                const activeItemIndex = getItemIndex(activeId);
 
-            if (overItemIndex <= activeItemIndex) {
-                return items[overItemIndex - 1];
+                if (overItemIndex <= activeItemIndex) {
+                    return items[overItemIndex - 1];
+                }
             }
-        }
 
-        return overId;
-    };
-
-    useDndMonitor({
-        onDragStart: (event) => {
-            setActiveItemKey(event.active.id as string);
-            onDragStart?.(event.active.id as string);
-
-            document.body.style.setProperty('cursor', 'grabbing');
+            return overId;
         },
-        onDragMove: (event) => {
-            if (enableNesting) {
+        [getItemIndex, items],
+    );
+
+    const handlers = React.useMemo<TableDndScopeHandlers>(
+        () => ({
+            onDragStart: (event: DragStartEvent) => {
+                if (getReorderType(event.active) !== REORDER_TYPE_ROW) {
+                    return;
+                }
+
+                const activeId = fromRowSortableId(event.active.id as string);
+
+                setActiveItemKey(activeId);
+                onDragStart?.(activeId);
+                document.body.style.setProperty('cursor', 'grabbing');
+            },
+            onDragMove: (event: DragMoveEvent) => {
+                if (getReorderType(event.active) !== REORDER_TYPE_ROW || !enableNesting) {
+                    return;
+                }
+
                 setIsParentMode(event.delta.x < -childModeOffset);
                 setIsChildMode(event.delta.x > childModeOffset);
-
                 setIsNextChildMode(
                     event.delta.x > nextChildModeOffset && event.delta.x <= childModeOffset,
                 );
-            }
-        },
-        onDragOver: (event) => {
-            const targetItemKey = getTargetItemKey(
-                event.active.id as string,
-                event.over?.id as string,
-            );
+            },
+            onDragOver: (event: DragOverEvent) => {
+                if (getReorderType(event.active) !== REORDER_TYPE_ROW) {
+                    return;
+                }
 
-            setTargetItemIndex(
-                targetItemKey && targetItemKey !== event.active.id
-                    ? getItemIndex(targetItemKey)
-                    : -1,
-            );
-        },
-        onDragEnd: (event) => {
-            document.body.style.setProperty('cursor', 'default');
+                const activeId = fromRowSortableId(event.active.id as string);
+                const overId = event.over ? fromRowSortableId(event.over.id as string) : undefined;
+                const targetItemKey = getTargetItemKey(activeId, overId);
 
-            if (!event.over) {
-                resetState();
-                return;
-            }
+                setTargetItemIndex(
+                    targetItemKey && targetItemKey !== activeId ? getItemIndex(targetItemKey) : -1,
+                );
+            },
+            onDragEnd: (event: DragEndEvent) => {
+                if (getReorderType(event.active) !== REORDER_TYPE_ROW) {
+                    return;
+                }
 
-            const draggedItemKey = event.active.id as string;
-            const targetItemKey = getTargetItemKey(draggedItemKey, event.over.id as string);
+                document.body.style.setProperty('cursor', 'default');
 
-            if (targetItemKey === draggedItemKey) {
-                resetState();
-                return;
-            }
+                if (!event.over) {
+                    resetState();
+                    return;
+                }
 
-            if (isChildMode) {
-                onDragEnd?.({
+                const draggedItemKey = fromRowSortableId(event.active.id as string);
+                const targetItemKey = getTargetItemKey(
                     draggedItemKey,
-                    targetItemKey,
-                    enableNesting,
-                });
-            } else {
-                onDragEnd?.({
-                    draggedItemKey,
-                    baseItemKey: targetItemKey,
-                    baseNextItemKey: items[targetItemKey ? getItemIndex(targetItemKey) + 1 : 0],
-                    enableNesting,
-                    nextChild: isNextChildMode,
-                    pullFromParent: isParentMode,
-                });
-            }
+                    fromRowSortableId(event.over.id as string),
+                );
 
-            resetState();
-        },
-        onDragCancel: resetState,
-    });
+                if (targetItemKey === draggedItemKey) {
+                    resetState();
+                    return;
+                }
+
+                if (isChildModeRef.current) {
+                    onDragEnd?.({
+                        draggedItemKey,
+                        targetItemKey,
+                        enableNesting,
+                    });
+                } else {
+                    onDragEnd?.({
+                        draggedItemKey,
+                        baseItemKey: targetItemKey,
+                        baseNextItemKey: items[targetItemKey ? getItemIndex(targetItemKey) + 1 : 0],
+                        enableNesting,
+                        nextChild: isNextChildModeRef.current,
+                        pullFromParent: isParentModeRef.current,
+                    });
+                }
+
+                resetState();
+            },
+            onDragCancel: (_event: DragCancelEvent) => {
+                document.body.style.setProperty('cursor', 'default');
+                resetState();
+            },
+        }),
+        [
+            childModeOffset,
+            enableNesting,
+            getItemIndex,
+            getTargetItemKey,
+            items,
+            nextChildModeOffset,
+            onDragEnd,
+            onDragStart,
+            resetState,
+        ],
+    );
 
     return {
         activeItemKey,
@@ -140,5 +192,6 @@ export const useSortableList = ({
         isParentMode,
         isChildMode,
         isNextChildMode,
+        handlers,
     };
 };
