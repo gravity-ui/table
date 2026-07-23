@@ -16,7 +16,7 @@ $dragHandleBlock: '.#{variables.$ns}drag-handle';
         }
 
         &[data-dragging='true'] {
-            z-index: 1;
+            z-index: 5;
 
             pointer-events: none;
 
@@ -27,7 +27,7 @@ $dragHandleBlock: '.#{variables.$ns}drag-handle';
                 position: absolute;
                 inset: 0;
 
-                z-index: 2;
+                z-index: 6;
 
                 content: '';
 
