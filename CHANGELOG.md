@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.0](https://github.com/gravity-ui/table/compare/v1.18.1...v1.19.0) (2026-07-28)
+
+
+### Features
+
+* **RowActions:** widen TableAction.text from string to ReactNode ([#165](https://github.com/gravity-ui/table/issues/165)) ([d71a1a7](https://github.com/gravity-ui/table/commit/d71a1a713547d907acecdd3277bb906c68a75d80))
+
 ## [1.18.1](https://github.com/gravity-ui/table/compare/v1.18.0...v1.18.1) (2026-07-22)
 
 
