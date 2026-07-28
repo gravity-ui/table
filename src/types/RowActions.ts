@@ -2,7 +2,7 @@ import type {MenuItemProps} from '@gravity-ui/uikit';
 import type {Row} from '@tanstack/react-table';
 
 export interface TableAction<TValue> {
-    text: string;
+    text: React.ReactNode;
     handler: (
         item: TValue,
         index: number,
