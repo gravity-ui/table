@@ -12,11 +12,15 @@ import {Table} from '../../Table';
 
 const columns: ColumnDef<Item>[] = [dragHandleColumn as ColumnDef<Item>, ...originalColumns];
 
-export const ReorderingStory = () => {
+interface ReorderingStoryProps {
+    dragWithoutHandle?: boolean;
+}
+
+export const ReorderingStory = ({dragWithoutHandle = false}: ReorderingStoryProps) => {
     const [data, setData] = React.useState(originalData);
 
     const table = useTable({
-        columns,
+        columns: dragWithoutHandle ? originalColumns : columns,
         data,
         getRowId: (item) => item.id,
     });
@@ -45,7 +49,11 @@ export const ReorderingStory = () => {
     }, []);
 
     return (
-        <ReorderingProvider table={table} onReorder={handleReorder}>
+        <ReorderingProvider
+            table={table}
+            dragWithoutHandle={dragWithoutHandle}
+            onReorder={handleReorder}
+        >
             <Table table={table} />
         </ReorderingProvider>
     );

@@ -13,6 +13,8 @@ export interface ReorderingProviderProps<TData> {
     table: Table<TData>;
     /** Children */
     children?: React.ReactNode;
+    /** Enables dragging a row by any part of it instead of requiring a drag handle. Default: `false` */
+    dragWithoutHandle?: SortableListProps['dragWithoutHandle'];
     /** A list of the dnd-kit modifiers */
     dndModifiers?: SortableListDndContextProps['modifiers'];
     /** Determines whether elements can be nested using drag-and-drop */
@@ -24,6 +26,7 @@ export interface ReorderingProviderProps<TData> {
 export const ReorderingProvider = <TData,>({
     table,
     children,
+    dragWithoutHandle = false,
     dndModifiers,
     enableNesting,
     onReorder,
@@ -36,6 +39,7 @@ export const ReorderingProvider = <TData,>({
             items={rowIds}
             onDragEnd={onReorder}
             enableNesting={enableNesting}
+            dragWithoutHandle={dragWithoutHandle}
             dndModifiers={dndModifiers}
         >
             {children}

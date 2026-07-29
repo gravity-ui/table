@@ -28,6 +28,7 @@ export const BaseDraggableRow = React.forwardRef(
             isChildMode,
             activeItemKey,
             targetItemIndex = -1,
+            dragWithoutHandle,
             enableNesting,
             // The `useSortable` hook is provided by `@dnd-kit/sortable` library and imported via `SortableListContext`.
             // This is a temporary solution to prevent importing the entire `@dnd-kit` library
@@ -40,6 +41,7 @@ export const BaseDraggableRow = React.forwardRef(
             transform = null,
             transition,
             isDragging = false,
+            listeners,
         } = useSortable?.({
             id: row.id,
         }) || {};
@@ -72,17 +74,39 @@ export const BaseDraggableRow = React.forwardRef(
                         ? attributesProp(draggableRow)
                         : attributesProp;
 
+                const handlePointerDown = (event: React.PointerEvent<HTMLTableRowElement>) => {
+                    attributes?.onPointerDown?.(event);
+
+                    if (event.defaultPrevented) {
+                        return;
+                    }
+
+                    listeners?.onPointerDown?.(event);
+                };
+
                 return {
                     ...attributes,
+                    onPointerDown: dragWithoutHandle
+                        ? handlePointerDown
+                        : attributes?.onPointerDown,
                     'data-key': draggableRow.id,
                     'data-depth': depth,
                     'data-draggable': true,
+                    'data-drag-without-handle': dragWithoutHandle || undefined,
                     'data-dragging': isDragging,
                     'data-drag-active': isDragActive,
                     'data-expanded': isDragActive && isParent,
                 };
             },
-            [attributesProp, depth, isDragging, isDragActive, isParent],
+            [
+                attributesProp,
+                depth,
+                dragWithoutHandle,
+                isDragging,
+                isDragActive,
+                isParent,
+                listeners,
+            ],
         );
 
         return (

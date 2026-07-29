@@ -392,6 +392,28 @@ const ReorderingExample = () => {
 };
 ```
 
+### Переупорядочивание без drag handle
+
+Передайте `dragWithoutHandle`, чтобы вся строка стала зоной начала перетаскивания, и не добавляйте
+`dragHandleColumn` в определения столбцов:
+
+```tsx
+const columns: ColumnDef<Person>[] = [
+  {accessorKey: 'name', header: 'Name'},
+  {accessorKey: 'age', header: 'Age'},
+];
+
+return (
+  <ReorderingProvider table={table} dragWithoutHandle onReorder={handleReorder}>
+    <Table table={table} />
+  </ReorderingProvider>
+);
+```
+
+Перетаскивание начинается после движения указателя на 8 пикселей, поэтому обычные клики по строке
+и контролам продолжают работать. Чтобы исключить пользовательскую область строки из зоны начала
+перетаскивания, вызовите `preventDefault()` в её обработчике `onPointerDown`.
+
 ### Переупорядочивание столбцов
 
 Оберните таблицу в `ColumnReorderingProvider`, чтобы включить перетаскивание столбцов за их заголовки.

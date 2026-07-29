@@ -6,6 +6,7 @@ import type {useSortableList} from '../../hooks';
 
 export interface SortableListContextValue
     extends Omit<ReturnType<typeof useSortableList>, 'handlers'> {
+    dragWithoutHandle?: boolean;
     enableNesting?: boolean;
     useSortable?: typeof useSortable;
 }

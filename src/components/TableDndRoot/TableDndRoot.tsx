@@ -32,7 +32,8 @@ export const TableDndRoot = ({scopes, children}: TableDndRootProps) => {
     const scopeList = React.useMemo(() => Object.values(scopes), [scopes]);
 
     const columnScope = scopeList.find((scope) => scope.type === 'column');
-    const activationDistance = columnScope?.activationDistance;
+    const rowScope = scopeList.find((scope) => scope.type === 'row');
+    const activationDistance = columnScope?.activationDistance ?? rowScope?.activationDistance;
 
     const pointerSensor = useSensor(
         PointerSensor,
