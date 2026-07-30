@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.0](https://github.com/gravity-ui/table/compare/v1.19.0...v1.20.0) (2026-07-30)
+
+
+### Features
+
+* **BaseTable:** drag without drag handle ([#167](https://github.com/gravity-ui/table/issues/167)) ([3d49236](https://github.com/gravity-ui/table/commit/3d492364ddc3c3105f259ce61dfb8a061585bd92))
+
 ## [1.19.0](https://github.com/gravity-ui/table/compare/v1.18.1...v1.19.0) (2026-07-28)
 
 
