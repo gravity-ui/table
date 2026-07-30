@@ -83,6 +83,13 @@ export const Reordering: StoryObj<typeof ReorderingStory> = {
     render: ReorderingStory,
 };
 
+export const ReorderingWithoutDragHandle: StoryObj<typeof ReorderingStory> = {
+    render: ReorderingStory,
+    args: {
+        dragWithoutHandle: true,
+    },
+};
+
 export const ReorderingTree: StoryObj<typeof ReorderingTreeStory> = {
     render: ReorderingTreeStory,
 };

@@ -14,6 +14,8 @@ import {
     toRowSortableId,
 } from '../TableDndRoot';
 
+import {ROW_DRAG_ACTIVATION_DISTANCE} from './constants';
+
 const useRowSortable: typeof useSortable = (args) =>
     useSortable({
         ...args,
@@ -23,6 +25,7 @@ const useRowSortable: typeof useSortable = (args) =>
 
 export interface SortableListProps extends UseSortableListParams {
     children?: React.ReactNode;
+    dragWithoutHandle?: boolean;
     dndModifiers?: import('@dnd-kit/core').Modifier[];
 }
 
@@ -32,6 +35,7 @@ export const SortableList = ({
     onDragStart,
     onDragEnd,
     enableNesting,
+    dragWithoutHandle = false,
     dndModifiers,
 }: SortableListProps) => {
     const registry = React.useContext(TableDndRegistryContext);
@@ -56,11 +60,12 @@ export const SortableList = ({
     const scopeConfig = React.useMemo(
         () => ({
             type: 'row' as const,
+            activationDistance: dragWithoutHandle ? ROW_DRAG_ACTIVATION_DISTANCE : undefined,
             modifiers: dndModifiers,
             autoScroll: true,
             handlers,
         }),
-        [dndModifiers, handlers],
+        [dndModifiers, dragWithoutHandle, handlers],
     );
 
     const contextValue = React.useMemo(
@@ -73,10 +78,19 @@ export const SortableList = ({
                 isParentMode,
                 targetItemIndex,
                 enableNesting,
+                dragWithoutHandle,
                 useSortable: useRowSortable,
             }) satisfies SortableListContextValue,
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [activeItemKey, isChildMode, isNextChildMode, isParentMode, targetItemIndex, enableNesting],
+        [
+            activeItemKey,
+            dragWithoutHandle,
+            enableNesting,
+            isChildMode,
+            isNextChildMode,
+            isParentMode,
+            targetItemIndex,
+        ],
     );
 
     const content = (
