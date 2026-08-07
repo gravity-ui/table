@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.1](https://github.com/gravity-ui/table/compare/v1.20.0...v1.20.1) (2026-08-07)
+
+
+### Bug Fixes
+
+* **TableDndRoot:** improve column drag mechanics ([#169](https://github.com/gravity-ui/table/issues/169)) ([219c66a](https://github.com/gravity-ui/table/commit/219c66a9f24b065e7971e18829bd4880dcc6cb2d))
+
 ## [1.20.0](https://github.com/gravity-ui/table/compare/v1.19.0...v1.20.0) (2026-07-30)
 
 
