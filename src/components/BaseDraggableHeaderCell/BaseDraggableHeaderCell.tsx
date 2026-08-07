@@ -16,7 +16,14 @@ export const BaseDraggableHeaderCell = <TData, TValue>({
 }: BaseDraggableHeaderCellProps<TData, TValue>) => {
     const {activeColumnId, useSortable} = React.useContext(ColumnReorderingContext) ?? {};
 
-    const {setNodeRef, listeners, isDragging = false} = useSortable?.({id: header.column.id}) ?? {};
+    const {
+        setNodeRef,
+        listeners,
+        isDragging = false,
+    } = useSortable?.({
+        id: header.column.id,
+        data: {columnGroup: header.column.getIsPinned() || 'center'},
+    }) ?? {};
 
     const isDragActive = Boolean(activeColumnId);
 
