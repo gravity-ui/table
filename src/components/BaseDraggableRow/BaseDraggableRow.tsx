@@ -3,7 +3,8 @@ import * as React from 'react';
 import {useForkRef} from '@gravity-ui/uikit';
 import type {Row} from '@tanstack/react-table';
 
-import {useDraggableRowDepth, useDraggableRowStyle} from '../../hooks';
+import {useDraggableRowDepth} from '../../hooks/useDraggableRowDepth';
+import {useDraggableRowStyle} from '../../hooks/useDraggableRowStyle';
 import type {BaseRowProps} from '../BaseRow';
 import {BaseRow} from '../BaseRow';
 import {SortableListContext} from '../SortableListContext';
