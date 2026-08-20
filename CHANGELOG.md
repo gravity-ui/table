@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.2](https://github.com/gravity-ui/table/compare/v1.20.1...v1.20.2) (2026-08-20)
+
+
+### Bug Fixes
+
+* remove dnd-kit from simple table bundle ([#171](https://github.com/gravity-ui/table/issues/171)) ([4b81d94](https://github.com/gravity-ui/table/commit/4b81d943d54c948e8224532506d22ba8f5b3bb8e))
+
 ## [1.20.1](https://github.com/gravity-ui/table/compare/v1.20.0...v1.20.1) (2026-08-07)
 
 
