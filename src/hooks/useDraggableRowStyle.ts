@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import type {useSortable} from '@dnd-kit/sortable';
 
-import {SortableListContext} from '../components';
+import {SortableListContext} from '../components/SortableListContext';
 
 export interface UseDraggableRowStyleParams
     extends Pick<ReturnType<typeof useSortable>, 'transform' | 'transition' | 'isDragging'> {
