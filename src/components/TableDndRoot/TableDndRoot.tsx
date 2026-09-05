@@ -8,11 +8,18 @@ import type {
     DragOverEvent,
     DragStartEvent,
 } from '@dnd-kit/core';
-import {DndContext, MeasuringStrategy, PointerSensor, useSensor, useSensors} from '@dnd-kit/core';
+import {
+    DndContext,
+    MeasuringStrategy,
+    PointerSensor,
+    getClientRect,
+    useSensor,
+    useSensors,
+} from '@dnd-kit/core';
 
 import {autoScrollConfig} from '../ColumnReorderingProvider/constants/autoScroll';
 
-import type {TableDndScopeConfig} from './types';
+import type {ReorderType, TableDndScopeConfig} from './types';
 import {createMergedModifiers} from './utils/mergeModifiers';
 import {getReorderType} from './utils/reorderType';
 import {tableCollisionDetection} from './utils/tableCollisionDetection';
@@ -29,7 +36,32 @@ export interface TableDndRootProps {
 }
 
 export const TableDndRoot = ({scopes, children}: TableDndRootProps) => {
+    const [activeReorderType, setActiveReorderType] = React.useState<ReorderType>();
+    const draggableMeasurementRef = React.useRef<{
+        element: HTMLElement;
+        rect: ReturnType<typeof getClientRect>;
+    }>();
     const scopeList = React.useMemo(() => Object.values(scopes), [scopes]);
+
+    const measureDraggable = React.useCallback((element: HTMLElement) => {
+        const cachedMeasurement = draggableMeasurementRef.current;
+
+        if (cachedMeasurement?.element === element) {
+            return cachedMeasurement.rect;
+        }
+
+        const rect = getClientRect(element, {ignoreTransform: true});
+        draggableMeasurementRef.current = {element, rect};
+
+        return rect;
+    }, []);
+    const measuring = React.useMemo(
+        () => ({
+            ...defaultMeasuring,
+            draggable: {measure: measureDraggable},
+        }),
+        [measureDraggable],
+    );
 
     const columnScope = scopeList.find((scope) => scope.type === 'column');
     const rowScope = scopeList.find((scope) => scope.type === 'row');
@@ -46,12 +78,14 @@ export const TableDndRoot = ({scopes, children}: TableDndRootProps) => {
     const modifiers = React.useMemo(() => createMergedModifiers(scopeList), [scopeList]);
 
     const autoScroll = React.useMemo<AutoScrollOptions | boolean>(() => {
-        if (!scopeList.some((scope) => scope.autoScroll)) {
+        const activeScope = scopeList.find((scope) => scope.type === activeReorderType);
+
+        if (!activeScope?.autoScroll) {
             return false;
         }
 
         return autoScrollConfig;
-    }, [scopeList]);
+    }, [activeReorderType, scopeList]);
 
     const dispatchToScope = React.useCallback(
         (
@@ -65,6 +99,11 @@ export const TableDndRoot = ({scopes, children}: TableDndRootProps) => {
 
     const handleDragStart = React.useCallback(
         (event: DragStartEvent) => {
+            // Virtualization mutates the row container while scrolling. Keep the active node's
+            // initial rect stable so dnd-kit does not reset its scroll compensation on each
+            // virtual window update.
+            draggableMeasurementRef.current = undefined;
+            setActiveReorderType(getReorderType(event.active));
             dispatchToScope(event)?.handlers.onDragStart?.(event);
         },
         [dispatchToScope],
@@ -87,6 +126,7 @@ export const TableDndRoot = ({scopes, children}: TableDndRootProps) => {
     const handleDragEnd = React.useCallback(
         (event: DragEndEvent) => {
             dispatchToScope(event)?.handlers.onDragEnd?.(event);
+            setActiveReorderType(undefined);
         },
         [dispatchToScope],
     );
@@ -94,6 +134,7 @@ export const TableDndRoot = ({scopes, children}: TableDndRootProps) => {
     const handleDragCancel = React.useCallback(
         (event: DragCancelEvent) => {
             dispatchToScope(event)?.handlers.onDragCancel?.(event);
+            setActiveReorderType(undefined);
         },
         [dispatchToScope],
     );
@@ -103,7 +144,7 @@ export const TableDndRoot = ({scopes, children}: TableDndRootProps) => {
             sensors={sensors}
             autoScroll={autoScroll}
             collisionDetection={tableCollisionDetection}
-            measuring={defaultMeasuring}
+            measuring={measuring}
             modifiers={modifiers}
             onDragStart={handleDragStart}
             onDragMove={handleDragMove}

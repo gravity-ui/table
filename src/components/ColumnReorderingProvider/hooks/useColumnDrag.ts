@@ -4,6 +4,7 @@ import type {DragEndEvent, DragOverEvent, DragStartEvent} from '@dnd-kit/core';
 import {arrayMove} from '@dnd-kit/sortable';
 import type {ColumnPinningState, Table} from '@tanstack/react-table';
 
+import {useBodyCursorOverride} from '../../../hooks/useBodyCursorOverride';
 import {b} from '../../BaseTable/BaseTable.classname';
 import {REORDER_TYPE_COLUMN, fromColumnSortableId, getReorderType} from '../../TableDndRoot';
 import type {TableDndScopeHandlers} from '../../TableDndRoot';
@@ -35,6 +36,7 @@ export function useColumnDrag<TData>({
     );
 
     const {startAutoScroll, stopAutoScroll} = useAutoScroll({table, scopeRef});
+    const {restoreBodyCursor, setBodyCursor} = useBodyCursorOverride();
 
     const captureOverlayClassNames = React.useCallback(
         (columnId: string) => {
@@ -67,9 +69,9 @@ export function useColumnDrag<TData>({
         setActiveColumnId(null);
         setTargetColumnId(null);
         setOverlayClassNames(null);
-        document.body.style.removeProperty('cursor');
+        restoreBodyCursor();
         stopAutoScroll();
-    }, [stopAutoScroll]);
+    }, [restoreBodyCursor, stopAutoScroll]);
 
     const handlers = React.useMemo<TableDndScopeHandlers>(
         () => ({
@@ -82,7 +84,7 @@ export function useColumnDrag<TData>({
 
                 setActiveColumnId(columnId);
                 captureOverlayClassNames(columnId);
-                document.body.style.setProperty('cursor', 'grabbing');
+                setBodyCursor('grabbing');
 
                 if (autoScroll && getColumnGroup(table, columnId) === 'center') {
                     startAutoScroll(event);
@@ -174,17 +176,21 @@ export function useColumnDrag<TData>({
                     }
                 };
 
-                if (typeof React.startTransition === 'function') {
-                    React.startTransition(applyReorder);
-                } else {
-                    applyReorder();
-                }
+                applyReorder();
             },
             onDragCancel: () => {
                 resetState();
             },
         }),
-        [autoScroll, captureOverlayClassNames, onReorder, resetState, startAutoScroll, table],
+        [
+            autoScroll,
+            captureOverlayClassNames,
+            onReorder,
+            resetState,
+            setBodyCursor,
+            startAutoScroll,
+            table,
+        ],
     );
 
     return {

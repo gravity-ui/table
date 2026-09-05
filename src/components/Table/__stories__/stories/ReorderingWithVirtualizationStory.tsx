@@ -24,10 +24,16 @@ export const ReorderingWithVirtualizationStory = () => {
     });
 
     const bodyRef = React.useRef<HTMLTableSectionElement>(null);
+    const rows = table.getRowModel().rows;
+    const getItemKey = React.useCallback(
+        (index: number) => rows[index]?.id ?? `missing:${index}`,
+        [rows],
+    );
 
     const rowVirtualizer = useWindowRowVirtualizer({
-        count: table.getRowModel().rows.length,
+        count: rows.length,
         estimateSize: () => 20,
+        getItemKey,
         overscan: 5,
         rangeExtractor: getVirtualRowRangeExtractor(tableRef.current),
         scrollMargin: bodyRef.current?.offsetTop ?? 0,
