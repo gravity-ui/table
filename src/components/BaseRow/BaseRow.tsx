@@ -1,23 +1,33 @@
 import * as React from 'react';
 
-import {useForkRef} from '@gravity-ui/uikit';
-import type {Row, Table} from '@tanstack/react-table';
+import type {Cell, Row, Table} from '@tanstack/react-table';
 import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
 
+import {shouldSkipVirtualizedRowRender} from '../../utils/shouldSkipVirtualizedRowRender';
 import type {BaseCellProps} from '../BaseCell';
-import {BaseCell} from '../BaseCell';
 import type {BaseGroupHeaderProps} from '../BaseGroupHeader';
-import {BaseGroupHeader} from '../BaseGroupHeader';
 import {b} from '../BaseTable/BaseTable.classname';
+
+import {useRowContent} from './hooks/useRowContent';
+import {useVirtualizedRow} from './hooks/useVirtualizedRow';
+import {resolveRowValue} from './utils/resolveRowValue';
 
 export interface BaseRowProps<TData, TScrollElement extends Element | Window = HTMLDivElement>
     extends Omit<React.HTMLAttributes<HTMLTableRowElement>, 'className' | 'onClick'> {
+    /** @internal */
+    canDeferOffscreenCellContent?: (cell: Cell<TData, unknown>) => boolean;
     cellClassName?: BaseCellProps<TData>['className'];
     className?: string | ((row?: Row<TData>) => string);
+    /** @internal */
+    deferred?: boolean;
+    /** @internal */
+    forceOffscreenCellContentHydration?: boolean;
     getGroupTitle?: (row: Row<TData>) => React.ReactNode;
     getIsCustomRow?: (row: Row<TData>) => boolean;
     getIsGroupHeaderRow?: (row: Row<TData>) => boolean;
     groupHeaderClassName?: string;
+    /** @internal */
+    immediateCellContentColumnIds?: ReadonlySet<string> | null;
     onClick?: (row: Row<TData>, event: React.MouseEvent<HTMLTableRowElement>) => void;
     renderCustomRowContent?: (props: {
         row: Row<TData>;
@@ -32,6 +42,10 @@ export interface BaseRowProps<TData, TScrollElement extends Element | Window = H
         getGroupTitle?: (row: Row<TData>) => React.ReactNode;
     }) => React.ReactNode;
     row: Row<TData>;
+    /** @internal */
+    scheduleOffscreenCellContentHydration?: (hydrate: () => void) => () => void;
+    /** @internal */
+    tableRenderVersion?: Readonly<Record<string, unknown>>;
     rowVirtualizer?: Virtualizer<TScrollElement, HTMLTableRowElement>;
     style?: React.CSSProperties;
     table: Table<TData>;
@@ -42,42 +56,50 @@ export interface BaseRowProps<TData, TScrollElement extends Element | Window = H
     cellAttributes?: BaseCellProps<TData>['attributes'];
 }
 
-export const BaseRow = React.forwardRef(
+const BaseRowComponent = React.forwardRef(
     <TData, TScrollElement extends Element | Window = HTMLDivElement>(
         {
+            canDeferOffscreenCellContent,
             cellClassName,
             className: classNameProp,
+            deferred = false,
+            forceOffscreenCellContentHydration = false,
             getGroupTitle,
             getIsCustomRow,
             getIsGroupHeaderRow,
             groupHeaderClassName,
+            immediateCellContentColumnIds,
             onClick,
             renderCustomRowContent,
             renderGroupHeader,
             renderGroupHeaderRowContent,
             row,
+            scheduleOffscreenCellContentHydration,
+            tableRenderVersion: renderVersion,
             rowVirtualizer,
             style,
             virtualItem,
             attributes: attributesProp,
             cellAttributes,
-            table: _,
+            table,
             ...restProps
         }: BaseRowProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableRowElement>,
     ) => {
-        const rowRef = useForkRef(rowVirtualizer?.measureElement, ref);
-
-        const attributes =
-            typeof attributesProp === 'function' ? attributesProp(row) : attributesProp;
-
-        const className = typeof classNameProp === 'function' ? classNameProp(row) : classNameProp;
+        const {rowRef, virtualRowPositionStyle} = useVirtualizedRow({
+            deferred,
+            forwardedRef: ref,
+            row,
+            rowVirtualizer,
+            virtualItem,
+        });
+        const attributes = resolveRowValue(deferred, row, attributesProp);
+        const className = resolveRowValue(deferred, row, classNameProp);
 
         const handleClick = React.useCallback(
             (event: React.MouseEvent<HTMLTableRowElement>) => {
                 const selection = window.getSelection();
                 if (selection?.toString()) {
-                    // don't trigger click handler if user selected row contents
                     return;
                 }
 
@@ -86,55 +108,25 @@ export const BaseRow = React.forwardRef(
             [onClick, row],
         );
 
-        const renderRowContent = () => {
-            if (getIsGroupHeaderRow?.(row)) {
-                return renderGroupHeaderRowContent ? (
-                    renderGroupHeaderRowContent({
-                        row,
-                        Cell: BaseCell,
-                        cellClassName,
-                        getGroupTitle,
-                    })
-                ) : (
-                    <BaseCell
-                        className={cellClassName}
-                        colSpan={row.getVisibleCells().length}
-                        attributes={cellAttributes}
-                        aria-colindex={1}
-                    >
-                        {renderGroupHeader ? (
-                            renderGroupHeader({
-                                row,
-                                className: b('group-header', groupHeaderClassName),
-                                getGroupTitle,
-                            })
-                        ) : (
-                            <BaseGroupHeader
-                                row={row}
-                                className={b('group-header', groupHeaderClassName)}
-                                getGroupTitle={getGroupTitle}
-                            />
-                        )}
-                    </BaseCell>
-                );
-            }
-
-            if (getIsCustomRow?.(row) && renderCustomRowContent) {
-                return renderCustomRowContent({row, Cell: BaseCell, cellClassName});
-            }
-
-            return row
-                .getVisibleCells()
-                .map((cell) => (
-                    <BaseCell
-                        key={cell.id}
-                        cell={cell}
-                        className={cellClassName}
-                        attributes={cellAttributes}
-                        aria-colindex={cell.column.getIndex() + 1}
-                    />
-                ));
-        };
+        const rowContent = useRowContent({
+            canDeferOffscreenCellContent,
+            cellAttributes,
+            cellClassName,
+            deferred,
+            forceOffscreenCellContentHydration,
+            getGroupTitle,
+            getIsCustomRow,
+            getIsGroupHeaderRow,
+            groupHeaderClassName,
+            immediateCellContentColumnIds,
+            renderCustomRowContent,
+            renderGroupHeader,
+            renderGroupHeaderRowContent,
+            renderVersion,
+            row,
+            table,
+            scheduleOffscreenCellContentHydration,
+        });
 
         return (
             <tr
@@ -142,30 +134,40 @@ export const BaseRow = React.forwardRef(
                 className={b(
                     'row',
                     {
-                        selected: row.getIsSelected(),
-                        interactive: Boolean(onClick),
+                        placeholder: deferred,
+                        selected: !deferred && row.getIsSelected(),
+                        interactive: Boolean(onClick) && !deferred,
                     },
                     className,
                 )}
-                onClick={handleClick}
-                data-index={virtualItem?.index}
+                onClick={deferred ? undefined : handleClick}
                 {...restProps}
                 {...attributes}
+                aria-hidden={deferred || undefined}
+                data-index={virtualItem?.index}
+                data-virtualization-placeholder={deferred ? 'true' : undefined}
+                data-virtualization-row-state={deferred ? 'deferred' : 'real'}
                 style={{
-                    top:
-                        rowVirtualizer && virtualItem
-                            ? virtualItem.start - rowVirtualizer.options.scrollMargin
-                            : undefined,
+                    pointerEvents: deferred ? 'none' : undefined,
+                    ...virtualRowPositionStyle,
+                    minHeight: deferred ? virtualItem?.size : undefined,
                     ...style,
                     ...attributes?.style,
                 }}
             >
-                {renderRowContent()}
+                {rowContent}
             </tr>
         );
     },
 ) as (<TData, TScrollElement extends Element | Window = HTMLDivElement>(
     props: BaseRowProps<TData, TScrollElement> & {ref?: React.Ref<HTMLTableRowElement>},
 ) => React.ReactElement) & {displayName: string};
+
+BaseRowComponent.displayName = 'BaseRowComponent';
+
+export const BaseRow = React.memo(
+    BaseRowComponent,
+    shouldSkipVirtualizedRowRender,
+) as typeof BaseRowComponent & {displayName?: string};
 
 BaseRow.displayName = 'BaseRow';

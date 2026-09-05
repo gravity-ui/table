@@ -5,16 +5,19 @@ import type {Row} from '@tanstack/react-table';
 
 import {useDraggableRowDepth} from '../../hooks/useDraggableRowDepth';
 import {useDraggableRowStyle} from '../../hooks/useDraggableRowStyle';
+import {shouldSkipVirtualizedRowRender} from '../../utils/shouldSkipVirtualizedRowRender';
 import type {BaseRowProps} from '../BaseRow';
-import {BaseRow} from '../BaseRow';
+import {BaseRow} from '../BaseRow/BaseRow';
 import {SortableListContext} from '../SortableListContext';
+
+import {useDragScrollCompensation} from './hooks/useDragScrollCompensation';
 
 export interface BaseDraggableRowProps<
     TData,
     TScrollElement extends Element | Window = HTMLDivElement,
 > extends BaseRowProps<TData, TScrollElement> {}
 
-export const BaseDraggableRow = React.forwardRef(
+const BaseDraggableRowComponent = React.forwardRef(
     <TData, TScrollElement extends Element | Window = HTMLDivElement>(
         {
             attributes: attributesProp,
@@ -46,11 +49,18 @@ export const BaseDraggableRow = React.forwardRef(
         } = useSortable?.({
             id: row.id,
         }) || {};
+        const rowNodeRef = React.useRef<HTMLTableRowElement>(null);
 
         const isDragActive = Boolean(activeItemKey);
         const isParent = isChildMode && targetItemIndex === row.index;
 
-        const handleRowRef = useForkRef(setNodeRef, ref);
+        const handleRowRef = useForkRef(setNodeRef, rowNodeRef, ref);
+
+        useDragScrollCompensation({
+            enabled: isDragging,
+            nodeRef: rowNodeRef,
+            renderedTransformY: transform?.y,
+        });
 
         const {isFirstChild, depth} = useDraggableRowDepth<TData>({
             row,
@@ -126,5 +136,12 @@ export const BaseDraggableRow = React.forwardRef(
 ) => React.ReactElement) & {
     displayName: string;
 };
+
+BaseDraggableRowComponent.displayName = 'BaseDraggableRowComponent';
+
+export const BaseDraggableRow = React.memo(
+    BaseDraggableRowComponent,
+    shouldSkipVirtualizedRowRender,
+) as typeof BaseDraggableRowComponent & {displayName?: string};
 
 BaseDraggableRow.displayName = 'BaseDraggableRow';

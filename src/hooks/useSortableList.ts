@@ -12,6 +12,8 @@ import type {SortableListDragResult} from '../components';
 import {REORDER_TYPE_ROW, fromRowSortableId, getReorderType} from '../components/TableDndRoot';
 import type {TableDndScopeHandlers} from '../components/TableDndRoot';
 
+import {useBodyCursorOverride} from './useBodyCursorOverride';
+
 export interface UseSortableListParams {
     items: string[];
     onDragStart?: (activeId: string) => void;
@@ -38,10 +40,7 @@ export const useSortableList = ({
     const isParentModeRef = React.useRef(isParentMode);
     const isChildModeRef = React.useRef(isChildMode);
     const isNextChildModeRef = React.useRef(isNextChildMode);
-
-    isParentModeRef.current = isParentMode;
-    isChildModeRef.current = isChildMode;
-    isNextChildModeRef.current = isNextChildMode;
+    const {restoreBodyCursor, setBodyCursor} = useBodyCursorOverride();
 
     const itemIndexMap = React.useMemo(() => {
         const map = new Map<string, number>();
@@ -65,6 +64,9 @@ export const useSortableList = ({
     );
 
     const resetState = React.useCallback(() => {
+        isParentModeRef.current = false;
+        isChildModeRef.current = false;
+        isNextChildModeRef.current = false;
         setActiveItemKey(null);
         setTargetItemIndex(-1);
         setIsParentMode(false);
@@ -99,18 +101,24 @@ export const useSortableList = ({
 
                 setActiveItemKey(activeId);
                 onDragStart?.(activeId);
-                document.body.style.setProperty('cursor', 'grabbing');
+                setBodyCursor('grabbing');
             },
             onDragMove: (event: DragMoveEvent) => {
                 if (getReorderType(event.active) !== REORDER_TYPE_ROW || !enableNesting) {
                     return;
                 }
 
-                setIsParentMode(event.delta.x < -childModeOffset);
-                setIsChildMode(event.delta.x > childModeOffset);
-                setIsNextChildMode(
-                    event.delta.x > nextChildModeOffset && event.delta.x <= childModeOffset,
-                );
+                const nextIsParentMode = event.delta.x < -childModeOffset;
+                const nextIsChildMode = event.delta.x > childModeOffset;
+                const nextIsNextChildMode =
+                    event.delta.x > nextChildModeOffset && event.delta.x <= childModeOffset;
+
+                isParentModeRef.current = nextIsParentMode;
+                isChildModeRef.current = nextIsChildMode;
+                isNextChildModeRef.current = nextIsNextChildMode;
+                setIsParentMode(nextIsParentMode);
+                setIsChildMode(nextIsChildMode);
+                setIsNextChildMode(nextIsNextChildMode);
             },
             onDragOver: (event: DragOverEvent) => {
                 if (getReorderType(event.active) !== REORDER_TYPE_ROW) {
@@ -130,7 +138,7 @@ export const useSortableList = ({
                     return;
                 }
 
-                document.body.style.setProperty('cursor', 'default');
+                restoreBodyCursor();
 
                 if (!event.over) {
                     resetState();
@@ -168,7 +176,7 @@ export const useSortableList = ({
                 resetState();
             },
             onDragCancel: (_event: DragCancelEvent) => {
-                document.body.style.setProperty('cursor', 'default');
+                restoreBodyCursor();
                 resetState();
             },
         }),
@@ -182,6 +190,8 @@ export const useSortableList = ({
             onDragEnd,
             onDragStart,
             resetState,
+            restoreBodyCursor,
+            setBodyCursor,
         ],
     );
 

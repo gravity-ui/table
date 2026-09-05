@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import type {useSortable} from '@dnd-kit/sortable';
 
+import {DRAG_SCROLL_COMPENSATION_TRANSFORM} from '../components/BaseDraggableRow/hooks/useDragScrollCompensation';
 import {SortableListContext} from '../components/SortableListContext';
 
 export interface UseDraggableRowStyleParams
@@ -45,7 +46,7 @@ export const useDraggableRowStyle = ({
         return {
             ...style,
             transition,
-            transform: `translate3d(${Math.max(x, 0)}px, ${transform.y}px, 0)`,
+            transform: `translate3d(${Math.max(x, 0)}px, ${transform.y}px, 0) ${DRAG_SCROLL_COMPENSATION_TRANSFORM}`,
         };
     }, [
         draggableChildRowOffset,
