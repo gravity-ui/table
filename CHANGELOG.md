@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.0](https://github.com/gravity-ui/table/compare/v1.20.2...v1.21.0) (2026-09-08)
+
+
+### Features
+
+* **BaseTable:** table optimization and adaptive row virtualization ([#173](https://github.com/gravity-ui/table/issues/173)) ([e858105](https://github.com/gravity-ui/table/commit/e85810547ba573ff2d9c09b13ed43a10f3de0628))
+
 ## [1.20.2](https://github.com/gravity-ui/table/compare/v1.20.1...v1.20.2) (2026-08-20)
 
 
