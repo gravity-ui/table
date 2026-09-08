@@ -32,6 +32,7 @@ export function useColumnsAutoSize<TData extends unknown>({
     > | null>(null);
 
     const measuredColumnIdsRef = React.useRef<Set<string>>(new Set());
+    const measurementGenerationRef = React.useRef(0);
 
     const rows = tableInstance?.getRowModel().rows ?? emptyRows;
 
@@ -43,6 +44,33 @@ export function useColumnsAutoSize<TData extends unknown>({
         (column) => column.id || ('accessorKey' in column && String(column.accessorKey)) || '',
     );
     const columnsKey = JSON.stringify(columnIds);
+
+    React.useEffect(() => {
+        const activeColumnIds = new Set(columnIds);
+
+        for (const columnId of measuredColumnIdsRef.current) {
+            if (!activeColumnIds.has(columnId)) {
+                measuredColumnIdsRef.current.delete(columnId);
+            }
+        }
+
+        setColumnWidths((currentWidths) => {
+            const nextWidths: Record<string, number> = {};
+            let changed = false;
+
+            for (const [columnId, width] of Object.entries(currentWidths)) {
+                if (activeColumnIds.has(columnId)) {
+                    nextWidths[columnId] = width;
+                } else {
+                    changed = true;
+                }
+            }
+
+            return changed ? nextWidths : currentWidths;
+        });
+        // `columnsKey` is the stable value representation of `columnIds`.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [columnsKey]);
 
     const measureCellWidth = useMeasureCellWidth({
         renderElementForMeasure,
@@ -57,6 +85,7 @@ export function useColumnsAutoSize<TData extends unknown>({
                     measureCellWidth,
                     sampledRows,
                     tableInstance,
+                    measurementGeneration,
                     minWidth = 50,
                     maxWidth = 500,
                     padding = 16,
@@ -68,8 +97,14 @@ export function useColumnsAutoSize<TData extends unknown>({
                     const newWidths: Record<string, number> = {};
 
                     const userResizedColumns = respectResizedWidths ? columnSizing : {};
+                    const isStale = () =>
+                        measurementGeneration !== measurementGenerationRef.current;
 
                     for (const column of columns) {
+                        if (isStale()) {
+                            return;
+                        }
+
                         const id =
                             column.id ||
                             ('accessorKey' in column && String(column.accessorKey)) ||
@@ -106,7 +141,15 @@ export function useColumnsAutoSize<TData extends unknown>({
                                     column,
                                 );
 
+                                if (isStale()) {
+                                    return;
+                                }
+
                                 const headerWidth = await measureCellWidth(headerContent, 'header');
+
+                                if (isStale()) {
+                                    return;
+                                }
 
                                 if (headerWidth === 0) {
                                     maxContentWidth = headerDefaultWidth + headerPadding;
@@ -119,6 +162,10 @@ export function useColumnsAutoSize<TData extends unknown>({
                         }
 
                         for (const row of sampledRows) {
+                            if (isStale()) {
+                                return;
+                            }
+
                             try {
                                 const cellValue = getValueFromCell(tableInstance, column, row);
 
@@ -127,6 +174,10 @@ export function useColumnsAutoSize<TData extends unknown>({
                                 }
 
                                 const cellWidth = await measureCellWidth(cellValue, 'cell');
+
+                                if (isStale()) {
+                                    return;
+                                }
 
                                 maxContentWidth = Math.max(maxContentWidth, cellWidth + padding);
                             } catch {}
@@ -137,6 +188,10 @@ export function useColumnsAutoSize<TData extends unknown>({
                         }
 
                         newWidths[id] = Math.min(Math.max(maxContentWidth, minWidth), maxWidth);
+                    }
+
+                    if (isStale()) {
+                        return;
                     }
 
                     setColumnWidths(newWidths);
@@ -151,18 +206,27 @@ export function useColumnsAutoSize<TData extends unknown>({
     );
 
     useDeepCompareEffect(() => {
+        const measurementGeneration = ++measurementGenerationRef.current;
+        const cancelMeasurement = () => {
+            if (measurementGenerationRef.current === measurementGeneration) {
+                measurementGenerationRef.current += 1;
+            }
+
+            calculateWidths.cancel();
+        };
+
+        calculateWidths.cancel();
+
         if (!sampledRows.length) {
-            return;
+            return cancelMeasurement;
         }
 
         if (
             options?.measureOnce &&
             columnIds.every((columnId) => measuredColumnIdsRef.current.has(columnId))
         ) {
-            return;
+            return cancelMeasurement;
         }
-
-        calculateWidths.cancel();
 
         calculateWidths({
             columnSizing,
@@ -171,7 +235,10 @@ export function useColumnsAutoSize<TData extends unknown>({
             sampledRows,
             tableInstance,
             ...options,
+            measurementGeneration,
         });
+
+        return cancelMeasurement;
     }, [columnSizing, rowsDataKey, columnsKey]);
 
     const columnsWithAutoSizes = React.useMemo(

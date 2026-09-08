@@ -24,12 +24,14 @@ const useRowSortable: typeof useSortable = (args) =>
     });
 
 export interface SortableListProps extends UseSortableListParams {
+    autoScroll?: boolean;
     children?: React.ReactNode;
     dragWithoutHandle?: boolean;
     dndModifiers?: import('@dnd-kit/core').Modifier[];
 }
 
 export const SortableList = ({
+    autoScroll = true,
     children,
     items,
     onDragStart,
@@ -62,10 +64,10 @@ export const SortableList = ({
             type: 'row' as const,
             activationDistance: dragWithoutHandle ? ROW_DRAG_ACTIVATION_DISTANCE : undefined,
             modifiers: dndModifiers,
-            autoScroll: true,
+            autoScroll,
             handlers,
         }),
-        [dndModifiers, dragWithoutHandle, handlers],
+        [autoScroll, dndModifiers, dragWithoutHandle, handlers],
     );
 
     const contextValue = React.useMemo(

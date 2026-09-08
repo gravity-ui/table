@@ -87,6 +87,8 @@ export function useAutoScroll<TData>({table, scopeRef}: UseAutoScrollProps<TData
 
     const startAutoScroll = React.useCallback(
         (event: DragStartEvent) => {
+            stopAutoScroll();
+
             const tableEl = scopeRef.current?.querySelector('table') ?? null;
             scrollContainerRef.current = findHorizontalScrollContainer(tableEl);
 
@@ -100,19 +102,10 @@ export function useAutoScroll<TData>({table, scopeRef}: UseAutoScrollProps<TData
             document.addEventListener('pointermove', handlePointerMove);
             rafRef.current = requestAnimationFrame(autoScrollStep);
         },
-        [scopeRef, handlePointerMove, autoScrollStep],
+        [scopeRef, handlePointerMove, autoScrollStep, stopAutoScroll],
     );
 
-    React.useEffect(
-        () => () => {
-            if (rafRef.current !== null) {
-                cancelAnimationFrame(rafRef.current);
-            }
-
-            document.removeEventListener('pointermove', handlePointerMove);
-        },
-        [handlePointerMove],
-    );
+    React.useEffect(() => stopAutoScroll, [stopAutoScroll]);
 
     return {startAutoScroll, stopAutoScroll};
 }

@@ -11,6 +11,8 @@ import './ReorderingProvider.scss';
 export interface ReorderingProviderProps<TData> {
     /** The table instance returned from the `useTable` hook */
     table: Table<TData>;
+    /** Enables the built-in dnd-kit row auto-scroll. Default: `true` */
+    autoScroll?: SortableListProps['autoScroll'];
     /** Children */
     children?: React.ReactNode;
     /** Enables dragging a row by any part of it instead of requiring a drag handle. Default: `false` */
@@ -25,6 +27,7 @@ export interface ReorderingProviderProps<TData> {
 
 export const ReorderingProvider = <TData,>({
     table,
+    autoScroll,
     children,
     dragWithoutHandle = false,
     dndModifiers,
@@ -41,6 +44,7 @@ export const ReorderingProvider = <TData,>({
             enableNesting={enableNesting}
             dragWithoutHandle={dragWithoutHandle}
             dndModifiers={dndModifiers}
+            autoScroll={autoScroll}
         >
             {children}
         </SortableList>

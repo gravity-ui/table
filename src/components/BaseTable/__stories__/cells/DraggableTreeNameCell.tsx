@@ -18,8 +18,8 @@ export const DraggableTreeNameCell = <TData,>({
     table,
     value,
 }: DraggableTreeNameCellProps<TData>) => {
-    const {useSortable} = React.useContext(SortableListContext) ?? {};
-    const {isDragging = false} = useSortable?.({id: row.id}) ?? {};
+    const {activeItemKey} = React.useContext(SortableListContext) ?? {};
+    const isDragging = activeItemKey === row.id;
 
     const {depth} = useDraggableRowDepth({row, table, isDragging});
 

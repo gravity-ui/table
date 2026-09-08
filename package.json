@@ -74,7 +74,7 @@
   "dependencies": {
     "@bem-react/classname": "^1.6.0",
     "@tanstack/react-table": "^8.20.6",
-    "@tanstack/react-virtual": "^3.11.2",
+    "@tanstack/react-virtual": "^3.14.10",
     "react-use": "^17.6.0"
   },
   "devDependencies": {
