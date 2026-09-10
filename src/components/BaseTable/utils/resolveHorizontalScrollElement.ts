@@ -6,7 +6,7 @@ export function resolveHorizontalScrollElement(
     if (!targetWindow) {
         return null;
     }
-    let ancestor = bodyElement?.parentElement;
+    let ancestor: HTMLElement | null = bodyElement;
     while (ancestor) {
         const {overflowX} = targetWindow.getComputedStyle(ancestor);
         if (
