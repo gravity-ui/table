@@ -130,11 +130,41 @@ export function useAdaptiveTableVirtualization<TData, TScrollElement extends Ele
             return;
         }
 
+        const previousRows = runtime?.renderedRows;
         if (runtime) {
             runtime.renderedRows = renderedRows;
         }
         controller?.commit(renderPlan ?? null, renderedRows);
-    }, [controller, preparedData, preparedRequiredIndexes, renderedRows, renderPlan, runtime]);
+        if (directDomUpdates && rowVirtualizer && runtime?.bodyElement) {
+            const previousRowsByKey = new Map(
+                previousRows?.map((record) => [record.virtualKey, record]),
+            );
+            const unmeasuredRealRows = renderedRows.filter((record) => {
+                if (record.deferred || rowVirtualizer.itemSizeCache.has(record.virtualKey)) {
+                    return false;
+                }
+                const previousRow = previousRowsByKey.get(record.virtualKey);
+                return (
+                    !previousRow ||
+                    previousRow.deferred ||
+                    !Object.is(previousRow.rowKey, record.rowKey) ||
+                    previousRow.index !== record.index
+                );
+            });
+            // TanStack skips initial measurement during scrolling. Reconcile new real rows
+            // before their estimated height can overlap the following rows.
+            remeasureRenderedRows(rowVirtualizer, runtime.bodyElement, unmeasuredRealRows);
+        }
+    }, [
+        controller,
+        directDomUpdates,
+        preparedData,
+        preparedRequiredIndexes,
+        renderedRows,
+        renderPlan,
+        rowVirtualizer,
+        runtime,
+    ]);
 
     useIsomorphicLayoutEffect(
         () => () => {

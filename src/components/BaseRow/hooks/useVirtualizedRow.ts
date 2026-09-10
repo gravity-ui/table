@@ -26,6 +26,7 @@ export function useVirtualizedRow<TData, TScrollElement extends Element | Window
     const runtime = rowVirtualizer ? getRowVirtualizerRuntime(rowVirtualizer) : undefined;
     const directDomUpdates = Boolean(runtime?.directDomUpdates);
     const directDomUpdatesMode = runtime?.directDomUpdatesMode ?? 'transform';
+    const measuredVirtualKeyRef = React.useRef<VirtualItem['key']>();
     const placeholderNodeRef = React.useRef<HTMLTableRowElement>();
     const placeholderVirtualKeyRef = React.useRef<VirtualItem['key']>();
     const virtualIndex = virtualItem?.index;
@@ -52,7 +53,17 @@ export function useVirtualizedRow<TData, TScrollElement extends Element | Window
                 }
             }
 
+            const previousVirtualKey = measuredVirtualKeyRef.current;
+            if (
+                previousVirtualKey !== undefined &&
+                !Object.is(previousVirtualKey, virtualKey) &&
+                rowVirtualizer?.elementsCache.get(previousVirtualKey) === node
+            ) {
+                rowVirtualizer.elementsCache.delete(previousVirtualKey);
+            }
+
             rowVirtualizer?.measureElement(node);
+            measuredVirtualKeyRef.current = virtualKey;
         },
         [
             directDomUpdates,
@@ -60,6 +71,7 @@ export function useVirtualizedRow<TData, TScrollElement extends Element | Window
             measurementVersion,
             rowVirtualizer,
             virtualIndex,
+            virtualKey,
             virtualItemPosition,
         ],
     );

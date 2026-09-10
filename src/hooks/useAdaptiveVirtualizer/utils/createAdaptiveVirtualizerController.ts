@@ -471,9 +471,9 @@ export const createAdaptiveVirtualizerController = (
             return;
         }
 
-        // A native terminal token is exact for the gesture that produced it. A new
-        // active direction invalidates it even before the offset has changed.
-        invalidateNativeSettled();
+        if (direction !== lastMotionDirection) {
+            invalidateNativeSettled();
+        }
         recordDirectionReversal(direction);
         updateScrollVelocity(direction, offset, timestamp);
         updateDirectionalSample(direction, offset, timestamp);
@@ -576,20 +576,35 @@ export const createAdaptiveVirtualizerController = (
             return [];
         }
         const direction = virtualizer?.scrollDirection ?? lastActiveDirection;
-        return prioritize(
+        const range = latestRange;
+        const indexes = prioritize(
             [...paintedDeferred].flatMap(([index, identity]) =>
                 sameIdentity(identity, deferred.get(index)) ? [index] : [],
             ),
-            latestRange,
+            range,
             direction,
         );
+        if (getNativeSettled() || !virtualizer?.isScrolling) {
+            const isVisible = (index: number) =>
+                index >= range.startIndex && index <= range.endIndex;
+            return [...indexes.filter(isVisible), ...indexes.filter((index) => !isVisible(index))];
+        }
+        return indexes;
     };
+
+    const getPendingRealizationIndexes = (snapshot: Snapshot | null) =>
+        snapshot
+            ? snapshot.indexes.filter(
+                  (index) => !snapshot.realIndexSet.has(index) && !deferred.has(index),
+              )
+            : [];
 
     const realizePainted = (
         limit: number,
         reason: 'active_recovery' | 'idle_stable' | 'native_settle',
     ) => {
-        const indexes = getRealizationCandidates().slice(0, limit);
+        const remaining = Math.max(0, limit - getPendingRealizationIndexes(committed).length);
+        const indexes = getRealizationCandidates().slice(0, remaining);
         if (indexes.length === 0) {
             return [];
         }
@@ -682,10 +697,25 @@ export const createAdaptiveVirtualizerController = (
             return;
         }
 
+        const direction = virtualizer.scrollDirection ?? lastActiveDirection;
+        const currentTicket = paintTicket;
+
+        if (
+            currentTicket &&
+            currentTicket.virtualizer === virtualizer &&
+            currentTicket.lifecycle === lifecycle &&
+            currentTicket.direction === direction &&
+            currentTicket.identities.size === identities.size &&
+            [...identities].every(([index, identity]) =>
+                sameIdentity(identity, currentTicket.identities.get(index)),
+            )
+        ) {
+            return;
+        }
         cancelPaintTicket('superseded');
         const ticket: PaintTicket = {
             cancel: null,
-            direction: virtualizer.scrollDirection ?? lastActiveDirection,
+            direction,
             id: ++ticketSequence,
             identities,
             lifecycle,
@@ -895,6 +925,13 @@ export const createAdaptiveVirtualizerController = (
                     state.canPrepareDirectionalCoverage),
         );
         const nextDeferred = new Map(deferred);
+        const pendingRealizations = new Set(getPendingRealizationIndexes(snapshot));
+        const usesBoundedRealization =
+            usesDeferredRecovery || nextDeferred.size > 0 || pendingRealizations.size > 0;
+        const realizationLimit = isScrolling
+            ? MAX_REALIZATION_CHUNK_SIZE
+            : MAX_NATIVE_SETTLED_REALIZATION_CHUNK_SIZE;
+        const remainingRealizations = Math.max(0, realizationLimit - pendingRealizations.size);
         const visibleSet = new Set(state.visible);
         const prioritizedRealCritical = [
             ...prioritize(
@@ -907,10 +944,10 @@ export const createAdaptiveVirtualizerController = (
                 range,
                 state.plan.direction,
             ),
-        ];
+        ].filter((index) => !nextDeferred.has(index) && !pendingRealizations.has(index));
         const realCritical = new Set(
-            usesDeferredRecovery
-                ? prioritizedRealCritical.slice(0, MAX_REALIZATION_CHUNK_SIZE)
+            usesBoundedRealization
+                ? prioritizedRealCritical.slice(0, remainingRealizations)
                 : prioritizedRealCritical,
         );
         const realizedDeferredCritical = prioritizedRealCritical.filter(
@@ -923,7 +960,7 @@ export const createAdaptiveVirtualizerController = (
         }
         for (const index of missingCritical) {
             output.add(index);
-            if (usesDeferredRecovery && !realCritical.has(index)) {
+            if (usesBoundedRealization && !realCritical.has(index)) {
                 nextDeferred.set(index, {
                     rowKey: dataRows?.[index]?.id,
                     virtualKey: getKey(index),
@@ -937,7 +974,7 @@ export const createAdaptiveVirtualizerController = (
         }
 
         let warmMissing: number[] = [];
-        if (!recoveryActive && deferred.size === 0) {
+        if (!recoveryActive && deferred.size === 0 && pendingRealizations.size === 0) {
             const mountLimit = isScrolling ? state.plan.mountChunkSize : MAX_WARM_MOUNT_CHUNK_SIZE;
             warmMissing = prioritize(
                 state.target.filter((index) => !output.has(index)),
@@ -996,7 +1033,7 @@ export const createAdaptiveVirtualizerController = (
 
     const getNormalStaleRemoveLimit = (isScrolling: boolean) => {
         if (isScrolling) {
-            return WARM_UNMOUNT_CHUNK_SIZE;
+            return 0;
         }
         if (idleTrimReady) {
             return IDLE_WARM_UNMOUNT_CHUNK_SIZE;
@@ -1017,13 +1054,19 @@ export const createAdaptiveVirtualizerController = (
                 (left, right) =>
                     distanceToRange(right, range) - distanceToRange(left, range) || right - left,
             );
-        const outputLimit = getAdaptiveOutputLimit(
+        const adaptiveOutputLimit = getAdaptiveOutputLimit(
             range,
             state,
             recovery,
             requiredSet.size,
             snapshot,
         );
+        const outputLimit = recovery.isScrolling
+            ? Math.min(
+                  adaptiveOutputLimit,
+                  Math.max(requiredSet.size, state.target.length + getGuard(range.overscan)),
+              )
+            : adaptiveOutputLimit;
         const forcedExcess = Math.max(0, recovery.output.size - outputLimit);
         const staleRemoveLimit = Math.min(
             stale.length,
@@ -1095,7 +1138,7 @@ export const createAdaptiveVirtualizerController = (
     ) => {
         const needsWarmWork = !coversIndexes(state.target, recovery.output);
         const hasStaleOutput = outputIndexes.some((index) => !recovery.targetSet.has(index));
-        if (needsWarmWork || (recovery.isScrolling && hasStaleOutput)) {
+        if (needsWarmWork || (!recovery.isScrolling && idleTrimReady && hasStaleOutput)) {
             scheduleFrame();
         } else if (!recovery.isScrolling && hasStaleOutput) {
             scheduleIdleTrim();

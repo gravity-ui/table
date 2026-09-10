@@ -203,6 +203,7 @@ export const BaseTable = React.forwardRef(
             bodyRows,
             bodyStyle,
             getRowVirtualizationProps,
+            headerRenderVersion,
             resolvedBodyRef,
             virtualizationCoverage,
         } = useTableVirtualization({
@@ -322,6 +323,7 @@ export const BaseTable = React.forwardRef(
                                     cellClassName={headerCellClassName}
                                     className={headerRowClassName}
                                     headerGroup={headerGroup}
+                                    tableRenderVersion={headerRenderVersion}
                                     parentHeaderGroup={headerGroups[index - 1]}
                                     renderHeaderCellContent={renderHeaderCellContent}
                                     renderResizeHandle={renderResizeHandle}

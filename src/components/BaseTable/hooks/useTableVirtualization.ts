@@ -147,6 +147,7 @@ export function useTableVirtualization<
 
     return {
         bodyRows,
+        headerRenderVersion: rowRenderVersion,
         bodyStyle: {
             height: getVirtualBodyHeight(bodyRows.length > 0, rowVirtualizer),
             ...bodyStyle,

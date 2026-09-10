@@ -6,7 +6,7 @@ export function createTableRenderVersion(
     const version: Record<string, unknown> = {__columnGeometry: columnGeometry};
 
     Object.entries(options).forEach(([key, value]) => {
-        if (key !== 'state') {
+        if (key !== 'state' && key !== 'onStateChange') {
             version[`option:${key}`] = value;
         }
     });
