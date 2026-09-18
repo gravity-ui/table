@@ -1,5 +1,5 @@
 import {MobileProvider} from '@gravity-ui/uikit';
-import type {Decorator} from '@storybook/react';
+import type {Decorator} from '@storybook/react-webpack5';
 
 export const withMobile: Decorator = (Story, context) => {
     const platform = context.globals.platform;

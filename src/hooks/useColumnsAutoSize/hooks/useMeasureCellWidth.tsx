@@ -7,7 +7,7 @@ import {disposeMeasureRoot} from '../utils/disposeMeasureRoot';
 import {renderElementForMeasure as defaultRenderElementForMeasure} from '../utils/renderElementForMeasure';
 
 export type UseMeasureCellWidthProps = {
-    renderElementForMeasure?: (element?: React.ReactNode) => JSX.Element;
+    renderElementForMeasure?: (element?: React.ReactNode) => React.JSX.Element;
 };
 
 export function useMeasureCellWidth({

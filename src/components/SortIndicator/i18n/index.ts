@@ -7,4 +7,6 @@ import ru from './ru.json';
 
 const COMPONENT = `${NAMESPACE}sort-indicator`;
 
-export default addComponentKeysets({en, ru}, COMPONENT);
+const i18n: (key: keyof typeof en) => string = addComponentKeysets({en, ru}, COMPONENT);
+
+export default i18n;

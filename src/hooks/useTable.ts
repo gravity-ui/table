@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import type {TableOptions} from '@tanstack/react-table';
+import type {Table, TableOptions} from '@tanstack/react-table';
 import {
     getCoreRowModel,
     getExpandedRowModel,
@@ -12,7 +12,7 @@ import {
 
 import type {UseTableOptions} from '../types/base';
 
-export const useTable = <TData>(options: UseTableOptions<TData>) => {
+export const useTable = <TData>(options: UseTableOptions<TData>): Table<TData> => {
     // Keep default factory identities stable so table render versions change only with input data or state.
     const rowModelFactories = React.useMemo(
         () => ({

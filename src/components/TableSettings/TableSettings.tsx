@@ -58,7 +58,7 @@ export const TableSettings = <TData extends unknown>({
     onSettingsApply,
     onSettingsReset,
 }: TableSettingsProps<TData>) => {
-    const anchorRef = React.useRef<HTMLButtonElement>(null);
+    const [anchorElement, setAnchorElement] = React.useState<HTMLElement | null>(null);
     const [open, setOpen] = React.useState<boolean>(false);
     const [search, setSearch] = React.useState('');
     const [expandNestedColumns, setExpandNestedColumns] = React.useState(false);
@@ -177,14 +177,11 @@ export const TableSettings = <TData extends unknown>({
         });
     };
 
-    const cancelEditing = () => {
-        setOpen(false);
-        resetSettings();
-    };
-
-    const togglePopup = () => {
-        if (open) cancelEditing();
-        else setOpen(true);
+    const handleOpenChange = (nextOpen: boolean) => {
+        setOpen(nextOpen);
+        if (!nextOpen) {
+            resetSettings();
+        }
     };
 
     const applyNewSettings = () => {
@@ -212,12 +209,10 @@ export const TableSettings = <TData extends unknown>({
         <React.Fragment>
             <Popup
                 open={open}
-                onClose={cancelEditing}
-                anchorRef={anchorRef}
+                onOpenChange={handleOpenChange}
+                anchorElement={anchorElement}
                 placement={POPUP_PLACEMENT}
                 className={b()}
-                // @ts-ignore
-                contentClassName={b()}
             >
                 <div className={b('popover-content')}>
                     {enableSearch && (
@@ -266,7 +261,7 @@ export const TableSettings = <TData extends unknown>({
                 </div>
                 <Divider />
                 {!emptyResult && (
-                    <Flex gap="2" className={b('popover-actions')}>
+                    <Flex gap="spacing-2" className={b('popover-actions')}>
                         {enableReset && (
                             <Button view="normal" size="m" onClick={resetToInitial} width="max">
                                 {i18n('button_reset')}
@@ -278,7 +273,12 @@ export const TableSettings = <TData extends unknown>({
                     </Flex>
                 )}
             </Popup>
-            <Button view="flat-secondary" size="m" ref={anchorRef} onClick={togglePopup}>
+            <Button
+                view="flat-secondary"
+                size="m"
+                ref={setAnchorElement}
+                onClick={() => handleOpenChange(!open)}
+            >
                 <Icon data={Gear} />
             </Button>
         </React.Fragment>

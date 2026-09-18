@@ -14,7 +14,7 @@ export function shouldSkipVirtualizedRowRender<
 ) {
     const directDomUpdates = Boolean(
         nextProps.rowVirtualizer &&
-            getRowVirtualizerRuntime(nextProps.rowVirtualizer)?.directDomUpdates,
+        getRowVirtualizerRuntime(nextProps.rowVirtualizer)?.directDomUpdates,
     );
     if (!directDomUpdates && !nextProps.rowVirtualizer?.isScrolling) {
         return false;

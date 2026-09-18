@@ -1,9 +1,12 @@
 {
   "extends": "@gravity-ui/tsconfig",
   "compilerOptions": {
+    "isolatedModules": true,
     "jsx": "react-jsx",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "rootDir": ".",
+    "types": ["jest", "node"]
   }
 }

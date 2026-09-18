@@ -12,8 +12,10 @@ import './Table.scss';
 
 type VerticalAlignment = 'top' | 'middle' | 'bottom';
 
-export interface TableProps<TData, TScrollElement extends Element | Window = HTMLDivElement>
-    extends BaseTableProps<TData, TScrollElement> {
+export interface TableProps<
+    TData,
+    TScrollElement extends Element | Window = HTMLDivElement,
+> extends BaseTableProps<TData, TScrollElement> {
     /** Table size */
     size?: TableSize;
     /** Row vertical align */

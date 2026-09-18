@@ -12,8 +12,10 @@ import {useRowContent} from './hooks/useRowContent';
 import {useVirtualizedRow} from './hooks/useVirtualizedRow';
 import {resolveRowValue} from './utils/resolveRowValue';
 
-export interface BaseRowProps<TData, TScrollElement extends Element | Window = HTMLDivElement>
-    extends Omit<React.HTMLAttributes<HTMLTableRowElement>, 'className' | 'onClick'> {
+export interface BaseRowProps<
+    TData,
+    TScrollElement extends Element | Window = HTMLDivElement,
+> extends Omit<React.HTMLAttributes<HTMLTableRowElement>, 'className' | 'onClick'> {
     /** @internal */
     canDeferOffscreenCellContent?: (cell: Cell<TData, unknown>) => boolean;
     cellClassName?: BaseCellProps<TData>['className'];

@@ -1,4 +1,5 @@
-import type {MenuItemProps} from '@gravity-ui/uikit';
+import type * as React from 'react';
+
 import type {Row} from '@tanstack/react-table';
 
 export interface TableAction<TValue> {
@@ -12,8 +13,8 @@ export interface TableAction<TValue> {
     target?: string;
     rel?: string;
     disabled?: boolean;
-    theme?: MenuItemProps['theme'];
-    icon?: MenuItemProps['iconStart'];
+    theme?: 'normal' | 'danger';
+    icon?: React.ReactNode;
 }
 export interface TableActionGroup<I> {
     title: string;

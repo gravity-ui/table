@@ -8,7 +8,7 @@ import {findHorizontalScrollContainer} from '../utils/findHorizontalScrollContai
 
 export interface UseAutoScrollProps<TData> {
     table: Table<TData>;
-    scopeRef: React.RefObject<HTMLElement>;
+    scopeRef: React.RefObject<HTMLElement | null>;
 }
 
 export function useAutoScroll<TData>({table, scopeRef}: UseAutoScrollProps<TData>) {

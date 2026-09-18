@@ -1,8 +1,8 @@
 // eslint-disable-next-line import/order
 import '@gravity-ui/uikit/styles/styles.scss';
 
-import {MINIMAL_VIEWPORTS} from '@storybook/addon-viewport';
-import type {Preview} from '@storybook/react';
+import type {Preview} from '@storybook/react-webpack5';
+import {MINIMAL_VIEWPORTS} from 'storybook/viewport';
 
 import {withLang} from './decorators/withLang';
 import {withMobile} from './decorators/withMobile';
@@ -11,9 +11,14 @@ import {withTheme} from './decorators/withTheme';
 
 const preview: Preview = {
     decorators: [withLang, withMobile, withTheme, withStrictMode],
+    initialGlobals: {
+        theme: 'light',
+        lang: 'en',
+        direction: 'ltr',
+        platform: 'desktop',
+    },
     globalTypes: {
         theme: {
-            defaultValue: 'light',
             toolbar: {
                 title: 'Theme',
                 icon: 'mirror',
@@ -27,7 +32,6 @@ const preview: Preview = {
             },
         },
         lang: {
-            defaultValue: 'en',
             toolbar: {
                 title: 'Language',
                 icon: 'globe',
@@ -39,7 +43,6 @@ const preview: Preview = {
             },
         },
         direction: {
-            defaultValue: 'ltr',
             toolbar: {
                 title: 'Direction',
                 icon: 'menu',
@@ -51,7 +54,6 @@ const preview: Preview = {
             },
         },
         platform: {
-            defaultValue: 'desktop',
             toolbar: {
                 title: 'Platform',
                 items: [
@@ -67,7 +69,7 @@ const preview: Preview = {
             showFunctions: true,
         },
         viewport: {
-            viewports: MINIMAL_VIEWPORTS,
+            options: MINIMAL_VIEWPORTS,
         },
     },
 };

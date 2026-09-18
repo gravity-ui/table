@@ -14,21 +14,31 @@ export const actionsSettings: TableActionsSettings<Item> = {
             },
         },
         {
-            text: 'with icon',
-            icon: <Icon data={Pencil} size={14} />,
-            handler: () => {},
+            title: 'Editing',
+            items: [
+                {
+                    text: <span tabIndex={-1}>with icon</span>,
+                    icon: <Icon data={Pencil} size={14} />,
+                    handler: () => {},
+                },
+            ],
+        },
+        {
+            title: 'Management',
+            items: [
+                {
+                    text: 'danger theme',
+                    theme: 'danger',
+                    handler: () => {
+                        alert(index);
+                    },
+                },
+            ],
         },
         {
             text: 'disabled',
             disabled: true,
             handler: () => {},
-        },
-        {
-            text: 'danger theme',
-            theme: 'danger',
-            handler: () => {
-                alert(index);
-            },
         },
         {
             text: 'with href',

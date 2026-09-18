@@ -1,7 +1,7 @@
 import type {TestRunnerConfig} from '@storybook/test-runner';
 
-import {waitForScrollToSettle} from './utils/waitForScrollToSettle';
-import {waitForTwoAnimationFrames} from './utils/waitForTwoAnimationFrames';
+import {waitForScrollToSettle} from './utils/waitForScrollToSettle.ts';
+import {waitForTwoAnimationFrames} from './utils/waitForTwoAnimationFrames.ts';
 
 type TestRunnerPage = Parameters<NonNullable<TestRunnerConfig['postVisit']>>[0];
 

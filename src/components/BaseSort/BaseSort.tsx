@@ -5,8 +5,10 @@ import {useActionHandlers} from '@gravity-ui/uikit';
 import type {Header} from '../../types/base';
 import {b} from '../BaseTable/BaseTable.classname';
 
-export interface BaseSortProps<TData, TValue>
-    extends Omit<React.HTMLAttributes<HTMLSpanElement>, 'className' | 'onClick'> {
+export interface BaseSortProps<TData, TValue> extends Omit<
+    React.HTMLAttributes<HTMLSpanElement>,
+    'className' | 'onClick'
+> {
     className?: string;
     header: Header<TData, TValue>;
 }

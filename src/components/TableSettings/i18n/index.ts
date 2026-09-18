@@ -7,4 +7,11 @@ import ru from './ru.json';
 
 const COMPONENT = `${NAMESPACE}table-settings`;
 
-export default addComponentKeysets({en, ru}, COMPONENT);
+type TranslationParams = Parameters<ReturnType<typeof addComponentKeysets>>[1];
+
+const i18n: (key: keyof typeof en, params?: TranslationParams) => string = addComponentKeysets(
+    {en, ru},
+    COMPONENT,
+);
+
+export default i18n;

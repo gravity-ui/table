@@ -9,7 +9,7 @@ export const DRAG_SCROLL_COMPENSATION_TRANSFORM = `translate3d(0, var(${DRAG_SCR
 
 interface UseDragScrollCompensationProps {
     enabled: boolean;
-    nodeRef: React.RefObject<HTMLTableRowElement>;
+    nodeRef: React.RefObject<HTMLTableRowElement | null>;
     renderedTransformY?: number;
 }
 
@@ -18,13 +18,13 @@ export function useDragScrollCompensation({
     nodeRef,
     renderedTransformY,
 }: UseDragScrollCompensationProps) {
-    const pointerYRef = React.useRef<number>();
+    const pointerYRef = React.useRef<number>(undefined);
     const dragStartRef = React.useRef<{
         element: HTMLTableRowElement;
         pointerY?: number;
         scrollTop: number;
         transformY: number;
-    }>();
+    }>(undefined);
 
     useIsomorphicLayoutEffect(() => {
         const node = nodeRef.current;
