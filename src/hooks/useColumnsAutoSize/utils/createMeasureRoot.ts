@@ -45,7 +45,8 @@ export async function createMeasureRoot(container: HTMLElement): Promise<Measure
         const root = createRoot(container);
 
         return {
-            render: (element) => root.render(element),
+            // Measurement must observe this commit, not a pending concurrent render.
+            render: (element) => ReactDOM.flushSync(() => root.render(element)),
             unmount: () => root.unmount(),
         };
     }
