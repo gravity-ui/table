@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.2](https://github.com/gravity-ui/table/compare/v1.21.1...v1.21.2) (2026-09-29)
+
+
+### Bug Fixes
+
+* **useColumnsAutoSize:** commit measurement content synchronously ([#178](https://github.com/gravity-ui/table/issues/178)) ([36df406](https://github.com/gravity-ui/table/commit/36df406bba65ed93c276c3ecfa0bd4c02ba29cb4))
+
 ## [1.21.1](https://github.com/gravity-ui/table/compare/v1.21.0...v1.21.1) (2026-09-10)
 
 
