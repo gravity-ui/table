@@ -159,6 +159,11 @@ export const TableSettings = <TData extends unknown>({
         setSearch('');
     };
 
+    const resetToInitial = () => {
+        setVisibilityState(table.initialState.columnVisibility ?? {});
+        setOrderState(getInitialOrderItems(filteredColumns, table.initialState.columnOrder ?? []));
+    };
+
     const cancelEditing = () => {
         setOpen(false);
         resetSettings();
@@ -247,13 +252,16 @@ export const TableSettings = <TData extends unknown>({
                     )}
                 </div>
                 <Divider />
-                {!emptyResult && (
-                    <div className={b('popover-actions')}>
-                        <Button view="action" size="m" onClick={applyNewSettings} width="max">
+                <div className={b('popover-actions')}>
+                    <Flex gap="2">
+                        <Button view="normal" size="l" onClick={resetToInitial} width="max">
+                            {i18n('button_reset')}
+                        </Button>
+                        <Button view="action" size="l" onClick={applyNewSettings} width="max">
                             {i18n('button_apply')}
                         </Button>
-                    </div>
-                )}
+                    </Flex>
+                </div>
             </Popup>
             <Button view="flat-secondary" size="m" ref={anchorRef} onClick={togglePopup}>
                 <Icon data={Gear} />
