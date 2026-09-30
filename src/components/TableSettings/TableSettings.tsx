@@ -252,14 +252,16 @@ export const TableSettings = <TData extends unknown>({
                     )}
                 </div>
                 <Divider />
-                <Flex gap="2" className={b('popover-actions')}>
-                    <Button view="normal" size="l" onClick={resetToInitial} width="max">
-                        {i18n('button_reset')}
-                    </Button>
-                    <Button view="action" size="l" onClick={applyNewSettings} width="max">
-                        {i18n('button_apply')}
-                    </Button>
-                </Flex>
+                {!emptyResult && (
+                    <Flex gap="2" className={b('popover-actions')}>
+                        <Button view="normal" size="l" onClick={resetToInitial} width="max">
+                            {i18n('button_reset')}
+                        </Button>
+                        <Button view="action" size="l" onClick={applyNewSettings} width="max">
+                            {i18n('button_apply')}
+                        </Button>
+                    </Flex>
+                )}
             </Popup>
             <Button view="flat-secondary" size="m" ref={anchorRef} onClick={togglePopup}>
                 <Icon data={Gear} />
