@@ -3,6 +3,7 @@ import * as React from 'react';
 import type {ExpandedState} from '@tanstack/react-table';
 
 import {useTable, useWindowRowVirtualizer} from '../../../../hooks';
+import {getColumnAwareRowOverscan} from '../../../../utils';
 import {ReorderingProvider} from '../../../ReorderingProvider';
 import {BaseTable} from '../../BaseTable';
 import type {TreeItem} from '../constants/tree';
@@ -65,6 +66,8 @@ export const ReorderingTreeWithVirtualizationStory = ({
         },
     });
     const rows = table.getRowModel().rows;
+    const columnCount = table.getVisibleLeafColumns().length;
+    const overscan = getColumnAwareRowOverscan(columnCount);
 
     const getItemKey = React.useCallback(
         (index: number) => rows[index]?.id ?? `missing:${index}`,
@@ -77,7 +80,7 @@ export const ReorderingTreeWithVirtualizationStory = ({
         directDomUpdatesMode: 'position',
         estimateSize: () => 58,
         getItemKey,
-        overscan: 12,
+        overscan,
         scrollMargin: bodyRef.current?.offsetTop ?? 0,
     });
 
@@ -94,7 +97,7 @@ export const ReorderingTreeWithVirtualizationStory = ({
                     nested row reordering
                 </span>
                 <span className={cnProductionVirtualizationStory('summary-item')}>
-                    window virtualization
+                    {columnCount} columns · base row overscan {overscan}
                 </span>
                 <span className={cnProductionVirtualizationStory('summary-item')}>
                     {HEAVY_TREE_METRIC_COLUMN_COUNT} expensive metric renderers per row

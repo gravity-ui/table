@@ -55,7 +55,8 @@ export type {
     UseColumnsAutoSizeProps,
 } from './hooks';
 
-export {getVirtualRowRangeExtractor} from './utils';
+export {getColumnAwareRowOverscan, getVirtualRowRangeExtractor} from './utils';
+export type {ColumnAwareRowOverscanOptions} from './utils';
 
 export type {
     TableAction,

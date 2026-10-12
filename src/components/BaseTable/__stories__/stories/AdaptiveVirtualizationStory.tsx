@@ -3,6 +3,7 @@ import * as React from 'react';
 import type {ExpandedState} from '@tanstack/react-table';
 
 import {useTable, useWindowRowVirtualizer} from '../../../../hooks';
+import {getColumnAwareRowOverscan} from '../../../../utils';
 import {BaseTable} from '../../BaseTable';
 import {
     HEAVY_METRIC_COLUMN_COUNT,
@@ -34,6 +35,8 @@ export const AdaptiveVirtualizationStory = () => {
     });
     const bodyRef = React.useRef<HTMLTableSectionElement>(null);
     const rows = table.getRowModel().rows;
+    const columnCount = table.getVisibleLeafColumns().length;
+    const overscan = getColumnAwareRowOverscan(columnCount);
 
     const getItemKey = React.useCallback(
         (index: number) => rows[index]?.id ?? `missing:${index}`,
@@ -46,7 +49,7 @@ export const AdaptiveVirtualizationStory = () => {
         directDomUpdatesMode: 'position',
         estimateSize: () => 58,
         getItemKey,
-        overscan: 12,
+        overscan,
         scrollMargin: bodyRef.current?.offsetTop ?? 0,
     });
 
@@ -63,7 +66,7 @@ export const AdaptiveVirtualizationStory = () => {
                     {data.length} domains · {rows.length.toLocaleString()} expanded nodes
                 </span>
                 <span className={cnProductionVirtualizationStory('summary-item')}>
-                    {adaptiveVirtualizationColumns.length} columns
+                    {columnCount} columns · base row overscan {overscan}
                 </span>
                 <span className={cnProductionVirtualizationStory('summary-item')}>
                     {HEAVY_METRIC_COLUMN_COUNT} expensive metric renderers per row
