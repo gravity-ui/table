@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.22.0](https://github.com/gravity-ui/table/compare/v1.21.2...v1.22.0) (2026-10-13)
+
+
+### Features
+
+* add column-aware row overscan helper ([#181](https://github.com/gravity-ui/table/issues/181)) ([9ca6a66](https://github.com/gravity-ui/table/commit/9ca6a6637ccc49a544c6f3c757d1693c359e589e))
+
 ## [1.21.2](https://github.com/gravity-ui/table/compare/v1.21.1...v1.21.2) (2026-09-29)
 
 
