@@ -606,7 +606,10 @@ direct-DOM-режим и используйте стабильные семан�
 строку до и после иммутабельного переупорядочивания или переноса в другого родителя:
 
 ```tsx
+import {getColumnAwareRowOverscan} from '@gravity-ui/table';
+
 const rows = table.getRowModel().rows;
+const columnCount = table.getVisibleLeafColumns().length;
 
 const getItemKey = React.useCallback(
   (index: number) => rows[index]?.id ?? `missing:${index}`,
@@ -621,7 +624,7 @@ const rowVirtualizer = useRowVirtualizer({
   estimateSize: () => 40,
   getItemKey,
   getScrollElement: () => containerRef.current,
-  overscan: 12,
+  overscan: getColumnAwareRowOverscan(columnCount),
 });
 ```
 
@@ -633,6 +636,34 @@ const rowVirtualizer = useRowVirtualizer({
 переупорядочивания или смены родителя.
 Произвольный пользовательский `rangeExtractor` остаётся главным источником диапазона и отключает
 адаптивное планирование окна.
+
+`getColumnAwareRowOverscan(columnCount, options?)` уменьшает базовый запас строк по мере роста
+количества колонок. По умолчанию функция делит бюджет в 240 ячеек на число колонок, округляет
+результат вниз и ограничивает его диапазоном от 4 до 24 строк. Используйте
+`table.getVisibleLeafColumns().length`, чтобы исключить скрытые колонки и учесть закреплённые.
+Функция подходит для `useRowVirtualizer` и `useWindowRowVirtualizer`; вместо неё по-прежнему
+можно явно задать числовой `overscan`.
+
+Подберите бюджет и границы запаса с учётом стоимости отрисовки ячеек. Если приложение
+виртуализирует колонки, передайте в `renderedColumnLimit` максимальное число одновременно
+отрисовываемых колонок в строке, включая закреплённые. Функция ограничит переданное число
+колонок этим значением:
+
+```tsx
+const overscan = getColumnAwareRowOverscan(table.getVisibleLeafColumns().length, {
+  renderedColumnLimit: 16,
+  cellBudget: 320,
+  minOverscan: 4,
+  maxOverscan: 20,
+});
+```
+
+Результат — базовый запас строк, а не строгий лимит смонтированных строк или ячеек. Видимые
+строки отрисовываются дополнительно к запасу, а адаптивная прокрутка может расширять
+смонтированный диапазон.
+Все аргументы функции должны быть неотрицательными безопасными целыми числами, а `maxOverscan` —
+не меньше `minOverscan`; при некорректных значениях функция выбрасывает `RangeError`.
+Нулевое число колонок при расчёте считается равным единице.
 
 `BaseTable.canDeferOffscreenCellContent` — дополнительная оптимизация для очень широких адаптивных
 таблиц. Возвращайте `true` только для пассивного содержимого, отложенный mount которого не влияет
