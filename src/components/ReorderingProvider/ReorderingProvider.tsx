@@ -13,6 +13,8 @@ export interface ReorderingProviderProps<TData> {
     table: Table<TData>;
     /** Enables the built-in dnd-kit row auto-scroll. Default: `true` */
     autoScroll?: SortableListProps['autoScroll'];
+    /** Accessibility configuration for the shared dnd-kit context */
+    accessibility?: SortableListProps['accessibility'];
     /** Children */
     children?: React.ReactNode;
     /** Enables dragging a row by any part of it instead of requiring a drag handle. Default: `false` */
@@ -32,6 +34,7 @@ export const ReorderingProvider = <TData,>({
     dragWithoutHandle = false,
     dndModifiers,
     enableNesting,
+    accessibility,
     onReorder,
 }: ReorderingProviderProps<TData>) => {
     const {rows} = table.getRowModel();
@@ -45,6 +48,7 @@ export const ReorderingProvider = <TData,>({
             dragWithoutHandle={dragWithoutHandle}
             dndModifiers={dndModifiers}
             autoScroll={autoScroll}
+            accessibility={accessibility}
         >
             {children}
         </SortableList>

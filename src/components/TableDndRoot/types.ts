@@ -1,6 +1,7 @@
 import type * as React from 'react';
 
 import type {
+    DndContextProps,
     DragCancelEvent,
     DragEndEvent,
     DragMoveEvent,
@@ -23,6 +24,7 @@ export interface TableDndScopeHandlers {
 export interface TableDndScopeConfig {
     type: ReorderType;
     activationDistance?: number;
+    accessibility?: DndContextProps['accessibility'];
     modifiers?: Modifier[];
     autoScroll?: boolean;
     measuring?: MeasuringConfiguration;

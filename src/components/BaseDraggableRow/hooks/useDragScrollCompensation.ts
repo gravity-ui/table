@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import {getScrollableAncestors} from '@dnd-kit/core';
+import {getScrollableAncestors, useDndContext} from '@dnd-kit/core';
 
 import {useIsomorphicLayoutEffect} from '../../../hooks/useIsomorphicLayoutEffect';
 
@@ -18,6 +18,9 @@ export function useDragScrollCompensation({
     nodeRef,
     renderedTransformY,
 }: UseDragScrollCompensationProps) {
+    const {activatorEvent} = useDndContext();
+    // Keyboard movement already accounts for scrolling and must not be cancelled by pointer compensation.
+    const compensatePointerScroll = enabled && activatorEvent?.type !== 'keydown';
     const pointerYRef = React.useRef<number>();
     const dragStartRef = React.useRef<{
         element: HTMLTableRowElement;
@@ -28,7 +31,7 @@ export function useDragScrollCompensation({
 
     useIsomorphicLayoutEffect(() => {
         const node = nodeRef.current;
-        if (!enabled || !node) {
+        if (!compensatePointerScroll || !node) {
             if (node) {
                 node.style.removeProperty(DRAG_SCROLL_COMPENSATION_PROPERTY);
             }
@@ -93,5 +96,5 @@ export function useDragScrollCompensation({
             );
             ownerWindow?.removeEventListener('pointermove', trackPointer, {capture: true});
         };
-    }, [enabled, nodeRef, renderedTransformY]);
+    }, [compensatePointerScroll, nodeRef, renderedTransformY]);
 }

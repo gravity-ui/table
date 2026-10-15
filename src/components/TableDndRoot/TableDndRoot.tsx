@@ -10,6 +10,7 @@ import type {
 } from '@dnd-kit/core';
 import {
     DndContext,
+    KeyboardSensor,
     MeasuringStrategy,
     PointerSensor,
     getClientRect,
@@ -19,10 +20,23 @@ import {
 
 import {autoScrollConfig} from '../ColumnReorderingProvider/constants/autoScroll';
 
+import {REORDER_TYPE_ROW} from './constants';
 import type {ReorderType, TableDndScopeConfig} from './types';
 import {createMergedModifiers} from './utils/mergeModifiers';
 import {getReorderType} from './utils/reorderType';
 import {tableCollisionDetection} from './utils/tableCollisionDetection';
+
+// Row and column providers share sensors, but keyboard dragging is enabled only for rows.
+class RowKeyboardSensor extends KeyboardSensor {
+    static activators: typeof KeyboardSensor.activators = KeyboardSensor.activators.map(
+        (activator) => ({
+            ...activator,
+            handler: (event, options, context) =>
+                context.active.data.current?.reorderType === REORDER_TYPE_ROW &&
+                activator.handler(event, options, context),
+        }),
+    );
+}
 
 const defaultMeasuring = {
     droppable: {
@@ -73,7 +87,8 @@ export const TableDndRoot = ({scopes, children}: TableDndRootProps) => {
             ? undefined
             : {activationConstraint: {distance: activationDistance}},
     );
-    const sensors = useSensors(pointerSensor);
+    const keyboardSensor = useSensor(RowKeyboardSensor);
+    const sensors = useSensors(pointerSensor, rowScope ? keyboardSensor : undefined);
 
     const modifiers = React.useMemo(() => createMergedModifiers(scopeList), [scopeList]);
 
@@ -142,6 +157,7 @@ export const TableDndRoot = ({scopes, children}: TableDndRootProps) => {
     return (
         <DndContext
             sensors={sensors}
+            accessibility={rowScope?.accessibility}
             autoScroll={autoScroll}
             collisionDetection={tableCollisionDetection}
             measuring={measuring}
