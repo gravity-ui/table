@@ -32,6 +32,7 @@ export const useSortableList = ({
     nextChildModeOffset = 10,
 }: UseSortableListParams) => {
     const [activeItemKey, setActiveItemKey] = React.useState<string | null>(null);
+    const [isKeyboardDragging, setIsKeyboardDragging] = React.useState(false);
     const [targetItemIndex, setTargetItemIndex] = React.useState(-1);
     const [isParentMode, setIsParentMode] = React.useState(false);
     const [isChildMode, setIsChildMode] = React.useState(false);
@@ -68,6 +69,7 @@ export const useSortableList = ({
         isChildModeRef.current = false;
         isNextChildModeRef.current = false;
         setActiveItemKey(null);
+        setIsKeyboardDragging(false);
         setTargetItemIndex(-1);
         setIsParentMode(false);
         setIsChildMode(false);
@@ -100,6 +102,7 @@ export const useSortableList = ({
                 const activeId = fromRowSortableId(event.active.id as string);
 
                 setActiveItemKey(activeId);
+                setIsKeyboardDragging(event.activatorEvent?.type === 'keydown');
                 onDragStart?.(activeId);
                 setBodyCursor('grabbing');
             },
@@ -197,6 +200,7 @@ export const useSortableList = ({
 
     return {
         activeItemKey,
+        isKeyboardDragging,
         activeItemIndex: getItemIndex(activeItemKey),
         targetItemIndex,
         isParentMode,

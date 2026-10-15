@@ -7,12 +7,14 @@ export {
     Table,
     TableSettings,
     SortableListContext,
+    DraggableRowContext,
     ExperimentalRowLink,
     TreeExpandableCell,
     RangedSelectionCheckbox,
 } from './components';
 export type {
     BaseTableProps,
+    DraggableRowContextValue,
     ReorderingProviderProps,
     ColumnReorderingProviderProps,
     ColumnReorderResult,

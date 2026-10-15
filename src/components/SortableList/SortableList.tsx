@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import type {DndContextProps} from '@dnd-kit/core';
 import {SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
 
 import type {UseSortableListParams} from '../../hooks';
@@ -24,6 +25,7 @@ const useRowSortable: typeof useSortable = (args) =>
     });
 
 export interface SortableListProps extends UseSortableListParams {
+    accessibility?: DndContextProps['accessibility'];
     autoScroll?: boolean;
     children?: React.ReactNode;
     dragWithoutHandle?: boolean;
@@ -39,12 +41,14 @@ export const SortableList = ({
     enableNesting,
     dragWithoutHandle = false,
     dndModifiers,
+    accessibility,
 }: SortableListProps) => {
     const registry = React.useContext(TableDndRegistryContext);
 
     const {
         activeItemKey,
         activeItemIndex,
+        isKeyboardDragging,
         isChildMode,
         isParentMode,
         isNextChildMode,
@@ -65,9 +69,10 @@ export const SortableList = ({
             activationDistance: dragWithoutHandle ? ROW_DRAG_ACTIVATION_DISTANCE : undefined,
             modifiers: dndModifiers,
             autoScroll,
+            accessibility,
             handlers,
         }),
-        [autoScroll, dndModifiers, dragWithoutHandle, handlers],
+        [autoScroll, dndModifiers, dragWithoutHandle, accessibility, handlers],
     );
 
     const contextValue = React.useMemo(
@@ -75,6 +80,7 @@ export const SortableList = ({
             ({
                 activeItemKey,
                 activeItemIndex,
+                isKeyboardDragging,
                 isChildMode,
                 isNextChildMode,
                 isParentMode,
@@ -89,6 +95,7 @@ export const SortableList = ({
             dragWithoutHandle,
             enableNesting,
             isChildMode,
+            isKeyboardDragging,
             isNextChildMode,
             isParentMode,
             targetItemIndex,
