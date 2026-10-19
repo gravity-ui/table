@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.0](https://github.com/gravity-ui/table/compare/v1.22.0...v1.23.0) (2026-10-19)
+
+
+### Features
+
+* support keyboard row reordering and accessibility ([#183](https://github.com/gravity-ui/table/issues/183)) ([01dd188](https://github.com/gravity-ui/table/commit/01dd188d62f69847db15964353df88b46fa34628))
+
 ## [1.22.0](https://github.com/gravity-ui/table/compare/v1.21.2...v1.22.0) (2026-10-13)
 
 
