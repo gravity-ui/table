@@ -10,6 +10,7 @@ import type {BaseRowProps} from '../BaseRow';
 import {BaseRow} from '../BaseRow/BaseRow';
 import {SortableListContext} from '../SortableListContext';
 
+import {DraggableRowContext} from './DraggableRowContext';
 import {useDragScrollCompensation} from './hooks/useDragScrollCompensation';
 
 export interface BaseDraggableRowProps<
@@ -31,6 +32,7 @@ const BaseDraggableRowComponent = React.forwardRef(
         const {
             isChildMode,
             activeItemKey,
+            isKeyboardDragging,
             targetItemIndex = -1,
             dragWithoutHandle,
             enableNesting,
@@ -42,6 +44,8 @@ const BaseDraggableRowComponent = React.forwardRef(
 
         const {
             setNodeRef,
+            setActivatorNodeRef,
+            attributes: dragHandleAttributes,
             transform = null,
             transition,
             isDragging = false,
@@ -49,6 +53,13 @@ const BaseDraggableRowComponent = React.forwardRef(
         } = useSortable?.({
             id: row.id,
         }) || {};
+        const dragHandleContext = React.useMemo(
+            () =>
+                dragHandleAttributes && setActivatorNodeRef
+                    ? {attributes: dragHandleAttributes, listeners, setActivatorNodeRef}
+                    : null,
+            [dragHandleAttributes, listeners, setActivatorNodeRef],
+        );
         const rowNodeRef = React.useRef<HTMLTableRowElement>(null);
 
         const isDragActive = Boolean(activeItemKey);
@@ -57,7 +68,8 @@ const BaseDraggableRowComponent = React.forwardRef(
         const handleRowRef = useForkRef(setNodeRef, rowNodeRef, ref);
 
         useDragScrollCompensation({
-            enabled: isDragging,
+            // Keyboard coordinates already include scrolling; pointer compensation would undo them.
+            enabled: isDragging && !isKeyboardDragging,
             nodeRef: rowNodeRef,
             renderedTransformY: transform?.y,
         });
@@ -121,14 +133,16 @@ const BaseDraggableRowComponent = React.forwardRef(
         );
 
         return (
-            <BaseRow
-                ref={handleRowRef}
-                attributes={getDraggableRowAttributes}
-                row={row}
-                style={draggableStyle}
-                table={table}
-                {...restProps}
-            />
+            <DraggableRowContext.Provider value={dragHandleContext}>
+                <BaseRow
+                    ref={handleRowRef}
+                    attributes={getDraggableRowAttributes}
+                    row={row}
+                    style={draggableStyle}
+                    table={table}
+                    {...restProps}
+                />
+            </DraggableRowContext.Provider>
         );
     },
 ) as (<TData, TScrollElement extends Element | Window = HTMLDivElement>(
