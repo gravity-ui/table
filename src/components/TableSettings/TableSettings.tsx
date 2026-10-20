@@ -32,15 +32,15 @@ export interface TableSettingsOptions {
     searchPlaceholder?: string;
 }
 
+interface TableSettingsState {
+    visibilityState: VisibilityState;
+    columnOrder: string[];
+}
+
 export interface TableSettingsProps<TData> extends TableSettingsOptions {
     table: Table<TData>;
-    onSettingsApply?: ({
-        visibilityState,
-        columnOrder,
-    }: {
-        visibilityState: VisibilityState;
-        columnOrder: string[];
-    }) => void;
+    onSettingsApply?: (settings: TableSettingsState) => void;
+    onSettingsReset?: (settings: TableSettingsState) => void;
 }
 
 const POPUP_PLACEMENT: PopupPlacement = ['bottom-end', 'bottom', 'top-end', 'top', 'left', 'right'];
@@ -54,6 +54,7 @@ export const TableSettings = <TData extends unknown>({
     enableSearch = false,
     searchPlaceholder = '',
     onSettingsApply,
+    onSettingsReset,
 }: TableSettingsProps<TData>) => {
     const anchorRef = React.useRef<HTMLButtonElement>(null);
     const [open, setOpen] = React.useState<boolean>(false);
@@ -159,6 +160,21 @@ export const TableSettings = <TData extends unknown>({
         setSearch('');
     };
 
+    const resetToInitial = () => {
+        const initialVisibility = table.initialState.columnVisibility ?? {};
+        const initialOrder = getInitialOrderItems(
+            filteredColumns,
+            table.initialState.columnOrder ?? [],
+        );
+
+        setVisibilityState(initialVisibility);
+        setOrderState(initialOrder);
+        onSettingsReset?.({
+            visibilityState: initialVisibility,
+            columnOrder: orderStateToColumnOrder(initialOrder),
+        });
+    };
+
     const cancelEditing = () => {
         setOpen(false);
         resetSettings();
@@ -248,11 +264,14 @@ export const TableSettings = <TData extends unknown>({
                 </div>
                 <Divider />
                 {!emptyResult && (
-                    <div className={b('popover-actions')}>
-                        <Button view="action" size="m" onClick={applyNewSettings} width="max">
+                    <Flex gap="2" className={b('popover-actions')}>
+                        <Button view="normal" size="l" onClick={resetToInitial} width="max">
+                            {i18n('button_reset')}
+                        </Button>
+                        <Button view="action" size="l" onClick={applyNewSettings} width="max">
                             {i18n('button_apply')}
                         </Button>
-                    </div>
+                    </Flex>
                 )}
             </Popup>
             <Button view="flat-secondary" size="m" ref={anchorRef} onClick={togglePopup}>
