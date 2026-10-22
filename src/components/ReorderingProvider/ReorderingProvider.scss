@@ -7,6 +7,14 @@ $dragHandleBlock: '.#{variables.$ns}drag-handle';
     position: relative;
 
     &[data-draggable='true'] {
+        &[data-drag-without-handle='true'] {
+            cursor: grab;
+
+            &[data-dragging='true'] {
+                cursor: grabbing;
+            }
+        }
+
         &:not([data-drag-active='true']):hover {
             #{$dragHandleBlock} {
                 z-index: 1;

@@ -13,10 +13,13 @@ import type {BaseHeaderRowProps} from '../BaseHeaderRow';
 import {BaseHeaderRow} from '../BaseHeaderRow';
 import type {BaseRowProps} from '../BaseRow';
 import {BaseRow} from '../BaseRow';
+import {ColumnReorderingContext} from '../ColumnReorderingContext';
 import {LastSelectedRowContextProvider} from '../LastSelectedRowContext';
 import {SortableListContext} from '../SortableListContext';
 
 import {b} from './BaseTable.classname';
+import {useTableVirtualization} from './hooks/useTableVirtualization';
+import type {CanDeferOffscreenCellContent} from './types';
 
 import './BaseTable.scss';
 
@@ -32,6 +35,12 @@ export interface BaseTableProps<TData, TScrollElement extends Element | Window =
     bodyClassName?: string;
     /** Ref for the `<tbody>` element */
     bodyRef?: React.Ref<HTMLTableSectionElement>;
+    /**
+     * Allows first-paint deferral for horizontally offscreen cell content while adaptive row
+     * virtualization realizes a row. Return `true` only for passive content whose delayed mount
+     * cannot affect row or column geometry, focus, accessibility, or application side effects.
+     */
+    canDeferOffscreenCellContent?: CanDeferOffscreenCellContent<TData>;
     /** HTML attributes for the `<td>` elements inside `<tbody>` */
     cellAttributes?: BaseRowProps<TData>['cellAttributes'];
     /** CSS classes for the `<td>` elements inside `<tbody>` */
@@ -123,6 +132,7 @@ export const BaseTable = React.forwardRef(
             bodyAttributes,
             bodyClassName,
             bodyRef,
+            canDeferOffscreenCellContent,
             cellAttributes,
             cellClassName,
             className,
@@ -166,9 +176,11 @@ export const BaseTable = React.forwardRef(
         ref: React.Ref<HTMLTableElement>,
     ) => {
         const draggableContext = React.useContext(SortableListContext);
+        const columnReorderingContext = React.useContext(ColumnReorderingContext);
         const draggingRowIndex = draggableContext?.activeItemIndex ?? -1;
+        const isColumnDragActive = Boolean(columnReorderingContext?.activeColumnId);
 
-        const {rows, rowsById} = table.getRowModel();
+        const {flatRows, rows} = table.getRowModel();
 
         const ariaRowIndexMap = React.useMemo(() => {
             return getAriaRowIndexMap(rows);
@@ -179,7 +191,7 @@ export const BaseTable = React.forwardRef(
 
         const colCount = table.getVisibleLeafColumns().length;
         const headerRowCount = headerGroups.length;
-        const bodyRowCount = Object.keys(rowsById).length;
+        const bodyRowCount = flatRows.length;
 
         const footerRowCount =
             (withFooter &&
@@ -187,7 +199,25 @@ export const BaseTable = React.forwardRef(
             0;
 
         const rowCount = bodyRowCount + headerRowCount + footerRowCount;
-        const bodyRows = rowVirtualizer?.getVirtualItems() || rows;
+        const {
+            bodyRows,
+            bodyStyle,
+            getRowVirtualizationProps,
+            headerRenderVersion,
+            resolvedBodyRef,
+            virtualizationCoverage,
+        } = useTableVirtualization({
+            bodyRef,
+            bodyStyle: bodyAttributes?.style,
+            canDeferOffscreenCellContent,
+            columnDragActive: isColumnDragActive,
+            draggingRowIndex,
+            getIsCustomRow,
+            getIsGroupHeaderRow,
+            rows,
+            rowVirtualizer,
+            table,
+        });
 
         const renderEmptyContent = () => {
             if (!emptyContent) {
@@ -232,9 +262,14 @@ export const BaseTable = React.forwardRef(
                         : undefined;
 
                 const virtualItem = rowVirtualizer ? (virtualItemOrRow as VirtualItem) : undefined;
-                const key = virtualItem?.key ?? row.id;
+                const {
+                    deferred,
+                    key,
+                    rowProps: virtualizationRowProps,
+                } = getRowVirtualizationProps(row, virtualItem, rowIndex);
 
                 const rowProps: BaseRowProps<TData, TScrollElement> = {
+                    ...virtualizationRowProps,
                     cellClassName,
                     className: rowClassName,
                     getGroupTitle,
@@ -248,9 +283,7 @@ export const BaseTable = React.forwardRef(
                     renderGroupHeader,
                     renderGroupHeaderRowContent,
                     row,
-                    rowVirtualizer,
                     table,
-                    virtualItem,
                     style,
                     'aria-rowindex': headerRowCount + ariaRowIndexMap[row.id],
                     'aria-selected': table.options.enableRowSelection
@@ -258,7 +291,7 @@ export const BaseTable = React.forwardRef(
                         : undefined,
                 };
 
-                if (draggableContext) {
+                if (draggableContext && !deferred) {
                     return <BaseDraggableRow key={key} {...rowProps} />;
                 }
 
@@ -272,6 +305,7 @@ export const BaseTable = React.forwardRef(
                     ref={ref}
                     className={b({'with-row-virtualization': Boolean(rowVirtualizer)}, className)}
                     data-dragging-row-index={draggingRowIndex > -1 ? draggingRowIndex : undefined}
+                    data-column-drag-active={isColumnDragActive || undefined}
                     aria-colcount={colCount > 0 ? colCount : undefined}
                     aria-rowcount={rowCount > 0 ? rowCount : undefined}
                     aria-multiselectable={getAriaMultiselectable(table)}
@@ -289,6 +323,7 @@ export const BaseTable = React.forwardRef(
                                     cellClassName={headerCellClassName}
                                     className={headerRowClassName}
                                     headerGroup={headerGroup}
+                                    tableRenderVersion={headerRenderVersion}
                                     parentHeaderGroup={headerGroups[index - 1]}
                                     renderHeaderCellContent={renderHeaderCellContent}
                                     renderResizeHandle={renderResizeHandle}
@@ -303,13 +338,11 @@ export const BaseTable = React.forwardRef(
                         </thead>
                     )}
                     <tbody
-                        ref={bodyRef}
+                        ref={resolvedBodyRef}
                         className={b('body', bodyClassName)}
                         {...bodyAttributes}
-                        style={{
-                            height: bodyRows.length ? rowVirtualizer?.getTotalSize() : undefined,
-                            ...bodyAttributes?.style,
-                        }}
+                        data-virtualization-coverage={virtualizationCoverage}
+                        style={bodyStyle}
                     >
                         {bodyRows.length ? renderBodyRows() : renderEmptyContent()}
                     </tbody>

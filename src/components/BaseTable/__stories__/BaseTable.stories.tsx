@@ -2,6 +2,7 @@ import type {Meta, StoryObj} from '@storybook/react';
 
 import {BaseTable} from '../index';
 
+import {AdaptiveVirtualizationStory} from './stories/AdaptiveVirtualizationStory';
 import {ColumnPinningStory} from './stories/ColumnPinningStory';
 import {ColumnReorderingStory} from './stories/ColumnReorderingStory';
 import {ColumnReorderingWithPinningStory} from './stories/ColumnReorderingWithPinningStory';
@@ -16,8 +17,10 @@ import {GroupingWithVirtualizationStory} from './stories/GroupingWithVirtualizat
 import {HeaderGroupsStory} from './stories/HeaderGroupsStory';
 import {ReorderingStory} from './stories/ReorderingStory';
 import {ReorderingTreeStory} from './stories/ReorderingTreeStory';
+import {ReorderingTreeWithVirtualizationStory} from './stories/ReorderingTreeWithVirtualizationStory';
 import {ReorderingWithVirtualizationStory} from './stories/ReorderingWithVirtualizationStory';
 import {ResizingStory} from './stories/ResizingStory';
+import {RowAndColumnReorderingStory} from './stories/RowAndColumnReorderingStory';
 import {SortingStory} from './stories/SortingStory';
 import {StickyHeaderStory} from './stories/StickyHeaderStory';
 import {TreeStory} from './stories/TreeStory';
@@ -82,8 +85,24 @@ export const Reordering: StoryObj<typeof ReorderingStory> = {
     render: ReorderingStory,
 };
 
+export const ReorderingWithoutDragHandle: StoryObj<typeof ReorderingStory> = {
+    render: ReorderingStory,
+    args: {
+        dragWithoutHandle: true,
+    },
+};
+
 export const ReorderingTree: StoryObj<typeof ReorderingTreeStory> = {
     render: ReorderingTreeStory,
+};
+
+export const HeavyTableWithTreeReorderingAndVirtualization: StoryObj<
+    typeof ReorderingTreeWithVirtualizationStory
+> = {
+    name: 'Heavy table with tree reordering and virtualization',
+    args: {autoScroll: true},
+    render: ReorderingTreeWithVirtualizationStory,
+    tags: ['browser-regression'],
 };
 
 export const ColumnReordering: StoryObj<typeof ColumnReorderingStory> = {
@@ -94,8 +113,18 @@ export const ColumnReorderingWithPinning: StoryObj<typeof ColumnReorderingWithPi
     render: ColumnReorderingWithPinningStory,
 };
 
+export const RowAndColumnReordering: StoryObj<typeof RowAndColumnReorderingStory> = {
+    render: RowAndColumnReorderingStory,
+};
+
 export const Virtualization: StoryObj<typeof VirtualizationStory> = {
     render: VirtualizationStory,
+};
+
+export const HeavyTableWithAdaptiveVirtualization: StoryObj<typeof AdaptiveVirtualizationStory> = {
+    name: 'Heavy table with adaptive virtualization',
+    render: AdaptiveVirtualizationStory,
+    tags: ['browser-regression'],
 };
 
 export const WindowVirtualization: StoryObj<typeof WindowVirtualizationStory> = {

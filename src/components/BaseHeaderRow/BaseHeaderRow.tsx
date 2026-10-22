@@ -10,6 +10,7 @@ import {b} from '../BaseTable/BaseTable.classname';
 import {ColumnReorderingContext} from '../ColumnReorderingContext';
 
 import {getCanReorderHeader} from './utils/getCanReorderHeader';
+import {shouldSkipHeaderRender} from './utils/shouldSkipHeaderRender';
 
 export interface BaseHeaderRowProps<TData, TValue = unknown>
     extends Omit<React.HTMLAttributes<HTMLTableRowElement>, 'className'> {
@@ -24,6 +25,8 @@ export interface BaseHeaderRowProps<TData, TValue = unknown>
     renderSortIndicator: BaseHeaderCellProps<TData, TValue>['renderSortIndicator'];
     resizeHandleClassName?: BaseHeaderCellProps<TData, TValue>['resizeHandleClassName'];
     sortIndicatorClassName: BaseHeaderCellProps<TData, TValue>['sortIndicatorClassName'];
+    /** @internal */
+    tableRenderVersion?: Readonly<Record<string, unknown>>;
     attributes?:
         | React.HTMLAttributes<HTMLTableRowElement>
         | ((
@@ -33,7 +36,7 @@ export interface BaseHeaderRowProps<TData, TValue = unknown>
     cellAttributes?: BaseHeaderCellProps<TData, TValue>['attributes'];
 }
 
-export const BaseHeaderRow = <TData, TValue = unknown>({
+const BaseHeaderRowComponent = <TData, TValue = unknown>({
     cellClassName,
     className: classNameProp,
     headerGroup,
@@ -43,6 +46,7 @@ export const BaseHeaderRow = <TData, TValue = unknown>({
     renderSortIndicator,
     resizeHandleClassName,
     sortIndicatorClassName,
+    tableRenderVersion: _tableRenderVersion,
     attributes: attributesProp,
     cellAttributes,
     ...restProps
@@ -93,3 +97,12 @@ export const BaseHeaderRow = <TData, TValue = unknown>({
         </tr>
     );
 };
+
+export const BaseHeaderRow = React.memo(BaseHeaderRowComponent, shouldSkipHeaderRender) as (<
+    TData,
+    TValue = unknown,
+>(
+    props: BaseHeaderRowProps<TData, TValue>,
+) => React.ReactElement) & {displayName?: string};
+
+BaseHeaderRow.displayName = 'BaseHeaderRow';

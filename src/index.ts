@@ -7,12 +7,14 @@ export {
     Table,
     TableSettings,
     SortableListContext,
+    DraggableRowContext,
     ExperimentalRowLink,
     TreeExpandableCell,
     RangedSelectionCheckbox,
 } from './components';
 export type {
     BaseTableProps,
+    DraggableRowContextValue,
     ReorderingProviderProps,
     ColumnReorderingProviderProps,
     ColumnReorderResult,
@@ -55,7 +57,8 @@ export type {
     UseColumnsAutoSizeProps,
 } from './hooks';
 
-export {getVirtualRowRangeExtractor} from './utils';
+export {getColumnAwareRowOverscan, getVirtualRowRangeExtractor} from './utils';
+export type {ColumnAwareRowOverscanOptions} from './utils';
 
 export type {
     TableAction,

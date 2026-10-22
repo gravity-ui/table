@@ -3,6 +3,7 @@ import * as React from 'react';
 import {cellDefaultWidth, headerDefaultWidth} from '../constants';
 import {createMeasureRoot} from '../utils/createMeasureRoot';
 import type {MeasureRoot} from '../utils/createMeasureRoot';
+import {disposeMeasureRoot} from '../utils/disposeMeasureRoot';
 import {renderElementForMeasure as defaultRenderElementForMeasure} from '../utils/renderElementForMeasure';
 
 export type UseMeasureCellWidthProps = {
@@ -20,23 +21,31 @@ export function useMeasureCellWidth({
         element: React.ReactNode;
         width: number;
     } | null>(null);
+    const measurementQueueRef = React.useRef(Promise.resolve());
 
     React.useEffect(() => {
         isUnmountedRef.current = false;
 
         return () => {
             isUnmountedRef.current = true;
+            const root = rootRef.current;
+            const rootPromise = rootPromiseRef.current;
+            const container = measureContainerRef.current;
 
-            if (rootRef.current) {
-                rootRef.current.unmount();
-                rootRef.current = null;
-            }
-
+            rootRef.current = null;
             rootPromiseRef.current = null;
+            lastMeasuredElementRef.current = null;
+            measureContainerRef.current = null;
 
-            if (measureContainerRef.current) {
-                document.body.removeChild(measureContainerRef.current);
-                measureContainerRef.current = null;
+            if (root) {
+                disposeMeasureRoot(root, container);
+            } else if (rootPromise) {
+                rootPromise.then(
+                    (resolvedRoot) => disposeMeasureRoot(resolvedRoot, container),
+                    () => container?.remove(),
+                );
+            } else {
+                container?.remove();
             }
         };
     }, []);
@@ -49,10 +58,8 @@ export function useMeasureCellWidth({
         if (!rootPromiseRef.current) {
             rootPromiseRef.current = createMeasureRoot(container).then((root) => {
                 // The hook may have unmounted while the React 18 client entry
-                // was being resolved; tear the orphan root down immediately.
+                // was being resolved. The cleanup attached to this promise owns disposal.
                 if (isUnmountedRef.current) {
-                    root.unmount();
-
                     return root;
                 }
 
@@ -65,9 +72,9 @@ export function useMeasureCellWidth({
         return rootPromiseRef.current;
     }, []);
 
-    return React.useCallback(
+    const measureCellWidth = React.useCallback(
         async (element: React.ReactNode, cellType: 'header' | 'cell' = 'cell') => {
-            if (element === null || element === undefined) {
+            if (isUnmountedRef.current || element === null || element === undefined) {
                 return 0;
             }
 
@@ -124,43 +131,79 @@ export function useMeasureCellWidth({
             }
 
             try {
-                const root = await ensureRoot(measureContainerRef.current);
+                const container = measureContainerRef.current;
+                const root = await ensureRoot(container);
+
+                if (isUnmountedRef.current || measureContainerRef.current !== container) {
+                    return 0;
+                }
 
                 root.render(renderElementForMeasure(element));
 
                 return new Promise<number>((resolve) => {
                     setTimeout(() => {
+                        if (isUnmountedRef.current) {
+                            resolve(0);
+                            return;
+                        }
+
                         try {
-                            const container = measureContainerRef.current;
-                            const width = container?.getBoundingClientRect().width ?? 0;
+                            const activeContainer = measureContainerRef.current;
+                            const width = activeContainer?.getBoundingClientRect().width ?? 0;
 
                             if (width === 0) {
                                 const defaultWidth =
                                     cellType === 'header' ? headerDefaultWidth : cellDefaultWidth;
 
-                                lastMeasuredElementRef.current = {element, width: defaultWidth};
                                 resolve(defaultWidth);
                             } else {
-                                lastMeasuredElementRef.current = {element, width};
                                 resolve(width);
                             }
                         } catch {
                             const defaultWidth =
                                 cellType === 'header' ? headerDefaultWidth : cellDefaultWidth;
 
-                            lastMeasuredElementRef.current = {element, width: defaultWidth};
                             resolve(defaultWidth);
+                        } finally {
+                            if (rootRef.current === root) {
+                                root.render(null);
+                            }
                         }
                     }, 0);
                 });
             } catch {
                 const defaultWidth = cellType === 'header' ? headerDefaultWidth : cellDefaultWidth;
 
-                lastMeasuredElementRef.current = {element, width: defaultWidth};
-
                 return defaultWidth;
             }
         },
         [ensureRoot, renderElementForMeasure],
+    );
+
+    return React.useCallback(
+        (element: React.ReactNode, cellType: 'header' | 'cell' = 'cell') => {
+            if (
+                element === null ||
+                element === undefined ||
+                typeof element === 'string' ||
+                typeof element === 'number' ||
+                typeof element === 'boolean'
+            ) {
+                return measureCellWidth(element, cellType);
+            }
+
+            const measurement = measurementQueueRef.current.then(
+                () => measureCellWidth(element, cellType),
+                () => measureCellWidth(element, cellType),
+            );
+
+            measurementQueueRef.current = measurement.then(
+                () => undefined,
+                () => undefined,
+            );
+
+            return measurement;
+        },
+        [measureCellWidth],
     );
 }

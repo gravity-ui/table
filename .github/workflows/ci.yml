@@ -44,3 +44,46 @@ jobs:
         run: npm ci
       - name: Unit Tests
         run: npm run test
+
+  browser_tests:
+    name: Browser Tests
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install Packages
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Build Storybook
+        run: npm run build-storybook
+      - name: Run Browser Regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 6006 --bind 127.0.0.1 --directory storybook-static &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:6006/index.html >/dev/null; then
+              break
+            fi
+            if [[ "$attempt" == 30 ]]; then
+              exit 1
+            fi
+            sleep 1
+          done
+          npm run test-storybook -- \
+            --url http://127.0.0.1:6006 \
+            --includeTags browser-regression \
+            --browsers chromium \
+            --maxWorkers 1 \
+            --testTimeout 30000 \
+            --ci

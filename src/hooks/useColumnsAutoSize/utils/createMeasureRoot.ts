@@ -3,7 +3,7 @@ import type * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 export interface MeasureRoot {
-    render(element: React.ReactElement): void;
+    render(element: React.ReactElement | null): void;
     unmount(): void;
 }
 
@@ -13,7 +13,7 @@ type CreateRoot = (container: Element | DocumentFragment) => {
 };
 
 type LegacyReactDOM = {
-    render(element: React.ReactElement, container: Element): void;
+    render(element: React.ReactElement | null, container: Element): void;
     unmountComponentAtNode(container: Element): void;
 };
 
@@ -45,7 +45,8 @@ export async function createMeasureRoot(container: HTMLElement): Promise<Measure
         const root = createRoot(container);
 
         return {
-            render: (element) => root.render(element),
+            // Measurement must observe this commit, not a pending concurrent render.
+            render: (element) => ReactDOM.flushSync(() => root.render(element)),
             unmount: () => root.unmount(),
         };
     }

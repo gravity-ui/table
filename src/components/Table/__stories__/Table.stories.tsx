@@ -10,6 +10,7 @@ import {GroupingStory} from './stories/GroupingStory';
 import {GroupingWithSelectionStory} from './stories/GroupingWithSelectionStory';
 import {ReorderingStory} from './stories/ReorderingStory';
 import {ReorderingWithVirtualizationStory} from './stories/ReorderingWithVirtualizationStory';
+import {RowAndColumnReorderingStory} from './stories/RowAndColumnReorderingStory';
 import {RowLinkStory} from './stories/RowLinkStory';
 import {SizeSStory} from './stories/SizeSStory';
 import {SortingStory} from './stories/SortingStory';
@@ -73,12 +74,23 @@ export const Reordering: StoryObj<typeof ReorderingStory> = {
     render: ReorderingStory,
 };
 
+export const ReorderingWithoutDragHandle: StoryObj<typeof ReorderingStory> = {
+    render: ReorderingStory,
+    args: {
+        dragWithoutHandle: true,
+    },
+};
+
 export const ColumnReordering: StoryObj<typeof ColumnReorderingStory> = {
     render: ColumnReorderingStory,
 };
 
 export const ColumnReorderingWithPinning: StoryObj<typeof ColumnReorderingWithPinningStory> = {
     render: ColumnReorderingWithPinningStory,
+};
+
+export const RowAndColumnReordering: StoryObj<typeof RowAndColumnReorderingStory> = {
+    render: RowAndColumnReorderingStory,
 };
 
 export const Virtualization: StoryObj<typeof VirtualizationStory> = {

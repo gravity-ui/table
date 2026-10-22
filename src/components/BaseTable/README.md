@@ -57,3 +57,10 @@ return <BaseTable table={table} />;
 | stickyHeader (`= false`)    | Makes the `<thead>` element sticky                                                                | `boolean`                                                                                                                                                                                                      |
 | withFooter (`= false`)      | Determines whether the `<tfoot>` element should be rendered                                       | `boolean`                                                                                                                                                                                                      |
 | withHeader (`= true`)       | Determines whether the `<thead>` element should be rendered                                       | `boolean`                                                                                                                                                                                                      |
+
+### Adaptive virtualization
+
+`canDeferOffscreenCellContent` lets adaptive virtualization delay horizontally offscreen passive
+cell content until its row shell is mounted. Return `true` only when delaying the cell cannot change
+geometry, focus, accessibility, or application state. Keep custom and group rows, pinned cells, and
+interactive or side-effectful content eager.

@@ -3,17 +3,22 @@ import * as React from 'react';
 import {useForkRef} from '@gravity-ui/uikit';
 import type {Row} from '@tanstack/react-table';
 
-import {useDraggableRowDepth, useDraggableRowStyle} from '../../hooks';
+import {useDraggableRowDepth} from '../../hooks/useDraggableRowDepth';
+import {useDraggableRowStyle} from '../../hooks/useDraggableRowStyle';
+import {shouldSkipVirtualizedRowRender} from '../../utils/shouldSkipVirtualizedRowRender';
 import type {BaseRowProps} from '../BaseRow';
-import {BaseRow} from '../BaseRow';
+import {BaseRow} from '../BaseRow/BaseRow';
 import {SortableListContext} from '../SortableListContext';
+
+import {DraggableRowContext} from './DraggableRowContext';
+import {useDragScrollCompensation} from './hooks/useDragScrollCompensation';
 
 export interface BaseDraggableRowProps<
     TData,
     TScrollElement extends Element | Window = HTMLDivElement,
 > extends BaseRowProps<TData, TScrollElement> {}
 
-export const BaseDraggableRow = React.forwardRef(
+const BaseDraggableRowComponent = React.forwardRef(
     <TData, TScrollElement extends Element | Window = HTMLDivElement>(
         {
             attributes: attributesProp,
@@ -27,7 +32,9 @@ export const BaseDraggableRow = React.forwardRef(
         const {
             isChildMode,
             activeItemKey,
+            isKeyboardDragging,
             targetItemIndex = -1,
+            dragWithoutHandle,
             enableNesting,
             // The `useSortable` hook is provided by `@dnd-kit/sortable` library and imported via `SortableListContext`.
             // This is a temporary solution to prevent importing the entire `@dnd-kit` library
@@ -37,17 +44,35 @@ export const BaseDraggableRow = React.forwardRef(
 
         const {
             setNodeRef,
+            setActivatorNodeRef,
+            attributes: dragHandleAttributes,
             transform = null,
             transition,
             isDragging = false,
+            listeners,
         } = useSortable?.({
             id: row.id,
         }) || {};
+        const dragHandleContext = React.useMemo(
+            () =>
+                dragHandleAttributes && setActivatorNodeRef
+                    ? {attributes: dragHandleAttributes, listeners, setActivatorNodeRef}
+                    : null,
+            [dragHandleAttributes, listeners, setActivatorNodeRef],
+        );
+        const rowNodeRef = React.useRef<HTMLTableRowElement>(null);
 
         const isDragActive = Boolean(activeItemKey);
         const isParent = isChildMode && targetItemIndex === row.index;
 
-        const handleRowRef = useForkRef(setNodeRef, ref);
+        const handleRowRef = useForkRef(setNodeRef, rowNodeRef, ref);
+
+        useDragScrollCompensation({
+            // Keyboard coordinates already include scrolling; pointer compensation would undo them.
+            enabled: isDragging && !isKeyboardDragging,
+            nodeRef: rowNodeRef,
+            renderedTransformY: transform?.y,
+        });
 
         const {isFirstChild, depth} = useDraggableRowDepth<TData>({
             row,
@@ -72,28 +97,52 @@ export const BaseDraggableRow = React.forwardRef(
                         ? attributesProp(draggableRow)
                         : attributesProp;
 
+                const handlePointerDown = (event: React.PointerEvent<HTMLTableRowElement>) => {
+                    attributes?.onPointerDown?.(event);
+
+                    if (event.defaultPrevented) {
+                        return;
+                    }
+
+                    listeners?.onPointerDown?.(event);
+                };
+
                 return {
                     ...attributes,
+                    onPointerDown: dragWithoutHandle
+                        ? handlePointerDown
+                        : attributes?.onPointerDown,
                     'data-key': draggableRow.id,
                     'data-depth': depth,
                     'data-draggable': true,
+                    'data-drag-without-handle': dragWithoutHandle || undefined,
                     'data-dragging': isDragging,
                     'data-drag-active': isDragActive,
                     'data-expanded': isDragActive && isParent,
                 };
             },
-            [attributesProp, depth, isDragging, isDragActive, isParent],
+            [
+                attributesProp,
+                depth,
+                dragWithoutHandle,
+                isDragging,
+                isDragActive,
+                isParent,
+                listeners,
+            ],
         );
 
         return (
-            <BaseRow
-                ref={handleRowRef}
-                attributes={getDraggableRowAttributes}
-                row={row}
-                style={draggableStyle}
-                table={table}
-                {...restProps}
-            />
+            <DraggableRowContext.Provider value={dragHandleContext}>
+                <BaseRow
+                    ref={handleRowRef}
+                    attributes={getDraggableRowAttributes}
+                    row={row}
+                    style={draggableStyle}
+                    table={table}
+                    {...restProps}
+                />
+            </DraggableRowContext.Provider>
         );
     },
 ) as (<TData, TScrollElement extends Element | Window = HTMLDivElement>(
@@ -101,5 +150,12 @@ export const BaseDraggableRow = React.forwardRef(
 ) => React.ReactElement) & {
     displayName: string;
 };
+
+BaseDraggableRowComponent.displayName = 'BaseDraggableRowComponent';
+
+export const BaseDraggableRow = React.memo(
+    BaseDraggableRowComponent,
+    shouldSkipVirtualizedRowRender,
+) as typeof BaseDraggableRowComponent & {displayName?: string};
 
 BaseDraggableRow.displayName = 'BaseDraggableRow';

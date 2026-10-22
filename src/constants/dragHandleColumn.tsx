@@ -7,6 +7,7 @@ export const dragHandleColumn: ColumnDef<unknown> = {
     cell: ({row}) => <DragHandle row={row} />,
     size: 32,
     minSize: 32,
+    enableColumnReordering: false,
     meta: {
         hideInSettings: true,
     },

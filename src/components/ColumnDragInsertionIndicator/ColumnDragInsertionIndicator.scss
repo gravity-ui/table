@@ -1,0 +1,15 @@
+@use '../variables';
+
+$block: '.#{variables.$ns}column-drag-insertion-indicator';
+
+#{$block} {
+    position: fixed;
+
+    pointer-events: none;
+
+    z-index: var(--gt-table-reordering-insertion-line-z-index, 2);
+
+    width: var(--gt-table-reordering-insertion-line-width, 2px);
+
+    background: var(--gt-table-reordering-insertion-line-color, #4d8bff);
+}

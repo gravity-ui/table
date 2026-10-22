@@ -392,6 +392,59 @@ const ReorderingExample = () => {
 };
 ```
 
+### Переупорядочивание без drag handle
+
+Передайте `dragWithoutHandle`, чтобы вся строка стала зоной начала перетаскивания, и не добавляйте
+`dragHandleColumn` в определения столбцов:
+
+```tsx
+const columns: ColumnDef<Person>[] = [
+  {accessorKey: 'name', header: 'Name'},
+  {accessorKey: 'age', header: 'Age'},
+];
+
+return (
+  <ReorderingProvider table={table} dragWithoutHandle onReorder={handleReorder}>
+    <Table table={table} />
+  </ReorderingProvider>
+);
+```
+
+Перетаскивание начинается после движения указателя на 8 пикселей, поэтому обычные клики по строке
+и контролам продолжают работать. Чтобы исключить пользовательскую область строки из зоны начала
+перетаскивания, вызовите `preventDefault()` в её обработчике `onPointerDown`.
+
+По умолчанию `ReorderingProvider` включает вертикальную автопрокрутку dnd-kit. Если приложение
+реализует собственную автопрокрутку во время drag-and-drop, передайте `autoScroll={false}`: две
+реализации одновременно могут конкурировать за положение скролла.
+
+### Переупорядочивание с клавиатуры и доступность
+
+`ReorderingProvider` поддерживает перетаскивание строк с клавиатуры.
+Переведите фокус на drag handle, нажмите Space или Enter для начала переноса,
+используйте стрелки для перемещения и Space или Enter для завершения. Escape отменяет перенос.
+Перетаскивание с клавиатуры действует только на строки и не меняет работу с клавиатурой в заголовках столбцов.
+
+Параметр `accessibility` позволяет настроить инструкции и объявления для скринридера, контейнер объявлений
+и восстановление фокуса средствами dnd-kit. Настройки применяются к переносу с клавиатуры и указателем.
+Вложенные провайдеры строк и столбцов используют общий DnD-контекст и настройки доступности;
+порядок провайдеров не важен.
+
+```tsx
+<ReorderingProvider
+  table={table}
+  onReorder={handleReorder}
+  accessibility={{
+    screenReaderInstructions: {
+      draggable:
+        'Нажмите Space для начала переноса, стрелки для перемещения, Enter для завершения или Escape для отмены.',
+    },
+  }}
+>
+  <Table table={table} />
+</ReorderingProvider>
+```
+
 ### Переупорядочивание столбцов
 
 Оберните таблицу в `ColumnReorderingProvider`, чтобы включить перетаскивание столбцов за их заголовки.
@@ -414,6 +467,54 @@ const ColumnReorderingExample = () => {
   return (
     <ColumnReorderingProvider table={table}>
       <Table table={table} />
+    </ColumnReorderingProvider>
+  );
+};
+```
+
+### Переупорядочивание строк и столбцов вместе
+
+Вложите `ColumnReorderingProvider` и `ReorderingProvider`, чтобы включить обе оси перетаскивания. Порядок провайдеров не важен — внутри используется один общий dnd-kit-контекст.
+
+```tsx
+import type {ColumnReorderingProviderProps, ReorderingProviderProps} from '@gravity-ui/table';
+import {ColumnReorderingProvider, ReorderingProvider, dragHandleColumn} from '@gravity-ui/table';
+
+const columns: ColumnDef<Person>[] = [
+  dragHandleColumn,
+  {accessorKey: 'name', header: 'Name'},
+  {accessorKey: 'age', header: 'Age'},
+];
+
+const CombinedReorderingExample = () => {
+  const [data, setData] = React.useState(initialData);
+  const [columnOrder, setColumnOrder] = React.useState<string[]>([]);
+
+  const table = useTable({
+    columns,
+    data,
+    getRowId: (item) => item.id,
+    state: {columnOrder},
+    onColumnOrderChange: setColumnOrder,
+  });
+
+  const handleRowReorder = React.useCallback<
+    NonNullable<ReorderingProviderProps<Person>['onReorder']>
+  >(({draggedItemKey, baseItemKey}) => {
+    // обновить массив data
+  }, []);
+
+  const handleColumnReorder = React.useCallback<
+    NonNullable<ColumnReorderingProviderProps<Person>['onReorder']>
+  >(({columnOrder}) => {
+    setColumnOrder(columnOrder);
+  }, []);
+
+  return (
+    <ColumnReorderingProvider table={table} onReorder={handleColumnReorder}>
+      <ReorderingProvider table={table} onReorder={handleRowReorder}>
+        <Table table={table} />
+      </ReorderingProvider>
     </ColumnReorderingProvider>
   );
 };
@@ -527,7 +628,79 @@ const VirtualizationExample = () => {
 };
 ```
 
-При использовании виртуализации с функцией переупорядочивания элементов также необходимо передать параметр `rangeExtractor`:
+Чтобы таблица оставалась заполненной при непрерывной прокрутке в обе стороны, включите адаптивный
+direct-DOM-режим и используйте стабильные семантические ключи. Один и тот же ключ должен обозначать
+строку до и после иммутабельного переупорядочивания или переноса в другого родителя:
+
+```tsx
+import {getColumnAwareRowOverscan} from '@gravity-ui/table';
+
+const rows = table.getRowModel().rows;
+const columnCount = table.getVisibleLeafColumns().length;
+
+const getItemKey = React.useCallback(
+  (index: number) => rows[index]?.id ?? `missing:${index}`,
+  [rows],
+);
+
+const rowVirtualizer = useRowVirtualizer({
+  adaptiveFlushSync: true,
+  count: rows.length,
+  directDomUpdates: true,
+  directDomUpdatesMode: 'position',
+  estimateSize: () => 40,
+  getItemKey,
+  getScrollElement: () => containerRef.current,
+  overscan: getColumnAwareRowOverscan(columnCount),
+});
+```
+
+`adaptiveFlushSync` поддерживает заранее смонтированный диапазон и синхронно добавляет только ещё
+не покрытую видимую область. С `directDomUpdates` виртуализатор обновляет позиции строк и размер
+`tbody` без React-рендера на каждое событие прокрутки. Для строк таблицы используйте режим
+`position`, если окружающей раскладке не нужны transforms. Сохраняйте стабильными `getRowId` и
+`getItemKey`, а `count` вычисляйте из актуальной плоской модели строк после раскрытия, сворачивания,
+переупорядочивания или смены родителя.
+Произвольный пользовательский `rangeExtractor` остаётся главным источником диапазона и отключает
+адаптивное планирование окна.
+
+`getColumnAwareRowOverscan(columnCount, options?)` уменьшает базовый запас строк по мере роста
+количества колонок. По умолчанию функция делит бюджет в 240 ячеек на число колонок, округляет
+результат вниз и ограничивает его диапазоном от 4 до 24 строк. Используйте
+`table.getVisibleLeafColumns().length`, чтобы исключить скрытые колонки и учесть закреплённые.
+Функция подходит для `useRowVirtualizer` и `useWindowRowVirtualizer`; вместо неё по-прежнему
+можно явно задать числовой `overscan`.
+
+Подберите бюджет и границы запаса с учётом стоимости отрисовки ячеек. Если приложение
+виртуализирует колонки, передайте в `renderedColumnLimit` максимальное число одновременно
+отрисовываемых колонок в строке, включая закреплённые. Функция ограничит переданное число
+колонок этим значением:
+
+```tsx
+const overscan = getColumnAwareRowOverscan(table.getVisibleLeafColumns().length, {
+  renderedColumnLimit: 16,
+  cellBudget: 320,
+  minOverscan: 4,
+  maxOverscan: 20,
+});
+```
+
+Результат — базовый запас строк, а не строгий лимит смонтированных строк или ячеек. Видимые
+строки отрисовываются дополнительно к запасу, а адаптивная прокрутка может расширять
+смонтированный диапазон.
+Все аргументы функции должны быть неотрицательными безопасными целыми числами, а `maxOverscan` —
+не меньше `minOverscan`; при некорректных значениях функция выбрасывает `RangeError`.
+Нулевое число колонок при расчёте считается равным единице.
+
+`BaseTable.canDeferOffscreenCellContent` — дополнительная оптимизация для очень широких адаптивных
+таблиц. Возвращайте `true` только для пассивного содержимого, отложенный mount которого не влияет
+на геометрию, фокус, accessibility или состояние приложения. Кастомные и групповые строки,
+закреплённые ячейки, интерактивное содержимое и код с побочными эффектами должны рендериться сразу.
+
+С диапазоном по умолчанию адаптивный `BaseTable` автоматически удерживает активную
+перетаскиваемую строку. Пользовательский `rangeExtractor` должен самостоятельно сохранять эту
+строку в диапазоне. Для переупорядочивания с неадаптивным виртуализатором сохраняйте описанный
+выше контракт семантического `getItemKey` и передавайте параметр `rangeExtractor`:
 
 ```tsx
 import {getVirtualRowRangeExtractor} from '@gravity-ui/table';

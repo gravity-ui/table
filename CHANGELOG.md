@@ -1,5 +1,87 @@
 # Changelog
 
+## [1.23.0](https://github.com/gravity-ui/table/compare/v1.22.0...v1.23.0) (2026-10-19)
+
+
+### Features
+
+* support keyboard row reordering and accessibility ([#183](https://github.com/gravity-ui/table/issues/183)) ([01dd188](https://github.com/gravity-ui/table/commit/01dd188d62f69847db15964353df88b46fa34628))
+
+## [1.22.0](https://github.com/gravity-ui/table/compare/v1.21.2...v1.22.0) (2026-10-13)
+
+
+### Features
+
+* add column-aware row overscan helper ([#181](https://github.com/gravity-ui/table/issues/181)) ([9ca6a66](https://github.com/gravity-ui/table/commit/9ca6a6637ccc49a544c6f3c757d1693c359e589e))
+
+## [1.21.2](https://github.com/gravity-ui/table/compare/v1.21.1...v1.21.2) (2026-09-29)
+
+
+### Bug Fixes
+
+* **useColumnsAutoSize:** commit measurement content synchronously ([#178](https://github.com/gravity-ui/table/issues/178)) ([36df406](https://github.com/gravity-ui/table/commit/36df406bba65ed93c276c3ecfa0bd4c02ba29cb4))
+
+## [1.21.1](https://github.com/gravity-ui/table/compare/v1.21.0...v1.21.1) (2026-09-10)
+
+
+### Bug Fixes
+
+* **BaseTable:** adaptive row virtualization improvements ([#175](https://github.com/gravity-ui/table/issues/175)) ([9aea7e3](https://github.com/gravity-ui/table/commit/9aea7e33cfed26f3842dec71b46e16feea7480f3))
+
+## [1.21.0](https://github.com/gravity-ui/table/compare/v1.20.2...v1.21.0) (2026-09-08)
+
+
+### Features
+
+* **BaseTable:** table optimization and adaptive row virtualization ([#173](https://github.com/gravity-ui/table/issues/173)) ([e858105](https://github.com/gravity-ui/table/commit/e85810547ba573ff2d9c09b13ed43a10f3de0628))
+
+## [1.20.2](https://github.com/gravity-ui/table/compare/v1.20.1...v1.20.2) (2026-08-20)
+
+
+### Bug Fixes
+
+* remove dnd-kit from simple table bundle ([#171](https://github.com/gravity-ui/table/issues/171)) ([4b81d94](https://github.com/gravity-ui/table/commit/4b81d943d54c948e8224532506d22ba8f5b3bb8e))
+
+## [1.20.1](https://github.com/gravity-ui/table/compare/v1.20.0...v1.20.1) (2026-08-07)
+
+
+### Bug Fixes
+
+* **TableDndRoot:** improve column drag mechanics ([#169](https://github.com/gravity-ui/table/issues/169)) ([219c66a](https://github.com/gravity-ui/table/commit/219c66a9f24b065e7971e18829bd4880dcc6cb2d))
+
+## [1.20.0](https://github.com/gravity-ui/table/compare/v1.19.0...v1.20.0) (2026-07-30)
+
+
+### Features
+
+* **BaseTable:** drag without drag handle ([#167](https://github.com/gravity-ui/table/issues/167)) ([3d49236](https://github.com/gravity-ui/table/commit/3d492364ddc3c3105f259ce61dfb8a061585bd92))
+
+## [1.19.0](https://github.com/gravity-ui/table/compare/v1.18.1...v1.19.0) (2026-07-28)
+
+
+### Features
+
+* **RowActions:** widen TableAction.text from string to ReactNode ([#165](https://github.com/gravity-ui/table/issues/165)) ([d71a1a7](https://github.com/gravity-ui/table/commit/d71a1a713547d907acecdd3277bb906c68a75d80))
+
+## [1.18.1](https://github.com/gravity-ui/table/compare/v1.18.0...v1.18.1) (2026-07-22)
+
+
+### Bug Fixes
+
+* **ColumnReorderingProvider:** support using both row and column reordering ([#158](https://github.com/gravity-ui/table/issues/158)) ([5fb6c2d](https://github.com/gravity-ui/table/commit/5fb6c2ddb74fef6bbce4bc79a51082ef976a672b))
+
+## [1.18.0](https://github.com/gravity-ui/table/compare/v1.17.0...v1.18.0) (2026-07-21)
+
+
+### Features
+
+* adds ability to recalculate columns sizes on its amount change ([#163](https://github.com/gravity-ui/table/issues/163)) ([fd55464](https://github.com/gravity-ui/table/commit/fd55464d59150ede3b8764e20bc31a667be85cbb))
+
+
+### Bug Fixes
+
+* **RowActions:** clip menu content to popup border radius ([#161](https://github.com/gravity-ui/table/issues/161)) ([309879d](https://github.com/gravity-ui/table/commit/309879da70f7c84e7f8095d7989cca706a1570ef))
+
 ## [1.17.0](https://github.com/gravity-ui/table/compare/v1.16.0...v1.17.0) (2026-07-16)
 
 

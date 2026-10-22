@@ -16,4 +16,18 @@ $headerCellBlock: '#{$tableBlock}__header-cell';
     &[data-drag-active='true'] {
         cursor: grabbing;
     }
+
+    &[data-dragging='true'] {
+        pointer-events: none;
+    }
+
+    &[data-drag-active='true']:hover {
+        * {
+            pointer-events: none;
+        }
+    }
+}
+
+#{$tableBlock}[data-column-drag-active='true'] {
+    pointer-events: none;
 }

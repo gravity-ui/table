@@ -1,0 +1,1 @@
+export const ROW_DRAG_ACTIVATION_DISTANCE = 8;
