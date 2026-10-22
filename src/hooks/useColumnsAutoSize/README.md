@@ -215,3 +215,28 @@ experimentalUseColumnsAutoSize({
   experimentalRenderElementForMeasure,
 });
 ```
+
+### Restoring measured widths after unmount
+
+Keep measured widths in the owner of the table, above the subtree that unmounts:
+
+```tsx
+const {columnsWithAutoSizes, setTableInstance, isMeasuring} = experimentalUseColumnsAutoSize({
+  columns,
+  initialColumnWidths: savedWidths,
+  onColumnWidthsChange: saveWidths,
+  options: {measureOnce: true},
+});
+```
+
+`initialColumnWidths` is read once on mount. Only finite positive widths of active
+columns are restored. When all columns have restored or predefined widths,
+`isMeasuring` is false on the first render, including when there are no rows yet.
+With `measureOnce`, restored columns are not measured again; newly added columns
+are measured without remeasuring the restored ones. Without `measureOnce`, restored
+widths are shown immediately and may be refreshed by subsequent measurements.
+
+`onColumnWidthsChange` receives complete measurement results, including restored
+widths on mount. Keep user-resized widths separately in TanStack `columnSizing`;
+they retain priority over auto widths. Remount the hook without the saved widths
+when the column format, font, or other measurement inputs change.

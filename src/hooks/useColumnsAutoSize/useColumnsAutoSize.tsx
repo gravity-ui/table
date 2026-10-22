@@ -18,20 +18,51 @@ import {setColumnAutoSizes} from './utils/setColumnAutoSizes';
 export type UseColumnsAutoSizeProps<TData extends unknown> = {
     columns: ColumnDef<TData>[];
     options?: UseColumnsAutoSizeOptions;
+    /** Measured widths to restore on mount, keyed by column ID. */
+    initialColumnWidths?: Record<string, number>;
+    /** Called when a complete set of measured widths is available. */
+    onColumnWidthsChange?: (columnWidths: Record<string, number>) => void;
 } & UseMeasureCellWidthProps;
 
 export function useColumnsAutoSize<TData extends unknown>({
     columns,
     options,
     renderElementForMeasure,
+    initialColumnWidths,
+    onColumnWidthsChange,
 }: UseColumnsAutoSizeProps<TData>) {
-    const [columnWidths, setColumnWidths] = React.useState<Record<string, number>>({});
-    const [isMeasuring, setIsMeasuring] = React.useState<boolean>(true);
+    const [columnWidths, setColumnWidths] = React.useState<Record<string, number>>(() => {
+        const widths: Record<string, number> = {};
+        for (const column of columns) {
+            const id = column.id || ('accessorKey' in column && String(column.accessorKey)) || '';
+            const width = initialColumnWidths?.[id];
+            if (width !== undefined && Number.isFinite(width) && width > 0) widths[id] = width;
+        }
+        return widths;
+    });
+    const [isMeasuring, setIsMeasuring] = React.useState<boolean>(
+        () =>
+            initialColumnWidths === undefined ||
+            columns.some((column) => {
+                const id =
+                    column.id || ('accessorKey' in column && String(column.accessorKey)) || '';
+                return (
+                    columnWidths[id] === undefined &&
+                    !(options?.respectExistingWidths !== false && hasDefinedWidth(column))
+                );
+            }),
+    );
+    const onColumnWidthsChangeRef = React.useRef(onColumnWidthsChange);
+    onColumnWidthsChangeRef.current = onColumnWidthsChange;
+
+    React.useEffect(() => {
+        if (!isMeasuring) onColumnWidthsChangeRef.current?.(columnWidths);
+    }, [columnWidths, isMeasuring]);
     const [tableInstance, setTableInstance] = React.useState<ReturnType<
         typeof useTable<TData>
     > | null>(null);
 
-    const measuredColumnIdsRef = React.useRef<Set<string>>(new Set());
+    const measuredColumnIdsRef = React.useRef<Set<string>>(new Set(Object.keys(columnWidths)));
 
     const rows = tableInstance?.getRowModel().rows ?? emptyRows;
 
@@ -64,6 +95,8 @@ export function useColumnsAutoSize<TData extends unknown>({
                     measureHeaderText = true,
                     respectExistingWidths = true,
                     respectResizedWidths = true,
+                    measureOnce = false,
+                    previousColumnWidths,
                 }: CalculateColumnWidthsArgs<TData>) => {
                     const newWidths: Record<string, number> = {};
 
@@ -94,6 +127,11 @@ export function useColumnsAutoSize<TData extends unknown>({
                                 newWidths[id] = column.minSize;
                             }
 
+                            continue;
+                        }
+
+                        if (measureOnce && previousColumnWidths[id] !== undefined) {
+                            newWidths[id] = previousColumnWidths[id];
                             continue;
                         }
 
@@ -171,6 +209,7 @@ export function useColumnsAutoSize<TData extends unknown>({
             sampledRows,
             tableInstance,
             ...options,
+            previousColumnWidths: columnWidths,
         });
     }, [columnSizing, rowsDataKey, columnsKey]);
 
