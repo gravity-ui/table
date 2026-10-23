@@ -216,27 +216,28 @@ experimentalUseColumnsAutoSize({
 });
 ```
 
-### Restoring measured widths after unmount
+### Controlled auto widths
 
-Keep measured widths in the owner of the table, above the subtree that unmounts:
+Pass `columnWidths` and `onChangeColumnWidths` to keep measured widths in the owner
+of a table. Updated `columnWidths` props are applied on every render. Without both
+props, the hook manages widths internally; an optional `onChangeColumnWidths`
+callback still receives updates in uncontrolled mode.
 
 ```tsx
+const [columnWidths, setColumnWidths] = React.useState<Record<string, number>>({});
 const {columnsWithAutoSizes, setTableInstance, isMeasuring} = experimentalUseColumnsAutoSize({
   columns,
-  initialColumnWidths: savedWidths,
-  onColumnWidthsChange: saveWidths,
+  columnWidths,
+  onChangeColumnWidths: setColumnWidths,
   options: {measureOnce: true},
 });
 ```
 
-`initialColumnWidths` is read once on mount. Only finite positive widths of active
-columns are restored. When all columns have restored or predefined widths,
-`isMeasuring` is false on the first render, including when there are no rows yet.
-With `measureOnce`, restored columns are not measured again; newly added columns
-are measured without remeasuring the restored ones. Without `measureOnce`, restored
-widths are shown immediately and may be refreshed by subsequent measurements.
-
-`onColumnWidthsChange` receives complete measurement results, including restored
-widths on mount. Keep user-resized widths separately in TanStack `columnSizing`;
-they retain priority over auto widths. Remount the hook without the saved widths
-when the column format, font, or other measurement inputs change.
+Keep this state above the subtree that unmounts to preserve measured widths.
+When all columns have valid controlled or predefined widths, `isMeasuring` is false
+on the first render, even without rows. With `measureOnce`, only missing widths
+are measured. Removed columns and invalid widths are excluded. User-resized
+TanStack `columnSizing` and predefined widths retain priority over auto widths.
+Callbacks are emitted for changes, not simply because the table mounts or a
+callback prop changes. The callback requests an update in controlled mode: only
+new `columnWidths` props change the rendered widths.

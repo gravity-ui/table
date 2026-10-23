@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import type {ColumnDef} from '@tanstack/react-table';
 import {act, renderHook} from '@testing-library/react';
 
@@ -30,103 +32,168 @@ afterEach(() => {
     jest.useRealTimers();
 });
 
-test('restores widths before the first render, without needing rows or measurement', () => {
-    const onColumnWidthsChange = jest.fn();
+test('uses controlled widths immediately without rows, measurements, or mount callbacks', () => {
+    const onChangeColumnWidths = jest.fn();
     const {result} = renderHook(() =>
         useColumnsAutoSize({
             columns,
-            initialColumnWidths: {name: 240, removed: 100},
-            onColumnWidthsChange,
+            columnWidths: {name: 240},
+            onChangeColumnWidths,
             options: {measureOnce: true},
         }),
     );
-
     expect(result.current.isMeasuring).toBe(false);
     expect(result.current.columnWidths).toEqual({name: 240});
     expect(result.current.columnsWithAutoSizes[0].size).toBe(240);
-    expect(onColumnWidthsChange).toHaveBeenCalledWith({name: 240});
+    expect(onChangeColumnWidths).not.toHaveBeenCalled();
     expect(measure).not.toHaveBeenCalled();
 });
 
-test('measureOnce skips restored columns when another column is added', async () => {
-    const onColumnWidthsChange = jest.fn();
+test('applies new controlled props after mount even with measureOnce', () => {
+    const onChangeColumnWidths = jest.fn();
+    const {result, rerender} = renderHook(
+        ({width}) =>
+            useColumnsAutoSize({
+                columns,
+                columnWidths: {name: width},
+                onChangeColumnWidths,
+                options: {measureOnce: true},
+            }),
+        {initialProps: {width: 240}},
+    );
+    rerender({width: 500});
+    expect(result.current.columnsWithAutoSizes[0].size).toBe(500);
+    expect(onChangeColumnWidths).not.toHaveBeenCalled();
+});
+
+test('updates internal widths and notifies the callback in uncontrolled mode', async () => {
+    const onChangeColumnWidths = jest.fn();
+    const {result} = renderHook(() => useColumnsAutoSize({columns, onChangeColumnWidths}));
+    act(() => result.current.setTableInstance(table()));
+    await act(async () => {
+        jest.advanceTimersByTime(100);
+    });
+    expect(result.current.columnWidths).toEqual({name: 144});
+    expect(onChangeColumnWidths).toHaveBeenCalledTimes(1);
+    expect(onChangeColumnWidths).toHaveBeenCalledWith({name: 144});
+});
+
+test('requests controlled changes without replacing the supplied widths internally', async () => {
+    const onChangeColumnWidths = jest.fn();
     const {result} = renderHook(() =>
         useColumnsAutoSize({
-            columns: [...columns, {id: 'value', header: 'Value'}],
-            initialColumnWidths: {name: 240},
-            onColumnWidthsChange,
-            options: {measureOnce: true},
+            columns,
+            columnWidths: {name: 240},
+            onChangeColumnWidths,
         }),
     );
+    act(() => result.current.setTableInstance(table()));
+    await act(async () => {
+        jest.advanceTimersByTime(100);
+    });
+    expect(onChangeColumnWidths).toHaveBeenLastCalledWith({name: 144});
+    expect(result.current.columnWidths).toEqual({name: 240});
+    expect(result.current.columnsWithAutoSizes[0].size).toBe(240);
+});
 
+test('measureOnce only measures missing columns and accepts the owner update', async () => {
+    const {result} = renderHook(() => {
+        const [columnWidths, onChangeColumnWidths] = React.useState<Record<string, number>>({
+            name: 240,
+        });
+        return useColumnsAutoSize({
+            columns: [...columns, {id: 'value', header: 'Value'}],
+            columnWidths,
+            onChangeColumnWidths,
+            options: {measureOnce: true},
+        });
+    });
     expect(result.current.isMeasuring).toBe(true);
     act(() => result.current.setTableInstance(table()));
     await act(async () => {
         jest.advanceTimersByTime(100);
     });
-
     expect(result.current.isMeasuring).toBe(false);
-    expect(result.current.columnWidths.name).toBe(240);
-    expect(result.current.columnWidths.value).toBe(144);
+    expect(result.current.columnWidths).toEqual({name: 240, value: 144});
     expect(measure).toHaveBeenCalledTimes(2);
-    expect(onColumnWidthsChange).toHaveBeenLastCalledWith({name: 240, value: 144});
 });
 
-test('restored widths are remeasured when measureOnce is disabled', async () => {
+test.each([0, -1, NaN, Infinity])('ignores invalid controlled width %s', (width) => {
     const {result} = renderHook(() =>
         useColumnsAutoSize({
             columns,
-            initialColumnWidths: {name: 240},
+            columnWidths: {name: width},
+            onChangeColumnWidths: jest.fn(),
         }),
     );
-    act(() => result.current.setTableInstance(table()));
-    await act(async () => {
-        jest.advanceTimersByTime(100);
-    });
-
-    expect(result.current.columnWidths.name).toBe(144);
-    expect(measure).toHaveBeenCalledTimes(2);
-});
-
-test.each([0, -1, NaN, Infinity])('ignores invalid restored width %s', (width) => {
-    const {result} = renderHook(() =>
-        useColumnsAutoSize({columns, initialColumnWidths: {name: width}}),
-    );
-
     expect(result.current.columnWidths).toEqual({});
     expect(result.current.isMeasuring).toBe(true);
 });
 
-test('preserves predefined and user-resized widths over restored auto widths', () => {
+test('removes obsolete widths and notifies the owner', () => {
+    const onChangeColumnWidths = jest.fn();
+    const {result} = renderHook(() =>
+        useColumnsAutoSize({
+            columns,
+            columnWidths: {name: 240, removed: 80},
+            onChangeColumnWidths,
+        }),
+    );
+    expect(result.current.columnWidths).toEqual({name: 240});
+    expect(onChangeColumnWidths).toHaveBeenCalledWith({name: 240});
+});
+
+test('preserves predefined and user-resized widths over controlled auto widths', () => {
     const {result} = renderHook(() =>
         useColumnsAutoSize({
             columns: [...columns, {id: 'fixed', size: 32}],
-            initialColumnWidths: {name: 240, fixed: 80},
+            columnWidths: {name: 240, fixed: 80},
+            onChangeColumnWidths: jest.fn(),
             options: {measureOnce: true},
         }),
     );
     act(() => result.current.setTableInstance(table({name: 360})));
-
     expect(result.current.columnsWithAutoSizes.map((column) => column.size)).toEqual([360, 32]);
     expect(measure).not.toHaveBeenCalled();
 });
 
-test('initial widths are read only on mount and callback identity does not trigger updates', () => {
+test('pending measurement uses the latest callback', async () => {
     const first = jest.fn();
     const second = jest.fn();
     const {result, rerender} = renderHook(
-        ({width, onChange}) =>
+        ({onChange}) =>
             useColumnsAutoSize({
                 columns,
-                initialColumnWidths: {name: width},
-                onColumnWidthsChange: onChange,
+                onChangeColumnWidths: onChange,
             }),
-        {initialProps: {width: 240, onChange: first}},
+        {initialProps: {onChange: first}},
     );
+    act(() => result.current.setTableInstance(table()));
+    rerender({onChange: second});
+    await act(async () => {
+        jest.advanceTimersByTime(100);
+    });
+    expect(first).not.toHaveBeenCalled();
+    expect(second).toHaveBeenCalledWith({name: 144});
+});
 
-    rerender({width: 500, onChange: second});
-
-    expect(result.current.columnWidths).toEqual({name: 240});
-    expect(first).toHaveBeenCalledTimes(1);
-    expect(second).not.toHaveBeenCalled();
+test('clearing controlled widths allows measureOnce to measure them again', async () => {
+    const onChangeColumnWidths = jest.fn();
+    const {result, rerender} = renderHook(
+        ({columnWidths}) =>
+            useColumnsAutoSize({
+                columns,
+                columnWidths,
+                onChangeColumnWidths,
+                options: {measureOnce: true},
+            }),
+        {initialProps: {columnWidths: {name: 240} as Record<string, number>}},
+    );
+    act(() => result.current.setTableInstance(table()));
+    rerender({columnWidths: {}});
+    await act(async () => {
+        jest.advanceTimersByTime(100);
+    });
+    expect(onChangeColumnWidths).toHaveBeenCalledWith({name: 144});
+    expect(measure).toHaveBeenCalledTimes(2);
 });
