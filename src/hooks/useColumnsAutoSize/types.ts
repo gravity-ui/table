@@ -23,4 +23,5 @@ export type CalculateColumnWidthsArgs<TData extends unknown> = UseColumnsAutoSiz
     measureCellWidth: ReturnType<typeof useMeasureCellWidth>;
     measurementGeneration: number;
     sampledRows: Row<TData>[];
+    previousColumnWidths: Record<string, number>;
 };
