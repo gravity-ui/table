@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.24.0](https://github.com/gravity-ui/table/compare/v1.23.0...v1.24.0) (2026-10-26)
+
+
+### Features
+
+* adds ability to recalculate columns sizes on its amount change ([875b0bb](https://github.com/gravity-ui/table/commit/875b0bb159776e04703a0d7c1e3171250e2f05df))
+* **Table:** Add ability to recalculate column sizes on unmount ([#185](https://github.com/gravity-ui/table/issues/185)) ([875b0bb](https://github.com/gravity-ui/table/commit/875b0bb159776e04703a0d7c1e3171250e2f05df))
+
 ## [1.23.0](https://github.com/gravity-ui/table/compare/v1.22.0...v1.23.0) (2026-10-19)
 
 
