@@ -215,3 +215,29 @@ experimentalUseColumnsAutoSize({
   experimentalRenderElementForMeasure,
 });
 ```
+
+### Controlled auto widths
+
+Pass `columnWidths` and `onChangeColumnWidths` to keep measured widths in the owner
+of a table. Updated `columnWidths` props are applied on every render. Without both
+props, the hook manages widths internally; an optional `onChangeColumnWidths`
+callback still receives updates in uncontrolled mode.
+
+```tsx
+const [columnWidths, setColumnWidths] = React.useState<Record<string, number>>({});
+const {columnsWithAutoSizes, setTableInstance, isMeasuring} = experimentalUseColumnsAutoSize({
+  columns,
+  columnWidths,
+  onChangeColumnWidths: setColumnWidths,
+  options: {measureOnce: true},
+});
+```
+
+Keep this state above the subtree that unmounts to preserve measured widths.
+When all columns have valid controlled or predefined widths, `isMeasuring` is false
+on the first render, even without rows. With `measureOnce`, only missing widths
+are measured. Removed columns and invalid widths are excluded. User-resized
+TanStack `columnSizing` and predefined widths retain priority over auto widths.
+Callbacks are emitted for changes, not simply because the table mounts or a
+callback prop changes. The callback requests an update in controlled mode: only
+new `columnWidths` props change the rendered widths.
