@@ -29,6 +29,7 @@ export interface TableSettingsOptions {
     sortable?: boolean;
     filterable?: boolean;
     enableSearch?: boolean;
+    enableReset?: boolean;
     searchPlaceholder?: string;
 }
 
@@ -52,6 +53,7 @@ export const TableSettings = <TData extends unknown>({
     sortable = true,
     filterable = true,
     enableSearch = false,
+    enableReset = false,
     searchPlaceholder = '',
     onSettingsApply,
     onSettingsReset,
@@ -265,10 +267,12 @@ export const TableSettings = <TData extends unknown>({
                 <Divider />
                 {!emptyResult && (
                     <Flex gap="2" className={b('popover-actions')}>
-                        <Button view="normal" size="l" onClick={resetToInitial} width="max">
-                            {i18n('button_reset')}
-                        </Button>
-                        <Button view="action" size="l" onClick={applyNewSettings} width="max">
+                        {enableReset && (
+                            <Button view="normal" size="m" onClick={resetToInitial} width="max">
+                                {i18n('button_reset')}
+                            </Button>
+                        )}
+                        <Button view="action" size="m" onClick={applyNewSettings} width="max">
                             {i18n('button_apply')}
                         </Button>
                     </Flex>
