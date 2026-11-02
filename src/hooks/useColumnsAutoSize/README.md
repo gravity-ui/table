@@ -241,3 +241,63 @@ TanStack `columnSizing` and predefined widths retain priority over auto widths.
 Callbacks are emitted for changes, not simply because the table mounts or a
 callback prop changes. The callback requests an update in controlled mode: only
 new `columnWidths` props change the rendered widths.
+
+### Lightweight measurement through column configuration
+
+Describe a column's visible text in `meta.autoSize` to measure it without mounting
+its React cell renderer. No DOM or measurement-renderer callback is required:
+
+```tsx
+const columns = React.useMemo<ColumnDef<Item>[]>(
+  () => [
+    {
+      id: 'duration',
+      accessorKey: 'duration',
+      header: 'Duration',
+      cell: ({getValue}) => <ExpensiveInteractiveCell value={getValue()} />,
+      meta: {
+        autoSize: {
+          text: (value) => formatDuration(value),
+          extraWidth: 24, // space occupied by the cell's icon/button
+        },
+      },
+    },
+  ],
+  [],
+);
+```
+
+`meta.autoSize: {}` measures the accessor's primitive value. Optional fields:
+
+- `text`: formatted text, or `(value, row) => text`. Share formatting with the real cell.
+- `extraWidth`: reserved space in px or a CSS length expression, optionally a function
+  of `(value, row)` for controls that are absent in empty cells.
+- `style` and `className`: typography/cell styles and the text class, either static
+  or functions of `(value, row)`. Numeric CSS lengths use React's px semantics.
+- `header`: text or `{text, extraWidth?, style?, className?}` for a custom React header.
+  String/number headers are inferred automatically.
+- `footer`: an array of text values or the same text descriptions for footer rows.
+
+The library creates lightweight DOM, inserts all described columns together,
+reads once per column and removes the batch. It uses the styled table's cell and
+header classes. `padding` and `headerPadding` supply horizontal spacing; cell
+`style` can override it. Columns without a description, unsupported values,
+custom React headers without a text description and broken formatters keep the
+existing React measurement path. Visible cell rendering is unchanged.
+
+Optional hook arguments:
+
+- `measurementContainerRef`: inherit fonts/theme variables from the table's parent;
+  attach this ref even while showing a loader. Defaults to `document.body`.
+- `measurementClassName`: additional table classes for the temporary container.
+- `measurementRevision`: a stable theme/style revision. Changing it refreshes even
+  `measureOnce` widths. Font loading triggers a refresh automatically.
+
+Register the table using `React.useLayoutEffect(() => setTableInstance(table),
+[table, setTableInstance])` to measure before paint. Sampling uses the current
+sorted/filtered row model. Predefined widths, user resizing, controlled widths and
+`measureOnce` retain their priority. No width cache is shared between mounts.
+
+`options.deferUpdates` defaults to `false`. Enable it to let React 18+ interrupt
+rendering real cells after measurement. React 17 applies updates normally. DOM
+measurement stays synchronous, so very large samples can still block the thread.
