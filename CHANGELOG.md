@@ -1,16 +1,5 @@
 # Changelog
 
-## Unreleased
-
-### Column auto-size migration
-
-- Auto-size width keys now consistently use TanStack column IDs. `accessorKey: 'a.b'`
-  resolves to `a_b` in both measurement paths. Update controlled width/sizing keys,
-  or specify `id: 'a.b'` explicitly to keep an existing dotted key.
-- Described DOM columns use automatic widths as their initial size without raising
-  `minSize`. Manual sizing follows explicit `minSize`/`maxSize` from the first drag
-  event. The existing React measurement path retains its auto-minimum behavior.
-
 ## [1.24.0](https://github.com/gravity-ui/table/compare/v1.23.0...v1.24.0) (2026-10-26)
 
 

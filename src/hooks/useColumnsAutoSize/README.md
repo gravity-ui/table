@@ -332,9 +332,10 @@ list; it does not run React renderers during DOM measurement.
 
 ### Column IDs and manual sizing
 
-Controlled `columnWidths` and TanStack `columnSizing` use resolved column IDs.
-A dotted accessor key such as `a.b` resolves to `a_b`, consistently in DOM and React
-measurement. Migrate old `a.b` map keys or set `id: 'a.b'` explicitly to retain them.
+Columns without `meta.autoSize` retain their existing width keys: explicit ID or
+accessor key, without normalization or a header fallback. Described DOM columns
+use TanStack IDs: `a.b` becomes `a_b` unless an explicit ID is provided.
+Nested columns are traversed only when DOM measurement is enabled.
 
 For DOM descriptions an auto width initializes `size`, but does not raise
 `minSize`: manual resizing may shrink below that width immediately, subject to

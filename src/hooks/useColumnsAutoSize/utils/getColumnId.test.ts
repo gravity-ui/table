@@ -2,26 +2,30 @@ import type {Row} from '@tanstack/react-table';
 
 import {getColumnId} from './getColumnId';
 import {getValueFromCell} from './getValueFromCell';
-import {getDefinedWidth, hasDefinedWidth} from './hasDefinedWidth';
+import {setColumnAutoSizes} from './setColumnAutoSizes';
 
-test('resolved IDs match TanStack, including explicit dotted IDs', () => {
-    expect(getColumnId({accessorKey: 'a.b'})).toBe('a_b');
-    expect(getColumnId({id: 'a.b', accessorKey: 'a.b'})).toBe('a.b');
-    expect(getColumnId({header: 'Name'})).toBe('Name');
+test('legacy IDs retain dotted keys, empty-ID fallback and ignore headers', () => {
+    expect(getColumnId({accessorKey: 'a.b'})).toBe('a.b');
+    expect(getColumnId({id: '', accessorKey: 'a.b'})).toBe('a.b');
+    expect(getColumnId({header: 'Name'})).toBe('');
+    expect(getColumnId({accessorKey: 'a.b', meta: {autoSize: {}}})).toBe('a_b');
+    expect(getColumnId({header: 'Name', meta: {autoSize: {}}})).toBe('Name');
 });
-test('only an explicit size or equal numeric bounds define a fixed width', () => {
-    expect(getDefinedWidth({id: 'value', size: 120})).toBe(120);
-    expect(getDefinedWidth({id: 'value', minSize: 100, maxSize: 100})).toBe(100);
-    expect(hasDefinedWidth({id: 'value', maxSize: 200})).toBe(false);
-    expect(getDefinedWidth({id: 'value', minSize: 10, maxSize: 200})).toBeUndefined();
+test('legacy cells read literal keys and invoke accessors with index zero', () => {
+    const original = {'a.b': 7, a: {b: 42}};
+    const getValue = jest.fn(() => 99);
+    const row = {original, index: 5, getValue} as unknown as Row<typeof original>;
+    expect(getValueFromCell(null, {accessorKey: 'a.b'}, row)).toBe(7);
+    const accessorFn = jest.fn((_value, index) => index);
+    expect(getValueFromCell(null, {id: 'v', accessorFn}, row)).toBe(0);
+    expect(getValue).not.toHaveBeenCalled();
+    expect(accessorFn).toHaveBeenCalledWith(original, 0);
 });
-test('React fallback resolves nested accessors using the same ID', () => {
-    const getValue = jest.fn(() => 42);
-    expect(
-        getValueFromCell(null, {accessorKey: 'a.b'}, {
-            original: {a: {b: 42}},
-            getValue,
-        } as unknown as Row<{a: {b: number}}>),
-    ).toBe(42);
-    expect(getValue).toHaveBeenCalledWith('a_b');
+test('legacy groups remain untouched unless recursive sizing is enabled', () => {
+    const columns = [{id: 'group', columns: [{accessorKey: 'a.b'}]}];
+    expect(setColumnAutoSizes(columns, {'a.b': 120}, {})).toEqual(columns);
+    expect(setColumnAutoSizes(columns, {'a.b': 120}, {}, true, true)[0]).toEqual({
+        id: 'group',
+        columns: [{accessorKey: 'a.b', size: 120, minSize: 120}],
+    });
 });

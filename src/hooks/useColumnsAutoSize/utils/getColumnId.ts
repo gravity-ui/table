@@ -1,6 +1,9 @@
 import type {ColumnDef} from '@tanstack/react-table';
 
 export function getColumnId<T>(column: ColumnDef<T>): string {
+    if (column.meta?.autoSize === undefined) {
+        return column.id || ('accessorKey' in column && String(column.accessorKey)) || '';
+    }
     if (column.id !== undefined) return column.id;
     if ('accessorKey' in column && column.accessorKey)
         return String(column.accessorKey).replace(/\./g, '_');

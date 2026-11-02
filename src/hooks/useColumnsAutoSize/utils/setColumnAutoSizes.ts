@@ -8,13 +8,14 @@ export function setColumnAutoSizes<TData extends unknown>(
     columnWidths: Record<string, number>,
     columnSizing: Record<string, number>,
     autoMinSize = true,
+    recursive = false,
 ): ColumnDef<TData>[] {
     if (!Object.keys(columnWidths).length) {
         return columns;
     }
 
     return columns.map((column) => {
-        if ('columns' in column && column.columns)
+        if (recursive && 'columns' in column && column.columns)
             return {
                 ...column,
                 columns: setColumnAutoSizes(
@@ -22,6 +23,7 @@ export function setColumnAutoSizes<TData extends unknown>(
                     columnWidths,
                     columnSizing,
                     autoMinSize,
+                    recursive,
                 ),
             };
         const id = getColumnId(column);

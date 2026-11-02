@@ -6,8 +6,6 @@ import type {ColumnDef, HeaderContext} from '@tanstack/react-table';
 import {useTable} from '../../useTable';
 import {cellDefaultWidth} from '../constants';
 
-import {getColumnId} from './getColumnId';
-
 export async function renderHeaderContent<TData extends unknown>(
     tableInstance: ReturnType<typeof useTable<TData>> | null,
     column: ColumnDef<TData>,
@@ -18,7 +16,7 @@ export async function renderHeaderContent<TData extends unknown>(
         }
 
         if (typeof column.header === 'function') {
-            const id = getColumnId(column);
+            const id = column.id || ('accessorKey' in column && String(column.accessorKey)) || '';
 
             const headerContext = {
                 column: {
@@ -64,6 +62,6 @@ export async function renderHeaderContent<TData extends unknown>(
 
         return column.header;
     } catch {
-        return getColumnId(column) || 'Header';
+        return column.id || ('accessorKey' in column && String(column.accessorKey)) || 'Header';
     }
 }

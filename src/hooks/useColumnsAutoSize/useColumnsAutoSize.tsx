@@ -20,7 +20,7 @@ import type {
 } from './types';
 import {getColumnId, getLeafColumns, getMeasurementColumns} from './utils/getColumnId';
 import {getValueFromCell} from './utils/getValueFromCell';
-import {getDefinedWidth, hasDefinedWidth} from './utils/hasDefinedWidth';
+import {hasDefinedWidth} from './utils/hasDefinedWidth';
 import {measureDOMColumns} from './utils/measureDOMColumns';
 import {renderHeaderContent} from './utils/renderHeaderContent';
 import {setColumnAutoSizes} from './utils/setColumnAutoSizes';
@@ -49,7 +49,14 @@ export function useColumnsAutoSize<TData extends unknown>({
     columnWidths: controlledColumnWidths,
     onChangeColumnWidths,
 }: UseColumnsAutoSizeProps<TData>) {
-    const leafColumns = React.useMemo(() => getLeafColumns(columns), [columns]);
+    const domEnabled = React.useMemo(
+        () => getLeafColumns(columns).some((column) => column.meta?.autoSize !== undefined),
+        [columns],
+    );
+    const leafColumns = React.useMemo(
+        () => (domEnabled ? getLeafColumns(columns) : columns),
+        [columns, domEnabled],
+    );
     const [rawColumnWidths, setColumnWidths] = useConditionallyControlledState(
         controlledColumnWidths,
         onChangeColumnWidths,
@@ -67,7 +74,7 @@ export function useColumnsAutoSize<TData extends unknown>({
     const hasAllWidths = leafColumns.every((column) => {
         const id = getColumnId(column);
         return (
-            !id ||
+            (domEnabled && !id) ||
             columnWidths[id] !== undefined ||
             (options?.respectExistingWidths !== false && hasDefinedWidth(column))
         );
@@ -78,7 +85,6 @@ export function useColumnsAutoSize<TData extends unknown>({
     > | null>(null);
 
     const measurementGenerationRef = React.useRef(0);
-    const domEnabled = leafColumns.some((column) => column.meta?.autoSize !== undefined);
     const domMeasurement = React.useMemo<DOMMeasurementOptions | undefined>(
         () =>
             domEnabled
@@ -440,7 +446,7 @@ export function useColumnsAutoSize<TData extends unknown>({
             const id = getColumnId(column);
             if (!id) continue;
             if (options?.respectExistingWidths !== false && hasDefinedWidth(column)) {
-                const defined = getDefinedWidth(column);
+                const defined = typeof column.size === 'number' ? column.size : column.minSize;
                 if (defined !== undefined) widths[id] = defined;
             }
             if (measured[id] !== undefined) {
@@ -533,7 +539,7 @@ export function useColumnsAutoSize<TData extends unknown>({
 
     const appliedSizing = domEnabled ? emptyColumnSizing : columnSizing;
     const columnsWithAutoSizes = React.useMemo(
-        () => setColumnAutoSizes(columns, columnWidths, appliedSizing, !domEnabled),
+        () => setColumnAutoSizes(columns, columnWidths, appliedSizing, !domEnabled, domEnabled),
         [columns, columnWidths, appliedSizing, domEnabled],
     );
 
