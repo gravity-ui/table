@@ -346,3 +346,7 @@ width as an initial minimum and releases it after a manual resize. Hook
 The Storybook **DOMMeasurementRegressionCase** has a browser regression test that
 compares widths with cloned real rendered cells in Arial, including copy buttons
 and footers, hidden mounting, ancestor scale and empty-to-data transitions.
+
+TypeScript: this feature augments TanStack `ColumnMeta` with `autoSize`. Projects
+that already declare a different type for that field must resolve the naming/type
+conflict before adopting this version.

@@ -251,7 +251,7 @@ export function useColumnsAutoSize<TData extends unknown>({
 
             const commit = () => {
                 setColumnWidths((currentWidths) => {
-                    if (isStale()) return currentWidths;
+                    if ((partial || deferUpdates) && isStale()) return currentWidths;
                     const result = partial ? {...currentWidths, ...newWidths} : newWidths;
                     // Never copy a manual width into the auto-width store.
                     if (partial)
@@ -395,7 +395,11 @@ export function useColumnsAutoSize<TData extends unknown>({
         previousSizing.current = sizing;
         const previous = lastDOMInputs.current;
         const changed = !isEqualWith(previous, inputs, (a, b) =>
-            React.isValidElement(a) || React.isValidElement(b) ? a === b : undefined,
+            React.isValidElement(a) ||
+            React.isValidElement(b) ||
+            (typeof Node !== 'undefined' && (a instanceof Node || b instanceof Node))
+                ? a === b
+                : undefined,
         );
         if (!changed && !released.length && !added.length) return;
         lastDOMInputs.current = inputs;
@@ -488,10 +492,13 @@ export function useColumnsAutoSize<TData extends unknown>({
                 partial: true,
             });
     });
+    const domEnabledRef = React.useRef(domEnabled);
+    domEnabledRef.current = domEnabled;
     const latestCalculation = React.useRef(calculateWidths);
     latestCalculation.current = calculateWidths;
     React.useEffect(
         () => () => {
+            if (!domEnabledRef.current) return;
             measurementGenerationRef.current += 1;
             latestCalculation.current.cancel();
             lastDOMInputs.current = undefined;

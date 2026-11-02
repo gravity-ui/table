@@ -8,6 +8,15 @@ import type {AutoSizeContent, DOMMeasurementOptions, UseColumnsAutoSizeOptions} 
 import {createDOMMeasureElementFactory} from './createDOMMeasureElement';
 import {getColumnId} from './getColumnId';
 
+const warnedColumns = new Set<string>();
+const isDev = () => {
+    try {
+        return process.env.NODE_ENV !== 'production';
+    } catch {
+        return false;
+    }
+};
+
 const resolve = <TData, TResult>(
     property: TResult | ((value: unknown, row: TData) => TResult),
     value: unknown,
@@ -162,10 +171,12 @@ export function measureDOMColumns<TData>({
             root.append(element);
             elements.push({id, element});
         } catch {
-            if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production')
+            if (isDev() && !warnedColumns.has(id)) {
+                warnedColumns.add(id);
                 console.warn(
                     `[table] Auto-size description for column ${id} failed; using React measurement.`,
                 );
+            }
         }
     }
     if (!elements.length) return {};

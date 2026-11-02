@@ -182,4 +182,7 @@ export const MeasureOnceColumnsChange: Story = {
     },
 };
 
-export const DOMMeasurementRegressionCase: Story = {render: () => <DOMMeasurementRegression />};
+export const DOMMeasurementRegressionCase: Story = {
+    tags: ['browser-regression'],
+    render: () => <DOMMeasurementRegression />,
+};
