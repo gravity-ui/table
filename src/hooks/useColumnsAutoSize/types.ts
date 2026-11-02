@@ -1,6 +1,6 @@
 import type * as React from 'react';
 
-import type {ColumnDef, Row, RowData} from '@tanstack/react-table';
+import type {ColumnDef, Row} from '@tanstack/react-table';
 
 import {useTable} from '../useTable';
 
@@ -40,13 +40,6 @@ export type ColumnAutoSize<TData, TValue = unknown> = {
     header?: string | number | AutoSizeContent;
     footer?: ReadonlyArray<string | number | AutoSizeContent>;
 };
-
-declare module '@tanstack/react-table' {
-    interface ColumnMeta<TData extends RowData, TValue> {
-        /** Opt into lightweight DOM sizing without mounting the cell renderer. */
-        autoSize?: ColumnAutoSize<TData, TValue>;
-    }
-}
 
 export type DOMMeasurementOptions = {
     containerRef?: React.RefObject<HTMLElement | null>;

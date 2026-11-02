@@ -22,8 +22,8 @@ test('inserts all columns before a single width read per column, inherits contex
     const container = document.createElement('section');
     document.body.append(container);
     const columns: ColumnDef<unknown>[] = [
-        {id: 'one', meta: {autoSize: {}}},
-        {id: 'two', meta: {autoSize: {}}},
+        {id: 'one', meta: {autoSize: {}} as ColumnDef<unknown>['meta']},
+        {id: 'two', meta: {autoSize: {}} as ColumnDef<unknown>['meta']},
     ];
     const read = jest
         .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
@@ -66,12 +66,14 @@ test('isolates broken text formatters and includes headers, footers and reserved
                                 throw Error('broken');
                             },
                         },
-                    },
+                    } as ColumnDef<unknown>['meta'],
                 },
                 {
                     id: 'healthy',
                     header: 'Header',
-                    meta: {autoSize: {extraWidth: 24, footer: ['Total: 42']}},
+                    meta: {
+                        autoSize: {extraWidth: 24, footer: ['Total: 42']},
+                    } as ColumnDef<unknown>['meta'],
                 },
             ],
             rows,
@@ -104,7 +106,9 @@ test('the DOM factory preserves text and React numeric style semantics', () => {
 });
 
 test('detached, hidden and zero-width containers defer instead of accepting minWidth', () => {
-    const columns: ColumnDef<unknown>[] = [{id: 'a', header: 'A', meta: {autoSize: {}}}];
+    const columns: ColumnDef<unknown>[] = [
+        {id: 'a', header: 'A', meta: {autoSize: {}} as ColumnDef<unknown>['meta']},
+    ];
     const container = document.createElement('div');
     expect(
         measureDOMColumns({
@@ -136,7 +140,7 @@ test('uses untransformed layout width and preserves function-based extra space',
     const extra = jest.fn((value: unknown) => Number(value));
     const rows = [{original: {}, getValue: () => 24}] as unknown as Row<unknown>[];
     const widths = measureDOMColumns({
-        columns: [{id: 'a', meta: {autoSize: {extraWidth: extra}}}],
+        columns: [{id: 'a', meta: {autoSize: {extraWidth: extra}} as ColumnDef<unknown>['meta']}],
         rows,
         measurement: {},
         options: {},
@@ -155,8 +159,8 @@ test('zero-width columns defer independently and meta.header works without colum
     expect(
         measureDOMColumns({
             columns: [
-                {id: 'a', meta: {autoSize: {header: 'Hidden'}}},
-                {id: 'b', meta: {autoSize: {header: 'Visible'}}},
+                {id: 'a', meta: {autoSize: {header: 'Hidden'}} as ColumnDef<unknown>['meta']},
+                {id: 'b', meta: {autoSize: {header: 'Visible'}} as ColumnDef<unknown>['meta']},
             ],
             rows: [],
             measurement: {},
@@ -183,7 +187,7 @@ test('formatter fallback does not require a process global', () => {
                                 throw Error('broken');
                             },
                         },
-                    },
+                    } as ColumnDef<unknown>['meta'],
                 },
             ],
             rows: [{original: {}, getValue: () => 1}] as unknown as Row<unknown>[],

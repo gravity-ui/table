@@ -1,7 +1,13 @@
 import type {ColumnDef} from '@tanstack/react-table';
 
+import type {ColumnAutoSize} from '../types';
+
+export function getColumnAutoSize<T>(column: ColumnDef<T>): ColumnAutoSize<T> | undefined {
+    return (column.meta as {autoSize?: ColumnAutoSize<T>} | undefined)?.autoSize;
+}
+
 export function getColumnId<T>(column: ColumnDef<T>): string {
-    if (column.meta?.autoSize === undefined) {
+    if (getColumnAutoSize(column) === undefined) {
         return column.id || ('accessorKey' in column && String(column.accessorKey)) || '';
     }
     if (column.id !== undefined) return column.id;
@@ -29,6 +35,14 @@ export function getMeasurementColumns<T>(columns: ColumnDef<T>[]) {
                 : typeof column.header === 'string'
                   ? 'text'
                   : 'custom',
-        autoSize: column.meta?.autoSize,
+        autoSize: getColumnAutoSize(column),
     }));
+}
+
+export function hasAutoSizeColumns<T>(columns: ColumnDef<T>[]): boolean {
+    return columns.some(
+        (column) =>
+            getColumnAutoSize(column) !== undefined ||
+            ('columns' in column && Boolean(column.columns && hasAutoSizeColumns(column.columns))),
+    );
 }

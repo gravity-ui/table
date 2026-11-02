@@ -5,6 +5,7 @@ import type {ColumnDef} from '@tanstack/react-table';
 
 import {Table} from '../../../components';
 import {useTable} from '../../useTable';
+import type {ColumnAutoSize} from '../types';
 import {useColumnsAutoSize} from '../useColumnsAutoSize';
 
 type Item = {value: string | number | null};
@@ -53,8 +54,8 @@ const columns: ColumnDef<Item>[] = [
                 extraWidth: (value) => (value === null || value === undefined ? 0 : 24),
                 style: font,
                 footer: [{text: total, extraWidth: 24, style: font}],
-            },
-        },
+            } satisfies ColumnAutoSize<Item>,
+        } as ColumnDef<Item>['meta'],
     },
 ];
 

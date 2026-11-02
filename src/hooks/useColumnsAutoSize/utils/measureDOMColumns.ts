@@ -6,7 +6,7 @@ import {cellDefaultWidth, headerDefaultWidth} from '../constants';
 import type {AutoSizeContent, DOMMeasurementOptions, UseColumnsAutoSizeOptions} from '../types';
 
 import {createDOMMeasureElementFactory} from './createDOMMeasureElement';
-import {getColumnId} from './getColumnId';
+import {getColumnAutoSize, getColumnId} from './getColumnId';
 
 const warnedColumns = new Set<string>();
 const isDev = () => {
@@ -91,7 +91,7 @@ export function measureDOMColumns<TData>({
         typeof value === 'object' ? value : {text: value};
     const elements: Array<{id: string; element: HTMLElement}> = [];
     for (const column of columns) {
-        const config = column.meta?.autoSize;
+        const config = getColumnAutoSize(column);
         const id = getColumnId(column);
         if (!config || !id) continue;
         try {

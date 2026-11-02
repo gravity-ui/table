@@ -1,4 +1,4 @@
-import type {Row} from '@tanstack/react-table';
+import type {ColumnDef, Row} from '@tanstack/react-table';
 
 import {getColumnId} from './getColumnId';
 import {getValueFromCell} from './getValueFromCell';
@@ -8,8 +8,12 @@ test('legacy IDs retain dotted keys, empty-ID fallback and ignore headers', () =
     expect(getColumnId({accessorKey: 'a.b'})).toBe('a.b');
     expect(getColumnId({id: '', accessorKey: 'a.b'})).toBe('a.b');
     expect(getColumnId({header: 'Name'})).toBe('');
-    expect(getColumnId({accessorKey: 'a.b', meta: {autoSize: {}}})).toBe('a_b');
-    expect(getColumnId({header: 'Name', meta: {autoSize: {}}})).toBe('Name');
+    expect(
+        getColumnId({accessorKey: 'a.b', meta: {autoSize: {}} as ColumnDef<unknown>['meta']}),
+    ).toBe('a_b');
+    expect(getColumnId({header: 'Name', meta: {autoSize: {}} as ColumnDef<unknown>['meta']})).toBe(
+        'Name',
+    );
 });
 test('legacy cells read literal keys and invoke accessors with index zero', () => {
     const original = {'a.b': 7, a: {b: 42}};

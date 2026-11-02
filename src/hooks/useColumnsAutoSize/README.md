@@ -248,6 +248,8 @@ Describe a column's visible text in `meta.autoSize` to measure it without mounti
 its React cell renderer. No DOM or measurement-renderer callback is required:
 
 ```tsx
+import type {ColumnAutoSize} from '@gravity-ui/table';
+
 const columns = React.useMemo<ColumnDef<Item>[]>(
   () => [
     {
@@ -259,8 +261,8 @@ const columns = React.useMemo<ColumnDef<Item>[]>(
         autoSize: {
           text: (value) => (typeof value === 'number' ? formatDuration(value) : '–'),
           extraWidth: 24, // space occupied by the cell's icon/button
-        },
-      },
+        } satisfies ColumnAutoSize<Item>,
+      } as ColumnDef<Item>['meta'],
     },
   ],
   [],
@@ -337,16 +339,17 @@ accessor key, without normalization or a header fallback. Described DOM columns
 use TanStack IDs: `a.b` becomes `a_b` unless an explicit ID is provided.
 Nested columns are traversed only when DOM measurement is enabled.
 
-For DOM descriptions an auto width initializes `size`, but does not raise
-`minSize`: manual resizing may shrink below that width immediately, subject to
-explicit column `minSize`/`maxSize`. The React path still applies the measured
-width as an initial minimum and releases it after a manual resize. Hook
-`minWidth`/`maxWidth` constrain automatic measurements, not manual resizing.
+When any column enables `meta.autoSize`, automatic widths initialize `size`
+without raising `minSize` for the entire table, including columns measured through
+the React fallback. Manual resizing may shrink below the measured width immediately,
+subject to explicit column `minSize`/`maxSize`. Tables without any `meta.autoSize`
+retain the legacy auto-minimum behavior. Hook `minWidth`/`maxWidth` constrain
+automatic measurements, not manual resizing.
 
 The Storybook **DOMMeasurementRegressionCase** has a browser regression test that
 compares widths with cloned real rendered cells in Arial, including copy buttons
 and footers, hidden mounting, ancestor scale and empty-to-data transitions.
 
-TypeScript: this feature augments TanStack `ColumnMeta` with `autoSize`. Projects
-that already declare a different type for that field must resolve the naming/type
-conflict before adopting this version.
+The library does not augment TanStack `ColumnMeta`. Type descriptions explicitly
+with `satisfies ColumnAutoSize<Item>` (exported by this package) for validation and
+formatter autocomplete. Existing application metadata declarations are unaffected.

@@ -13,7 +13,12 @@ jest.mock('./hooks/useMeasureCellWidth');
 type Item = {id: string; value: number};
 const formatText = jest.fn((value: unknown, _row: Item) => String(80 + Number(value)));
 const columns: ColumnDef<Item>[] = [
-    {id: 'value', accessorKey: 'value', header: 'Value', meta: {autoSize: {text: formatText}}},
+    {
+        id: 'value',
+        accessorKey: 'value',
+        header: 'Value',
+        meta: {autoSize: {text: formatText}} as ColumnDef<Item>['meta'],
+    },
 ];
 const initialData: Item[] = [{id: 'same-id', value: 1}];
 const measureReact = jest.fn(async () => 120);
@@ -98,7 +103,11 @@ test('updates data with unchanged IDs and applies min/max bounds', () => {
 test('keeps user widths and does not remeasure other columns on resize', () => {
     const defs: ColumnDef<Item>[] = [
         ...columns,
-        {id: 'other', accessorKey: 'value', meta: {autoSize: {text: formatText}}},
+        {
+            id: 'other',
+            accessorKey: 'value',
+            meta: {autoSize: {text: formatText}} as ColumnDef<Item>['meta'],
+        },
     ];
     const {result, rerender} = renderHook(({data}) => useTestTable({data, defs}), {
         initialProps: {data: initialData},
@@ -136,7 +145,11 @@ test('measureOnce waits for data, measures new columns and refreshes on a style 
     expect(formatText).toHaveBeenCalledTimes(1);
     const defs: ColumnDef<Item>[] = [
         ...columns,
-        {id: 'other', accessorKey: 'value', meta: {autoSize: {text: formatText}}},
+        {
+            id: 'other',
+            accessorKey: 'value',
+            meta: {autoSize: {text: formatText}} as ColumnDef<Item>['meta'],
+        },
     ];
     rerender({data: initialData, defs, revision: undefined});
     expect(formatText).toHaveBeenCalledTimes(2);
@@ -183,12 +196,12 @@ test('a stale React fallback cannot overwrite a newer DOM measurement', async ()
             ...columns[0],
             meta: {
                 autoSize: {
-                    text: (value) => {
+                    text: (value: unknown) => {
                         if (value === 1) throw Error('fallback');
                         return String(80 + Number(value));
                     },
                 },
-            },
+            } as ColumnDef<Item>['meta'],
         },
     ];
     const {result, rerender} = renderHook(({data}) => useTestTable({data, defs}), {
@@ -232,7 +245,11 @@ test('keeps a new described column pending until the controlled owner accepts it
     rerender({
         defs: [
             ...columns,
-            {id: 'other', accessorKey: 'value', meta: {autoSize: {text: formatText}}},
+            {
+                id: 'other',
+                accessorKey: 'value',
+                meta: {autoSize: {text: formatText}} as ColumnDef<Item>['meta'],
+            },
         ],
     });
     expect(result.current.isMeasuring).toBe(true);
@@ -371,7 +388,7 @@ test('inline cell callbacks and React header owners are excluded from the measur
                 ...columns[0],
                 cell: () => null,
                 header: header as unknown as string,
-                meta: {autoSize: {text: formatText, header: 'Value'}},
+                meta: {autoSize: {text: formatText, header: 'Value'}} as ColumnDef<Item>['meta'],
             },
         ];
     };

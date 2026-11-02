@@ -18,7 +18,12 @@ import type {
     DOMMeasurementOptions,
     UseColumnsAutoSizeOptions,
 } from './types';
-import {getColumnId, getLeafColumns, getMeasurementColumns} from './utils/getColumnId';
+import {
+    getColumnId,
+    getLeafColumns,
+    getMeasurementColumns,
+    hasAutoSizeColumns,
+} from './utils/getColumnId';
 import {getValueFromCell} from './utils/getValueFromCell';
 import {hasDefinedWidth} from './utils/hasDefinedWidth';
 import {measureDOMColumns} from './utils/measureDOMColumns';
@@ -49,10 +54,7 @@ export function useColumnsAutoSize<TData extends unknown>({
     columnWidths: controlledColumnWidths,
     onChangeColumnWidths,
 }: UseColumnsAutoSizeProps<TData>) {
-    const domEnabled = React.useMemo(
-        () => getLeafColumns(columns).some((column) => column.meta?.autoSize !== undefined),
-        [columns],
-    );
+    const domEnabled = React.useMemo(() => hasAutoSizeColumns(columns), [columns]);
     const leafColumns = React.useMemo(
         () => (domEnabled ? getLeafColumns(columns) : columns),
         [columns, domEnabled],
