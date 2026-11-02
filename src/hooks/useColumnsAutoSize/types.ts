@@ -51,7 +51,7 @@ declare module '@tanstack/react-table' {
 export type DOMMeasurementOptions = {
     containerRef?: React.RefObject<HTMLElement | null>;
     className?: string;
-    revision?: unknown;
+    revision?: string | number | boolean | null;
 };
 
 export type CalculateColumnWidthsArgs<TData extends unknown> = UseColumnsAutoSizeOptions & {
@@ -62,5 +62,5 @@ export type CalculateColumnWidthsArgs<TData extends unknown> = UseColumnsAutoSiz
     measurementGeneration: number;
     sampledRows: Row<TData>[];
     previousColumnWidths: Record<string, number>;
-    domMeasurement?: DOMMeasurementOptions;
+    partial?: boolean;
 };

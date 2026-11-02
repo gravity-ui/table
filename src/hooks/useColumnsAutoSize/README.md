@@ -254,10 +254,10 @@ const columns = React.useMemo<ColumnDef<Item>[]>(
       id: 'duration',
       accessorKey: 'duration',
       header: 'Duration',
-      cell: ({getValue}) => <ExpensiveInteractiveCell value={getValue()} />,
+      cell: ({getValue}) => <ExpensiveInteractiveCell value={getValue<number>()} />,
       meta: {
         autoSize: {
-          text: (value) => formatDuration(value),
+          text: (value) => (typeof value === 'number' ? formatDuration(value) : '–'),
           extraWidth: 24, // space occupied by the cell's icon/button
         },
       },
@@ -301,3 +301,31 @@ sorted/filtered row model. Predefined widths, user resizing, controlled widths a
 `options.deferUpdates` defaults to `false`. Enable it to let React 18+ interrupt
 rendering real cells after measurement. React 17 applies updates normally. DOM
 measurement stays synchronous, so very large samples can still block the thread.
+
+### Measurement lifecycle and invalidation
+
+Only positive layout widths are committed. Hidden or detached containers defer
+measurement and retry when layout/visibility changes; they do not finalize
+`measureOnce` at `minWidth`. CSS layout widths are used rather than transformed
+client rectangles, so an ancestor's `transform: scale(...)` does not change sizing.
+Empty tables finish loading and can size headers/footers. Header-only widths are
+refreshed when the first data arrives, even with `measureOnce`.
+
+Descriptions on leaf columns inside groups are supported. Equivalent column
+arrays, options and controlled-width records are compared structurally. Formatter
+functions are compared by identity: use stable callbacks when their behavior has
+not changed. `measurementRevision` accepts a string, number, boolean or null; use
+a primitive version key rather than an object literal for external style changes.
+
+DOM descriptions are measured synchronously. In a mixed table their widths can
+update immediately, but `isMeasuring` waits for the remaining React columns.
+React fallback requests retain the 100 ms debounce and stale results are ignored.
+Without a header or nonempty content, the existing default cell width is used.
+Resetting TanStack column sizing measures the latest data again rather than
+promoting a user's manual width to an automatic width.
+
+Measurement inherits the table's header, body, row and footer classes. Arbitrary
+custom DOM layouts still need a matching text/style description or React fallback.
+Broken text formatters and unsupported values produce a development warning before
+falling back. The numeric-style utility follows the linked React unitless-property
+list; it does not run React renderers during DOM measurement.

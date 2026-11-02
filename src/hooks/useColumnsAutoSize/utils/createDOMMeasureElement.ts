@@ -1,5 +1,6 @@
 import type * as React from 'react';
 
+// Numeric CSS rules follow React: https://github.com/facebook/react/blob/v19.0.0/packages/react-dom-bindings/src/shared/isUnitlessNumber.js
 const unitlessProperties = new Set(
     (
         'animationIterationCount aspectRatio borderImageOutset borderImageSlice borderImageWidth ' +

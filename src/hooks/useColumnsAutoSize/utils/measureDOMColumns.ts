@@ -1,8 +1,12 @@
 import type {ColumnDef, Row} from '@tanstack/react-table';
 
+import {b as base} from '../../../components/BaseTable/BaseTable.classname';
+import {b as styled} from '../../../components/Table/Table.classname';
+import {cellDefaultWidth, headerDefaultWidth} from '../constants';
 import type {AutoSizeContent, DOMMeasurementOptions, UseColumnsAutoSizeOptions} from '../types';
 
 import {createDOMMeasureElementFactory} from './createDOMMeasureElement';
+import {getColumnId} from './getColumnId';
 
 const resolve = <TData, TResult>(
     property: TResult | ((value: unknown, row: TData) => TResult),
@@ -24,11 +28,18 @@ export function measureDOMColumns<TData>({
     rows: Row<TData>[];
     measurement: DOMMeasurementOptions;
     options: Pick<UseColumnsAutoSizeOptions, 'padding' | 'headerPadding' | 'measureHeaderText'>;
-}): Record<string, number> {
+}): Record<string, number> | undefined {
+    if (!columns.length) return {};
     const container = measurement.containerRef?.current ?? document.body;
+    if (
+        !container.isConnected ||
+        (!container.getClientRects().length &&
+            container.ownerDocument.defaultView?.getComputedStyle(container).display !== 'contents')
+    )
+        return undefined;
     const createElement = createDOMMeasureElementFactory(container.ownerDocument);
     const root = createElement('div', {
-        className: `gt-table gt-styled-table ${measurement.className ?? ''}`,
+        className: `${base()} ${styled()} ${measurement.className ?? ''}`,
         style: {
             position: 'fixed',
             top: 0,
@@ -44,7 +55,7 @@ export function measureDOMColumns<TData>({
     root.setAttribute('aria-hidden', 'true');
     const createCell = (content: AutoSizeContent, kind: 'cell' | 'header-cell' | 'footer-cell') => {
         const cell = createElement('div', {
-            className: `gt-table__${kind} gt-styled-table__${kind}`,
+            className: `${base(kind)} ${styled(kind)}`,
             styleText: `padding-inline:${(kind === 'header-cell' ? (options.headerPadding ?? 24) : (options.padding ?? 16)) / 2}px`,
             style: content.style,
         });
@@ -70,10 +81,31 @@ export function measureDOMColumns<TData>({
     const elements: Array<{id: string; element: HTMLElement}> = [];
     for (const column of columns) {
         const config = column.meta?.autoSize;
-        const id = column.id || ('accessorKey' in column && String(column.accessorKey)) || '';
+        const id = getColumnId(column);
         if (!config || !id) continue;
         try {
             const element = createElement('div', {style: {width: 'max-content'}});
+            const wrap = (section: 'header' | 'body' | 'footer') => {
+                const node = createElement('div', {
+                    className: `${base(section)} ${styled(section)}`,
+                });
+                element.append(node);
+                return node;
+            };
+            const appendRow = (
+                section: HTMLElement,
+                content: AutoSizeContent,
+                kind: 'cell' | 'header-cell' | 'footer-cell',
+            ) => {
+                const rowKind =
+                    kind === 'cell' ? 'row' : kind === 'header-cell' ? 'header-row' : 'footer-row';
+                const row = createElement('div', {
+                    className: `${base(rowKind)} ${styled(rowKind)}`,
+                });
+                row.append(createCell(content, kind));
+                section.append(row);
+            };
+            let hasContent = false;
             if (options.measureHeaderText !== false && column.header !== undefined) {
                 const header = config.header ?? column.header;
                 // Arbitrary React headers still require the existing React path.
@@ -83,13 +115,13 @@ export function measureDOMColumns<TData>({
                     (typeof header !== 'object' || !('text' in header))
                 )
                     continue;
-                element.append(
-                    createCell(
-                        asContent(header as string | number | AutoSizeContent),
-                        'header-cell',
-                    ),
-                );
+                const content = asContent(header as string | number | AutoSizeContent);
+                hasContent = true;
+                if (!String(content.text).trim())
+                    element.style.minWidth = `${headerDefaultWidth + (options.headerPadding ?? 24)}px`;
+                appendRow(wrap('header'), content, 'header-cell');
             }
+            const body = wrap('body');
             for (const row of rows) {
                 const value = row.getValue(id);
                 const text =
@@ -102,34 +134,50 @@ export function measureDOMColumns<TData>({
                 ) {
                     throw new Error('A lightweight measurement requires primitive text');
                 }
-                element.append(
-                    createCell(
-                        {
-                            text: text ?? '',
-                            extraWidth: resolve(config.extraWidth, value, row.original),
-                            className: resolve(config.className, value, row.original),
-                            style: resolve(config.style, value, row.original),
-                        },
-                        'cell',
-                    ),
+                hasContent ||= Boolean(String(text ?? '').trim());
+                appendRow(
+                    body,
+                    {
+                        text: text ?? '',
+                        extraWidth: resolve(config.extraWidth, value, row.original),
+                        className: resolve(config.className, value, row.original),
+                        style: resolve(config.style, value, row.original),
+                    },
+                    'cell',
                 );
             }
-            for (const footer of config.footer ?? [])
-                element.append(createCell(asContent(footer), 'footer-cell'));
+            if (config.footer?.length) {
+                const footer = wrap('footer');
+                for (const value of config.footer) {
+                    hasContent = true;
+                    appendRow(footer, asContent(value), 'footer-cell');
+                }
+            }
+            if (!hasContent) element.style.minWidth = `${cellDefaultWidth}px`;
             root.append(element);
             elements.push({id, element});
         } catch {
-            // An unsupported value or broken formatter falls back for this column only.
+            if (process.env.NODE_ENV !== 'production')
+                console.warn(
+                    `[table] Auto-size description for column ${id} failed; using React measurement.`,
+                );
         }
     }
     if (!elements.length) return {};
     container.append(root);
     try {
+        if (!root.isConnected || !root.getClientRects().length) return undefined;
         const widths: Record<string, number> = {};
         for (const {id, element} of elements) {
             try {
-                const width = element.getBoundingClientRect().width;
-                if (Number.isFinite(width) && width >= 0) widths[id] = Math.ceil(width);
+                const layoutWidth = element.offsetWidth;
+                if (layoutWidth <= 0) return undefined;
+                // Computed CSS width is fractional and independent of ancestor transforms.
+                const width =
+                    Number.parseFloat(
+                        container.ownerDocument.defaultView?.getComputedStyle(element).width ?? '',
+                    ) || layoutWidth;
+                if (Number.isFinite(width) && width > 0) widths[id] = Math.ceil(width);
             } catch {
                 // Keep measuring the remaining columns and fall back for this one.
             }
