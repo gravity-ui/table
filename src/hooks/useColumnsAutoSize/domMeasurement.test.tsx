@@ -356,3 +356,30 @@ test('resize ticks do not force another owner render', () => {
     act(() => result.current.table.setColumnSizing({value: 210}));
     expect(rendered.mock.calls.length - before).toBe(1);
 });
+
+test('inline cell callbacks and React header owners are excluded from the measurement key', () => {
+    const makeDefs = (): ColumnDef<Item>[] => {
+        const header = {$$typeof: Symbol.for('react.element'), type: 'span', props: {}};
+        Object.defineProperty(header, '_owner', {
+            enumerable: true,
+            get() {
+                throw Error('Fiber must not be visited');
+            },
+        });
+        return [
+            {
+                ...columns[0],
+                cell: () => null,
+                header: header as unknown as string,
+                meta: {autoSize: {text: formatText, header: 'Value'}},
+            },
+        ];
+    };
+    const {rerender} = renderHook(({tick: _tick}) => useTestTable({defs: makeDefs()}), {
+        initialProps: {tick: 0},
+    });
+    const calls = formatText.mock.calls.length;
+    rerender({tick: 1});
+    rerender({tick: 2});
+    expect(formatText).toHaveBeenCalledTimes(calls);
+});

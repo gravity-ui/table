@@ -3,6 +3,7 @@ import * as React from 'react';
 import type {ColumnDef} from '@tanstack/react-table';
 import debounce from 'lodash/debounce.js';
 import isEqual from 'lodash/isEqual.js';
+import isEqualWith from 'lodash/isEqualWith.js';
 import {useDeepCompareEffect} from 'react-use';
 
 import type {useTable} from '..';
@@ -17,9 +18,9 @@ import type {
     DOMMeasurementOptions,
     UseColumnsAutoSizeOptions,
 } from './types';
-import {getColumnId, getLeafColumns} from './utils/getColumnId';
+import {getColumnId, getLeafColumns, getMeasurementColumns} from './utils/getColumnId';
 import {getValueFromCell} from './utils/getValueFromCell';
-import {hasDefinedWidth} from './utils/hasDefinedWidth';
+import {getDefinedWidth, hasDefinedWidth} from './utils/hasDefinedWidth';
 import {measureDOMColumns} from './utils/measureDOMColumns';
 import {renderHeaderContent} from './utils/renderHeaderContent';
 import {setColumnAutoSizes} from './utils/setColumnAutoSizes';
@@ -244,6 +245,7 @@ export function useColumnsAutoSize<TData extends unknown>({
 
             const commit = () => {
                 setColumnWidths((currentWidths) => {
+                    if (isStale()) return currentWidths;
                     const result = partial ? {...currentWidths, ...newWidths} : newWidths;
                     // Never copy a manual width into the auto-width store.
                     if (partial)
@@ -278,7 +280,7 @@ export function useColumnsAutoSize<TData extends unknown>({
     const lastDOMInputs = React.useRef<
         | {
               rows: Array<{id: string; original: TData}>;
-              columns: ColumnDef<TData>[];
+              columns: ReturnType<typeof getMeasurementColumns<TData>>;
               measurement: {
                   container: HTMLElement | null;
                   className?: string;
@@ -315,40 +317,51 @@ export function useColumnsAutoSize<TData extends unknown>({
     React.useEffect(() => {
         if (!waitingForLayout) return undefined;
         const container = measurementContainerRef?.current ?? document.body;
-        let wasConnected = container.isConnected;
         const retry = () => {
             if (
-                !container.isConnected ||
-                (!container.getClientRects().length &&
-                    container.ownerDocument.defaultView?.getComputedStyle(container).display !==
+                container.isConnected &&
+                (container.getClientRects().length ||
+                    container.ownerDocument.defaultView?.getComputedStyle(container).display ===
                         'contents')
             )
-                return;
-            retryLayout();
+                retryLayout();
         };
         const resize = typeof ResizeObserver === 'function' ? new ResizeObserver(retry) : undefined;
-        const mutation = new MutationObserver((records) => {
-            if (
-                records.some(
-                    (record) =>
-                        record.type === 'attributes' &&
-                        (record.target === container ||
-                            (record.target as Element).contains(container)),
-                ) ||
-                (!wasConnected && container.isConnected)
-            )
-                retry();
-            wasConnected = container.isConnected;
-        });
+        const intersection =
+            typeof IntersectionObserver === 'function'
+                ? new IntersectionObserver(retry)
+                : undefined;
+        const attributes = new MutationObserver(retry);
+        for (
+            let ancestor: HTMLElement | null = container;
+            ancestor;
+            ancestor = ancestor.parentElement
+        ) {
+            attributes.observe(ancestor, {
+                attributes: true,
+                attributeFilter: ['style', 'class', 'hidden'],
+            });
+        }
         resize?.observe(container);
-        mutation.observe(container.ownerDocument.documentElement, {
-            attributes: true,
+        intersection?.observe(container);
+        // Only detached subtrees need connection detection; stop as soon as attached.
+        const connection = !container.isConnected
+            ? new MutationObserver(() => {
+                  if (container.isConnected) {
+                      connection?.disconnect();
+                      retry();
+                  }
+              })
+            : undefined;
+        connection?.observe(container.ownerDocument.documentElement, {
             childList: true,
             subtree: true,
         });
         return () => {
             resize?.disconnect();
-            mutation.disconnect();
+            intersection?.disconnect();
+            attributes.disconnect();
+            connection?.disconnect();
         };
     }, [waitingForLayout, measurementContainerRef]);
 
@@ -357,7 +370,7 @@ export function useColumnsAutoSize<TData extends unknown>({
         const currentRows = tableInstance.getRowModel().rows.slice(0, options?.sampleSize ?? 100);
         const inputs = {
             rows: currentRows.map((row) => ({id: row.id, original: row.original})),
-            columns: leafColumns,
+            columns: getMeasurementColumns(leafColumns),
             measurement: {
                 container: measurementContainerRef?.current ?? null,
                 className: measurementClassName,
@@ -375,7 +388,9 @@ export function useColumnsAutoSize<TData extends unknown>({
         const added = Object.keys(sizing).filter((id) => previousSizing.current[id] === undefined);
         previousSizing.current = sizing;
         const previous = lastDOMInputs.current;
-        const changed = !isEqual(previous, inputs);
+        const changed = !isEqualWith(previous, inputs, (a, b) =>
+            React.isValidElement(a) || React.isValidElement(b) ? a === b : undefined,
+        );
         if (!changed && !released.length && !added.length) return;
         lastDOMInputs.current = inputs;
         const generation = ++measurementGenerationRef.current;
@@ -396,30 +411,37 @@ export function useColumnsAutoSize<TData extends unknown>({
                 !options?.measureOnce || refresh || force.has(id) || columnWidths[id] === undefined
             );
         });
+        const deferredColumnIds = new Set<string>();
         const measured = measureDOMColumns({
             columns: pending,
             rows: currentRows,
             measurement: domMeasurement,
             options: options ?? {},
+            deferredColumnIds,
         });
         if (measured === undefined) {
             setWaitingForLayout(true);
             if (!currentRows.length) setIsMeasuring(false);
             return;
         }
-        setWaitingForLayout(false);
-        const fallback = pending.filter((column) => measured[getColumnId(column)] === undefined);
+        setWaitingForLayout(deferredColumnIds.size > 0);
+        const fallback = pending.filter(
+            (column) =>
+                measured[getColumnId(column)] === undefined &&
+                !deferredColumnIds.has(getColumnId(column)),
+        );
         for (const column of fallback) {
             const id = getColumnId(column);
             if (!currentRows.length) headerOnly.current.add(id);
             else headerOnly.current.delete(id);
         }
-        const widths = {...columnWidths};
+        const widths: Record<string, number> = {};
         for (const column of leafColumns) {
             const id = getColumnId(column);
             if (!id) continue;
             if (options?.respectExistingWidths !== false && hasDefinedWidth(column)) {
-                widths[id] = column.size ?? column.minSize!;
+                const defined = getDefinedWidth(column);
+                if (defined !== undefined) widths[id] = defined;
             }
             if (measured[id] !== undefined) {
                 widths[id] = Math.min(
@@ -431,11 +453,21 @@ export function useColumnsAutoSize<TData extends unknown>({
             }
         }
         const commit = () => {
-            setColumnWidths((current) => (isEqual(current, widths) ? current : widths));
-            if (isMeasuring !== fallback.length > 0) setIsMeasuring(fallback.length > 0);
+            setColumnWidths((current) => {
+                if (generation !== measurementGenerationRef.current) return current;
+                const merged = {...current, ...widths};
+                for (const id of Object.keys(merged))
+                    if (!columnIds.includes(id)) delete merged[id];
+                return isEqual(current, merged) ? current : merged;
+            });
+            const pendingReactOrLayout = fallback.length > 0 || deferredColumnIds.size > 0;
+            if (isMeasuring !== pendingReactOrLayout) setIsMeasuring(pendingReactOrLayout);
         };
-        if (options?.deferUpdates && React.startTransition) React.startTransition(commit);
-        else commit();
+        if (options?.deferUpdates && React.startTransition) {
+            React.startTransition(commit);
+        } else {
+            commit();
+        }
         if (fallback.length)
             calculateWidths({
                 columns: fallback,
@@ -450,13 +482,15 @@ export function useColumnsAutoSize<TData extends unknown>({
                 partial: true,
             });
     });
+    const latestCalculation = React.useRef(calculateWidths);
+    latestCalculation.current = calculateWidths;
     React.useEffect(
         () => () => {
             measurementGenerationRef.current += 1;
-            calculateWidths.cancel();
+            latestCalculation.current.cancel();
             lastDOMInputs.current = undefined;
         },
-        [calculateWidths],
+        [],
     );
 
     useDeepCompareEffect(() => {

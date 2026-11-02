@@ -329,3 +329,19 @@ custom DOM layouts still need a matching text/style description or React fallbac
 Broken text formatters and unsupported values produce a development warning before
 falling back. The numeric-style utility follows the linked React unitless-property
 list; it does not run React renderers during DOM measurement.
+
+### Column IDs and manual sizing
+
+Controlled `columnWidths` and TanStack `columnSizing` use resolved column IDs.
+A dotted accessor key such as `a.b` resolves to `a_b`, consistently in DOM and React
+measurement. Migrate old `a.b` map keys or set `id: 'a.b'` explicitly to retain them.
+
+For DOM descriptions an auto width initializes `size`, but does not raise
+`minSize`: manual resizing may shrink below that width immediately, subject to
+explicit column `minSize`/`maxSize`. The React path still applies the measured
+width as an initial minimum and releases it after a manual resize. Hook
+`minWidth`/`maxWidth` constrain automatic measurements, not manual resizing.
+
+The Storybook **DOMMeasurementRegressionCase** has a browser regression test that
+compares widths with cloned real rendered cells in Arial, including copy buttons
+and footers, hidden mounting, ancestor scale and empty-to-data transitions.

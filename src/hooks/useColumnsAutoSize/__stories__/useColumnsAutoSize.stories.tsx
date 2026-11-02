@@ -1,6 +1,7 @@
 import type {Meta, StoryObj} from '@storybook/react';
 
 import {AutoSizedTable} from './AutoSizedTable';
+import {DOMMeasurementRegression} from './DOMMeasurementRegression';
 import {MeasureOnceColumnsChangeTable} from './MeasureOnceColumnsChangeTable';
 import {TableWithDynamicData} from './TableWithDynamicData';
 import {columns} from './constants/columns';
@@ -180,3 +181,5 @@ export const MeasureOnceColumnsChange: Story = {
         },
     },
 };
+
+export const DOMMeasurementRegressionCase: Story = {render: () => <DOMMeasurementRegression />};

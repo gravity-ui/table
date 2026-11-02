@@ -5,48 +5,44 @@ import type {CellContext, ColumnDef, Row} from '@tanstack/react-table';
 
 import {useTable} from '../../useTable';
 
+import {getColumnId} from './getColumnId';
+
 export function getValueFromCell<TData extends unknown>(
     tableInstance: ReturnType<typeof useTable<TData>> | null,
     column: ColumnDef<TData>,
     row: Row<TData>,
 ): React.ReactNode {
     try {
+        const getValue = () => {
+            if (typeof row.getValue === 'function') return row.getValue(getColumnId(column));
+            if ('accessorFn' in column) return column.accessorFn(row.original, row.index ?? 0);
+            if ('accessorKey' in column) {
+                return String(column.accessorKey)
+                    .split('.')
+                    .reduce<unknown>(
+                        (value, key) =>
+                            value === null || value === undefined
+                                ? undefined
+                                : (value as Record<string, unknown>)[key],
+                        row.original,
+                    );
+            }
+            return undefined;
+        };
         if (column.cell) {
-            const getValue = () => {
-                if ('accessorKey' in column) {
-                    return row.original[column.accessorKey as keyof TData];
-                }
-
-                if ('accessorFn' in column) {
-                    return column.accessorFn(row.original, 0);
-                }
-
-                return undefined;
-            };
-
             const context = {
                 table: tableInstance || {},
                 row,
-                column: column,
+                column: {...column, id: getColumnId(column)},
                 getValue,
-                renderValue: () => getValue(),
+                renderValue: getValue,
             };
-
             return flexRender(
                 column.cell,
                 context as unknown as CellContext<TData, unknown>,
             ) as React.ReactNode;
         }
-
-        let value;
-
-        if ('accessorKey' in column) {
-            value = row.original[column.accessorKey as keyof TData];
-        } else if ('accessorFn' in column) {
-            value = column.accessorFn(row.original, 0);
-        } else {
-            return '';
-        }
+        const value = getValue();
 
         if (
             value !== null &&

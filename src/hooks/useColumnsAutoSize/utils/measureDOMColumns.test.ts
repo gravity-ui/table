@@ -145,15 +145,53 @@ test('uses untransformed layout width and preserves function-based extra space',
     expect(extra).toHaveBeenCalledWith(24, {});
 });
 
-test('a connected but zero-width measurement is never committed', () => {
-    jest.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(0);
+test('zero-width columns defer independently and meta.header works without column.header', () => {
+    jest.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(function (
+        this: HTMLElement,
+    ) {
+        return this.textContent?.includes('Hidden') ? 0 : 120;
+    });
+    const deferred = new Set<string>();
     expect(
         measureDOMColumns({
-            columns: [{id: 'a', header: 'A', meta: {autoSize: {}}}],
+            columns: [
+                {id: 'a', meta: {autoSize: {header: 'Hidden'}}},
+                {id: 'b', meta: {autoSize: {header: 'Visible'}}},
+            ],
             rows: [],
             measurement: {},
             options: {},
+            deferredColumnIds: deferred,
         }),
-    ).toBeUndefined();
+    ).toEqual({b: 120});
+    expect([...deferred]).toEqual(['a']);
     expect(document.querySelector('[aria-hidden="true"]')).toBeNull();
+});
+
+test('formatter fallback does not require a process global', () => {
+    const descriptor = Object.getOwnPropertyDescriptor(globalThis, 'process');
+    let widths: Record<string, number> | undefined;
+    try {
+        Object.defineProperty(globalThis, 'process', {value: undefined, configurable: true});
+        widths = measureDOMColumns({
+            columns: [
+                {
+                    id: 'x',
+                    meta: {
+                        autoSize: {
+                            text: () => {
+                                throw Error('broken');
+                            },
+                        },
+                    },
+                },
+            ],
+            rows: [{original: {}, getValue: () => 1}] as unknown as Row<unknown>[],
+            measurement: {},
+            options: {},
+        });
+    } finally {
+        if (descriptor) Object.defineProperty(globalThis, 'process', descriptor);
+    }
+    expect(widths).toEqual({});
 });

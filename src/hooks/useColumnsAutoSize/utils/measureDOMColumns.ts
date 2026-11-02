@@ -23,10 +23,12 @@ export function measureDOMColumns<TData>({
     rows,
     measurement,
     options,
+    deferredColumnIds,
 }: {
     columns: ColumnDef<TData>[];
     rows: Row<TData>[];
     measurement: DOMMeasurementOptions;
+    deferredColumnIds?: Set<string>;
     options: Pick<UseColumnsAutoSizeOptions, 'padding' | 'headerPadding' | 'measureHeaderText'>;
 }): Record<string, number> | undefined {
     if (!columns.length) return {};
@@ -106,7 +108,10 @@ export function measureDOMColumns<TData>({
                 section.append(row);
             };
             let hasContent = false;
-            if (options.measureHeaderText !== false && column.header !== undefined) {
+            if (
+                options.measureHeaderText !== false &&
+                (config.header !== undefined || column.header !== undefined)
+            ) {
                 const header = config.header ?? column.header;
                 // Arbitrary React headers still require the existing React path.
                 if (
@@ -157,7 +162,7 @@ export function measureDOMColumns<TData>({
             root.append(element);
             elements.push({id, element});
         } catch {
-            if (process.env.NODE_ENV !== 'production')
+            if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production')
                 console.warn(
                     `[table] Auto-size description for column ${id} failed; using React measurement.`,
                 );
@@ -171,7 +176,10 @@ export function measureDOMColumns<TData>({
         for (const {id, element} of elements) {
             try {
                 const layoutWidth = element.offsetWidth;
-                if (layoutWidth <= 0) return undefined;
+                if (layoutWidth <= 0) {
+                    deferredColumnIds?.add(id);
+                    continue;
+                }
                 // Computed CSS width is fractional and independent of ancestor transforms.
                 const width =
                     Number.parseFloat(

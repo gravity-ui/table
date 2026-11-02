@@ -12,3 +12,20 @@ export function getLeafColumns<T>(columns: ColumnDef<T>[]): ColumnDef<T>[] {
         'columns' in column && column.columns ? getLeafColumns(column.columns) : [column],
     );
 }
+
+export function getMeasurementColumns<T>(columns: ColumnDef<T>[]) {
+    return columns.map((column) => ({
+        id: getColumnId(column),
+        size: column.size,
+        minSize: column.minSize,
+        maxSize: column.maxSize,
+        header: typeof column.header === 'string' ? column.header : undefined,
+        headerKind:
+            column.header === null || column.header === undefined
+                ? 'none'
+                : typeof column.header === 'string'
+                  ? 'text'
+                  : 'custom',
+        autoSize: column.meta?.autoSize,
+    }));
+}
