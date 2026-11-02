@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import {useForkRef} from '@gravity-ui/uikit';
 import type {QAProps} from '@gravity-ui/uikit';
 import type {Row, Table} from '@tanstack/react-table';
 import type {VirtualItem, Virtualizer} from '@tanstack/react-virtual';
@@ -18,13 +19,16 @@ import {LastSelectedRowContextProvider} from '../LastSelectedRowContext';
 import {SortableListContext} from '../SortableListContext';
 
 import {b} from './BaseTable.classname';
+import {useColumnWidths} from './hooks/useColumnWidths';
 import {useTableVirtualization} from './hooks/useTableVirtualization';
 import type {CanDeferOffscreenCellContent} from './types';
 
 import './BaseTable.scss';
 
-export interface BaseTableProps<TData, TScrollElement extends Element | Window = HTMLDivElement>
-    extends QAProps {
+export interface BaseTableProps<
+    TData,
+    TScrollElement extends Element | Window = HTMLDivElement,
+> extends QAProps {
     /** The table instance returned from the `useTable` hook */
     table: Table<TData>;
     /** HTML attributes for the `<table>` element */
@@ -175,6 +179,8 @@ export const BaseTable = React.forwardRef(
         }: BaseTableProps<TData, TScrollElement>,
         ref: React.Ref<HTMLTableElement>,
     ) => {
+        const {tableRef} = useColumnWidths(table);
+        const resolvedTableRef = useForkRef(tableRef, ref);
         const draggableContext = React.useContext(SortableListContext);
         const columnReorderingContext = React.useContext(ColumnReorderingContext);
         const draggingRowIndex = draggableContext?.activeItemIndex ?? -1;
@@ -302,7 +308,7 @@ export const BaseTable = React.forwardRef(
         return (
             <LastSelectedRowContextProvider>
                 <table
-                    ref={ref}
+                    ref={resolvedTableRef}
                     className={b({'with-row-virtualization': Boolean(rowVirtualizer)}, className)}
                     data-dragging-row-index={draggingRowIndex > -1 ? draggingRowIndex : undefined}
                     data-column-drag-active={isColumnDragActive || undefined}

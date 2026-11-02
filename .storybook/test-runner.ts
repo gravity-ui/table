@@ -2,7 +2,6 @@ import type {TestRunnerConfig} from '@storybook/test-runner';
 import {toMatchImageSnapshot} from 'jest-image-snapshot';
 
 import {testAdaptiveVirtualization} from './browser-tests/testAdaptiveVirtualization/testAdaptiveVirtualization';
-import {testDOMMeasurement} from './browser-tests/testDOMMeasurement/testDOMMeasurement';
 import {testVirtualizedTreeReordering} from './browser-tests/testVirtualizedTreeReordering/testVirtualizedTreeReordering';
 
 const ADAPTIVE_VIRTUALIZATION_STORY = 'basetable--heavy-table-with-adaptive-virtualization';
@@ -14,10 +13,6 @@ const config: TestRunnerConfig = {
         expect.extend({toMatchImageSnapshot});
     },
     async postVisit(page, context) {
-        if (context.id === 'hooks-usecolumnsautosize--dom-measurement-regression-case') {
-            await testDOMMeasurement(page);
-            return;
-        }
         if (context.id === ADAPTIVE_VIRTUALIZATION_STORY) {
             await testAdaptiveVirtualization(page);
             return;

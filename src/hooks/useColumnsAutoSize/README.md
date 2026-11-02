@@ -242,114 +242,24 @@ Callbacks are emitted for changes, not simply because the table mounts or a
 callback prop changes. The callback requests an update in controlled mode: only
 new `columnWidths` props change the rendered widths.
 
-### Lightweight measurement through column configuration
+## Native CSS column sizing
 
-Describe a column's visible text in `meta.autoSize` to measure it without mounting
-its React cell renderer. No DOM or measurement-renderer callback is required:
+For react-data-grid style sizing, specify `width` on the column definitions
+(import `ColumnDef` from `@gravity-ui/table`, rather than TanStack):
 
 ```tsx
-import type {ColumnAutoSize} from '@gravity-ui/table';
-
-const columns = React.useMemo<ColumnDef<Item>[]>(
-  () => [
-    {
-      id: 'duration',
-      accessorKey: 'duration',
-      header: 'Duration',
-      cell: ({getValue}) => <ExpensiveInteractiveCell value={getValue<number>()} />,
-      meta: {
-        autoSize: {
-          text: (value) => (typeof value === 'number' ? formatDuration(value) : '–'),
-          extraWidth: 24, // space occupied by the cell's icon/button
-        } satisfies ColumnAutoSize<Item>,
-      } as ColumnDef<Item>['meta'],
-    },
-  ],
-  [],
-);
+const columns: ColumnDef<Row>[] = [
+  {accessorKey: 'name', header: 'Name', width: 'max-content', minSize: 80, maxSize: 500},
+  {accessorKey: 'value', header: 'Value', width: 'minmax(max-content, 1fr)', minSize: 80},
+];
+const table = useTable({columns, data, enableColumnResizing: true});
+return <Table table={table} />;
 ```
 
-`meta.autoSize: {}` measures the accessor's primitive value. Optional fields:
-
-- `text`: formatted text, or `(value, row) => text`. Share formatting with the real cell.
-- `extraWidth`: reserved space in px or a CSS length expression, optionally a function
-  of `(value, row)` for controls that are absent in empty cells.
-- `style` and `className`: typography/cell styles and the text class, either static
-  or functions of `(value, row)`. Numeric CSS lengths use React's px semantics.
-- `header`: text or `{text, extraWidth?, style?, className?}` for a custom React header.
-  String/number headers are inferred automatically.
-- `footer`: an array of text values or the same text descriptions for footer rows.
-
-The library creates lightweight DOM, inserts all described columns together,
-reads once per column and removes the batch. It uses the styled table's cell and
-header classes. `padding` and `headerPadding` supply horizontal spacing; cell
-`style` can override it. Columns without a description, unsupported values,
-custom React headers without a text description and broken formatters keep the
-existing React measurement path. Visible cell rendering is unchanged.
-
-Optional hook arguments:
-
-- `measurementContainerRef`: inherit fonts/theme variables from the table's parent;
-  attach this ref even while showing a loader. Defaults to `document.body`.
-- `measurementClassName`: additional table classes for the temporary container.
-- `measurementRevision`: a stable theme/style revision. Changing it refreshes even
-  `measureOnce` widths. Font loading triggers a refresh automatically.
-
-Register the table using `React.useLayoutEffect(() => setTableInstance(table),
-[table, setTableInstance])` to measure before paint. Sampling uses the current
-sorted/filtered row model. Predefined widths, user resizing, controlled widths and
-`measureOnce` retain their priority. No width cache is shared between mounts.
-
-`options.deferUpdates` defaults to `false`. Enable it to let React 18+ interrupt
-rendering real cells after measurement. React 17 applies updates normally. DOM
-measurement stays synchronous, so very large samples can still block the thread.
-
-### Measurement lifecycle and invalidation
-
-Only positive layout widths are committed. Hidden or detached containers defer
-measurement and retry when layout/visibility changes; they do not finalize
-`measureOnce` at `minWidth`. CSS layout widths are used rather than transformed
-client rectangles, so an ancestor's `transform: scale(...)` does not change sizing.
-Empty tables finish loading and can size headers/footers. Header-only widths are
-refreshed when the first data arrives, even with `measureOnce`.
-
-Descriptions on leaf columns inside groups are supported. Equivalent column
-arrays, options and controlled-width records are compared structurally. Formatter
-functions are compared by identity: use stable callbacks when their behavior has
-not changed. `measurementRevision` accepts a string, number, boolean or null; use
-a primitive version key rather than an object literal for external style changes.
-
-DOM descriptions are measured synchronously. In a mixed table their widths can
-update immediately, but `isMeasuring` waits for the remaining React columns.
-React fallback requests retain the 100 ms debounce and stale results are ignored.
-Without a header or nonempty content, the existing default cell width is used.
-Resetting TanStack column sizing measures the latest data again rather than
-promoting a user's manual width to an automatic width.
-
-Measurement inherits the table's header, body, row and footer classes. Arbitrary
-custom DOM layouts still need a matching text/style description or React fallback.
-Broken text formatters and unsupported values produce a development warning before
-falling back. The numeric-style utility follows the linked React unitless-property
-list; it does not run React renderers during DOM measurement.
-
-### Column IDs and manual sizing
-
-Columns without `meta.autoSize` retain their existing width keys: explicit ID or
-accessor key, without normalization or a header fallback. Described DOM columns
-use TanStack IDs: `a.b` becomes `a_b` unless an explicit ID is provided.
-Nested columns are traversed only when DOM measurement is enabled.
-
-When any column enables `meta.autoSize`, automatic widths initialize `size`
-without raising `minSize` for the entire table, including columns measured through
-the React fallback. Manual resizing may shrink below the measured width immediately,
-subject to explicit column `minSize`/`maxSize`. Tables without any `meta.autoSize`
-retain the legacy auto-minimum behavior. Hook `minWidth`/`maxWidth` constrain
-automatic measurements, not manual resizing.
-
-The Storybook **DOMMeasurementRegressionCase** has a browser regression test that
-compares widths with cloned real rendered cells in Arial, including copy buttons
-and footers, hidden mounting, ancestor scale and empty-to-data transitions.
-
-The library does not augment TanStack `ColumnMeta`. Type descriptions explicitly
-with `satisfies ColumnAutoSize<Item>` (exported by this package) for validation and
-formatter autocomplete. Existing application metadata declarations are unaffected.
+No autosize hook or external DOM ref is required. The table lays out a hidden DOM snapshot of its mounted
+header, body and footer cells on shared CSS grid tracks before paint, reads the
+track widths through empty measuring cells, then caches numeric sizes.
+The live row layout is preserved during measurement. Only mounted content contributes. Changing data or scrolling preserves cached
+widths. Resizing the table or another column recalculates flexible tracks;
+manual sizes remain fixed. Double-click a resize handle to measure that column
+with `max-content` again and store the result as a manual size.

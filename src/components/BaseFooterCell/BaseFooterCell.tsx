@@ -32,6 +32,9 @@ export const BaseFooterCell = <TData, TValue>({
             colSpan={header.colSpan > 1 ? header.colSpan : undefined}
             rowSpan={rowSpan > 1 ? rowSpan : undefined}
             {...attributes}
+            data-column-id={
+                header.colSpan === 1 && !header.isPlaceholder ? header.column.id : undefined
+            }
             style={getCellStyles(header, attributes?.style)}
         >
             {flexRender(header.column.columnDef.footer, header.getContext())}
