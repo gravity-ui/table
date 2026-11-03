@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.25.0](https://github.com/gravity-ui/table/compare/v1.24.0...v1.25.0) (2026-11-03)
+
+
+### Features
+
+* **TableSettings:** reset to initial settings ([#180](https://github.com/gravity-ui/table/issues/180)) ([09aee4e](https://github.com/gravity-ui/table/commit/09aee4e0af73d7c72b4d8a7ae85876607cd274a3))
+
 ## [1.24.0](https://github.com/gravity-ui/table/compare/v1.23.0...v1.24.0) (2026-10-26)
 
 
