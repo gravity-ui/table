@@ -85,7 +85,11 @@ export function measureGridColumns<T>(
         table.parentElement?.append(snapshot);
         const widths: Record<string, number> = {};
         for (const [index, probe] of probes.entries()) {
-            const width = probe.getBoundingClientRect().width;
+            // CSS layout widths do not include transforms on ancestor elements.
+            const width =
+                Number.parseFloat(
+                    table.ownerDocument.defaultView?.getComputedStyle(probe).width ?? '',
+                ) || probe.offsetWidth;
             if (width > 0) widths[columns[index].id] = width;
         }
         return widths;

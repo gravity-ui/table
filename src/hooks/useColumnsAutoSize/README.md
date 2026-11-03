@@ -260,6 +260,10 @@ No autosize hook or external DOM ref is required. The table lays out a hidden DO
 header, body and footer cells on shared CSS grid tracks before paint, reads the
 track widths through empty measuring cells, then caches numeric sizes.
 The live row layout is preserved during measurement. Only mounted content contributes. Changing data or scrolling preserves cached
-widths. Resizing the table or another column recalculates flexible tracks;
+widths. The first rows after an empty result, font loading, changes to visible
+track definitions, and resetting a manual width trigger a fresh measurement.
+Resizing the table or another column recalculates flexible tracks; intrinsic
+`max-content` / `min-content` tracks retain their widths when a neighboring
+column is resized;
 manual sizes remain fixed. Double-click a resize handle to measure that column
 with `max-content` again and store the result as a manual size.

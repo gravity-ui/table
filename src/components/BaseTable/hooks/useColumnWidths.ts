@@ -34,7 +34,9 @@ export function useColumnWidths<T>(table: Table<T>) {
     const leaves = leafColumns(columns);
     const enabled = leaves.some((column) => column.width !== undefined);
     const sizing = table.getState().columnSizing;
-    const previous = React.useRef({gridWidth, sizing});
+    const [fontRevision, refreshFonts] = React.useReducer((n: number) => n + 1, 0);
+    const headerOnly = React.useRef(new Set<string>());
+    const previous = React.useRef({gridWidth, sizing, fontRevision, tracksKey: ''});
     const getId = (column: ColumnDef<T>): string =>
         column.id ??
         ('accessorKey' in column
@@ -79,8 +81,22 @@ export function useColumnWidths<T>(table: Table<T>) {
         // A table can overflow its viewport. Its intrinsic width must not become
         // an input to its next measurement (a resize feedback loop).
         observer?.observe(element.parentElement ?? element);
+        const fonts = element.ownerDocument.fonts;
+        let active = true;
+        let pendingFonts = fonts?.status === 'loading';
+        const onFonts = () => {
+            if (!active || fonts?.status === 'loading') return;
+            pendingFonts = false;
+            refreshFonts();
+        };
+        fonts?.addEventListener('loadingdone', onFonts);
+        fonts?.ready.then(() => {
+            if (pendingFonts) onFonts();
+        });
         autoSizeHandlers.set(table, (id) => flushSync(() => setAutoResize(id)));
         return () => {
+            active = false;
+            fonts?.removeEventListener('loadingdone', onFonts);
             observer?.disconnect();
             autoSizeHandlers.delete(table);
         };
@@ -99,6 +115,20 @@ export function useColumnWidths<T>(table: Table<T>) {
             return;
         const visible = table.getVisibleLeafColumns();
         const last = previous.current;
+        const hasRows = table.getRowModel().rows.length > 0;
+        const tracksKey = JSON.stringify(
+            visible.map((column) => {
+                const definition = leaves.find((leaf) => getId(leaf) === column.id);
+                return [
+                    column.id,
+                    definition?.width,
+                    definition?.size,
+                    column.columnDef.minSize,
+                    column.columnDef.maxSize,
+                ];
+            }),
+        );
+        const changed = tracksKey !== last.tracksKey || fontRevision !== last.fontRevision;
         const resized =
             Object.keys(sizing).length !== Object.keys(last.sizing).length ||
             Object.keys(sizing).some((id) => sizing[id] !== last.sizing[id]);
@@ -115,19 +145,31 @@ export function useColumnWidths<T>(table: Table<T>) {
             }
             if (sizing[column.id] !== undefined) return `${column.getSize()}px`;
             if (typeof width === 'number') return `${width}px`;
-            if (widthChanged || resized || measured[column.id] === undefined) {
+            if (
+                changed ||
+                widthChanged ||
+                (resized && width !== 'max-content' && width !== 'min-content') ||
+                (last.sizing[column.id] !== undefined && sizing[column.id] === undefined) ||
+                (hasRows && headerOnly.current.has(column.id)) ||
+                measured[column.id] === undefined
+            ) {
                 pending.add(column.id);
                 return width;
             }
             return `${measured[column.id]}px`;
         });
         if (!pending.size) {
-            previous.current = {gridWidth: viewportWidth, sizing};
+            previous.current = {gridWidth: viewportWidth, sizing, fontRevision, tracksKey};
             return;
         }
         const widths = measureGridColumns(tableRef.current, visible, tracks, viewportWidth);
         if (!widths) return;
-        previous.current = {gridWidth: viewportWidth, sizing};
+        previous.current = {gridWidth: viewportWidth, sizing, fontRevision, tracksKey};
+        for (const id of pending) {
+            if (widths[id] === undefined) continue;
+            if (hasRows) headerOnly.current.delete(id);
+            else headerOnly.current.add(id);
+        }
         setMeasured((current) => {
             const next = {...current};
             for (const id of pending) if (widths[id] !== undefined) next[id] = widths[id];

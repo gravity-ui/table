@@ -13,8 +13,16 @@ const columns: ColumnDef<{value: string}>[] = [
 let intrinsicWidth = 100;
 const readWidth = jest.fn();
 let table: ReturnType<typeof useTable<{value: string}>>;
-function Example({value = 'short', controlled = false}: {value?: string; controlled?: boolean}) {
-    const data = React.useMemo(() => [{value}], [value]);
+function Example({
+    value = 'short',
+    controlled = false,
+    empty = false,
+}: {
+    value?: string;
+    controlled?: boolean;
+    empty?: boolean;
+}) {
+    const data = React.useMemo(() => (empty ? [] : [{value}]), [value, empty]);
     table = useTable({
         columns,
         data,
@@ -26,6 +34,11 @@ function Example({value = 'short', controlled = false}: {value?: string; control
 beforeEach(() => {
     intrinsicWidth = 100;
     readWidth.mockClear();
+    jest.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(function (
+        this: HTMLElement,
+    ) {
+        return this.getBoundingClientRect().width;
+    });
     jest.spyOn(HTMLElement.prototype, 'getClientRects').mockImplementation(function (
         this: HTMLElement,
     ) {
@@ -78,4 +91,36 @@ test('does not remeasure when a controlled owner recreates equivalent sizing sta
     const before = readWidth.mock.calls.length;
     rerender(<Example controlled value="updated" />);
     expect(readWidth).toHaveBeenCalledTimes(before);
+});
+
+test('replaces header-only widths when the first rows arrive', () => {
+    const {rerender} = render(<Example empty />);
+    expect(table.getColumn('value')?.getSize()).toBe(100);
+    intrinsicWidth = 250;
+    rerender(<Example />);
+    expect(table.getColumn('value')?.getSize()).toBe(250);
+});
+
+test('resetting a manual width measures current content', () => {
+    render(<Example />);
+    act(() => table.setColumnSizing({value: 180}));
+    intrinsicWidth = 250;
+    act(() => table.setColumnSizing({}));
+    expect(table.getColumn('value')?.getSize()).toBe(250);
+});
+
+test('font loading refreshes native widths', () => {
+    const descriptor = Object.getOwnPropertyDescriptor(document, 'fonts');
+    const fonts = Object.assign(new EventTarget(), {status: 'loaded', ready: Promise.resolve()});
+    Object.defineProperty(document, 'fonts', {configurable: true, value: fonts});
+    try {
+        const {unmount} = render(<Example />);
+        intrinsicWidth = 250;
+        act(() => fonts.dispatchEvent(new Event('loadingdone')));
+        expect(table.getColumn('value')?.getSize()).toBe(250);
+        unmount();
+    } finally {
+        if (descriptor) Object.defineProperty(document, 'fonts', descriptor);
+        else Reflect.deleteProperty(document, 'fonts');
+    }
 });
