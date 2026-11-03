@@ -97,7 +97,11 @@ const tableColumns: ColumnDef<Item>[] = [
     },
 ];
 
-export const TableSettingsColumnStory = ({sortable, filterable}: TableSettingsOptions) => {
+export const TableSettingsColumnStory = ({
+    sortable,
+    filterable,
+    enableReset,
+}: TableSettingsOptions) => {
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
     const [columnPinning, setColumnPinning] = React.useState<ColumnPinningState>({
         left: ['_select'],
@@ -108,9 +112,9 @@ export const TableSettingsColumnStory = ({sortable, filterable}: TableSettingsOp
         () => [
             selectionColumn as ColumnDef<Item>,
             ...tableColumns,
-            getSettingsColumn<Item>(SETTINGS_COLUMN_ID, {sortable, filterable}),
+            getSettingsColumn<Item>(SETTINGS_COLUMN_ID, {sortable, filterable, enableReset}),
         ],
-        [sortable, filterable],
+        [sortable, filterable, enableReset],
     );
 
     const table = useTable({

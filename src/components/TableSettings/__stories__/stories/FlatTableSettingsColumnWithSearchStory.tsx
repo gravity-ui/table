@@ -17,6 +17,7 @@ export const FlatTableSettingsColumnWithSearchStory = ({
     sortable,
     filterable,
     enableSearch,
+    enableReset,
 }: TableSettingsOptions) => {
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
     const [columnPinning, setColumnPinning] = React.useState<ColumnPinningState>({
@@ -28,9 +29,14 @@ export const FlatTableSettingsColumnWithSearchStory = ({
         () => [
             selectionColumn as ColumnDef<Item>,
             ...tableColumns,
-            getSettingsColumn<Item>(SETTINGS_COLUMN_ID, {sortable, filterable, enableSearch}),
+            getSettingsColumn<Item>(SETTINGS_COLUMN_ID, {
+                sortable,
+                filterable,
+                enableSearch,
+                enableReset,
+            }),
         ],
-        [sortable, filterable],
+        [sortable, filterable, enableSearch, enableReset],
     );
 
     const table = useTable({

@@ -19,6 +19,9 @@ const meta: Meta<TableSettingsOptions> = {
         enableSearch: {
             control: 'boolean',
         },
+        enableReset: {
+            control: 'boolean',
+        },
     },
 };
 
@@ -45,5 +48,6 @@ export const FlatTableSettingsColumnWithSearch: StoryObj<typeof TableSettingsCol
         sortable: true,
         filterable: true,
         enableSearch: true,
+        enableReset: true,
     }),
 };
