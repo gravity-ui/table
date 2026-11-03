@@ -5,6 +5,8 @@ import {flushSync} from 'react-dom';
 
 import {useIsomorphicLayoutEffect} from '../../../hooks/useIsomorphicLayoutEffect';
 import type {ColumnDef} from '../../../types/base';
+import {getLeafColumnDefinitions} from '../utils/getLeafColumnDefinitions';
+import {getNativeColumnId} from '../utils/getNativeColumnId';
 import {measureGridColumns} from '../utils/measureGridColumns';
 
 const autoSizeHandlers = new WeakMap<object, (id: string) => void>();
@@ -22,37 +24,25 @@ export function useColumnWidths<T>(table: Table<T>) {
     const tableRef = React.useRef<HTMLTableElement>(null);
     const [measured, setMeasured] = React.useState<Record<string, number>>({});
     const [autoResize, setAutoResize] = React.useState<string | null>(null);
+    const [, retryLayout] = React.useReducer((n: number) => n + 1, 0);
     const [gridWidth, setGridWidth] = React.useState(0);
     const source = React.useRef({columns: table.options.columns, applied: table.options.columns});
     if (table.options.columns !== source.current.applied)
         source.current.columns = table.options.columns;
     const columns = source.current.columns as ColumnDef<T>[];
-    const leafColumns = (defs: ColumnDef<T>[]): ColumnDef<T>[] =>
-        defs.flatMap((column) =>
-            'columns' in column && column.columns ? leafColumns(column.columns) : [column],
-        );
-    const leaves = leafColumns(columns);
+    const leaves = getLeafColumnDefinitions(columns);
     const enabled = leaves.some((column) => column.width !== undefined);
     const sizing = table.getState().columnSizing;
     const [fontRevision, refreshFonts] = React.useReducer((n: number) => n + 1, 0);
     const headerOnly = React.useRef(new Set<string>());
     const previous = React.useRef({gridWidth, sizing, fontRevision, tracksKey: ''});
-    const getId = (column: ColumnDef<T>): string =>
-        column.id ??
-        ('accessorKey' in column
-            ? String(column.accessorKey).replace(/\./g, '_')
-            : String(column.header ?? ''));
     const applied = React.useMemo(() => {
         if (!enabled) return columns;
         const apply = (defs: ColumnDef<T>[]): ColumnDef<T>[] =>
             defs.map((column) => {
                 if ('columns' in column && column.columns)
                     return {...column, columns: apply(column.columns)};
-                const id =
-                    column.id ??
-                    ('accessorKey' in column
-                        ? String(column.accessorKey).replace(/\./g, '_')
-                        : String(column.header ?? ''));
+                const id = getNativeColumnId(column);
                 const size = typeof column.width === 'number' ? column.width : measured[id];
                 return size === undefined ? column : {...column, size};
             });
@@ -68,11 +58,14 @@ export function useColumnWidths<T>(table: Table<T>) {
         if (!enabled) return undefined;
         const element = tableRef.current;
         if (!element) return undefined;
+        let wasVisible = element.getClientRects().length > 0;
         const observer =
             typeof ResizeObserver === 'function'
-                ? new ResizeObserver(([entry]) => {
-                      const width =
-                          (element.parentElement ?? element).clientWidth || entry.contentRect.width;
+                ? new ResizeObserver(() => {
+                      const width = (element.parentElement ?? element).clientWidth;
+                      const visible = element.getClientRects().length > 0;
+                      if (visible && !wasVisible) retryLayout();
+                      wasVisible = visible;
                       setGridWidth((current) =>
                           Math.abs(current - width) < 0.5 ? current : width,
                       );
@@ -81,6 +74,8 @@ export function useColumnWidths<T>(table: Table<T>) {
         // A table can overflow its viewport. Its intrinsic width must not become
         // an input to its next measurement (a resize feedback loop).
         observer?.observe(element.parentElement ?? element);
+        // The table may be hidden while its parent keeps the same dimensions.
+        observer?.observe(element);
         const fonts = element.ownerDocument.fonts;
         let active = true;
         let pendingFonts = fonts?.status === 'loading';
@@ -118,7 +113,7 @@ export function useColumnWidths<T>(table: Table<T>) {
         const hasRows = table.getRowModel().rows.length > 0;
         const tracksKey = JSON.stringify(
             visible.map((column) => {
-                const definition = leaves.find((leaf) => getId(leaf) === column.id);
+                const definition = leaves.find((leaf) => getNativeColumnId(leaf) === column.id);
                 return [
                     column.id,
                     definition?.width,
@@ -136,7 +131,7 @@ export function useColumnWidths<T>(table: Table<T>) {
         const widthChanged = Math.abs(viewportWidth - last.gridWidth) >= 0.5;
         const pending = new Set<string>();
         const tracks = visible.map((column) => {
-            const definition = leaves.find((leaf) => getId(leaf) === column.id);
+            const definition = leaves.find((leaf) => getNativeColumnId(leaf) === column.id);
             const width =
                 definition?.width ?? (definition?.size === undefined ? 'auto' : definition.size);
             if (column.id === autoResize) {

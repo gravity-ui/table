@@ -1,6 +1,7 @@
 import type {TestRunnerConfig} from '@storybook/test-runner';
 import {toMatchImageSnapshot} from 'jest-image-snapshot';
 
+import {testNativeWidths} from './browser-tests/nativeWidths/testNativeWidths';
 import {testAdaptiveVirtualization} from './browser-tests/testAdaptiveVirtualization/testAdaptiveVirtualization';
 import {testVirtualizedTreeReordering} from './browser-tests/testVirtualizedTreeReordering/testVirtualizedTreeReordering';
 
@@ -13,6 +14,10 @@ const config: TestRunnerConfig = {
         expect.extend({toMatchImageSnapshot});
     },
     async postVisit(page, context) {
+        if (context.id === 'browser-tests-native-widths--layout') {
+            await testNativeWidths(page);
+            return;
+        }
         if (context.id === ADAPTIVE_VIRTUALIZATION_STORY) {
             await testAdaptiveVirtualization(page);
             return;

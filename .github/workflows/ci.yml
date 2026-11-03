@@ -63,8 +63,12 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Build Storybook
+        env:
+          STORYBOOK_BROWSER_TESTS: 1
         run: npm run build-storybook
       - name: Run Browser Regressions
+        env:
+          STORYBOOK_BROWSER_TESTS: 1
         shell: bash
         run: |
           set -euo pipefail
