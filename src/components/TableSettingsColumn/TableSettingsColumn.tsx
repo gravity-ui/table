@@ -20,6 +20,7 @@ interface Props<TData> extends TableSettingsOptions {
     activeDepth?: number;
     disabled?: boolean;
     withOffset?: boolean;
+    withDivider?: boolean;
     onVisibilityToggle: (updater: Updater<VisibilityState>) => void;
 }
 
@@ -33,6 +34,7 @@ export const TableSettingsColumn = <TData extends unknown>({
     disabled = false,
     activeDepth,
     withOffset = false,
+    withDivider = false,
     onVisibilityToggle,
 }: React.PropsWithChildren<Props<TData>>) => {
     const innerColumns = column.getLeafColumns();
@@ -144,7 +146,7 @@ export const TableSettingsColumn = <TData extends unknown>({
                     </SortableContext>
                 </div>
             </div>
-            {isRoot && !isDragging ? (
+            {isRoot && withDivider ? (
                 <div className={b('divider')}>
                     <Divider />
                 </div>

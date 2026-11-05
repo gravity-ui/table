@@ -2,6 +2,7 @@ import type {Meta, StoryObj} from '@storybook/react';
 
 import type {TableSettingsOptions} from '../TableSettings';
 
+import {mixedTableColumns} from './constants/nestedSettings';
 import {FlatTableSettingsColumnWithSearchStory} from './stories/FlatTableSettingsColumnWithSearchStory';
 import {NestedTableSettingsColumnWithSearchStory} from './stories/NestedTableSettingsColumnWithSearchStory';
 import {TableSettingsColumnStory} from './stories/TableSettingsColumnStory';
@@ -40,6 +41,15 @@ export const NestedTableSettingsColumnWithSearch: StoryObj<typeof TableSettingsC
         sortable: true,
         filterable: true,
         enableSearch: true,
+    }),
+};
+
+export const MixedTableSettingsColumnWithSearch: StoryObj<typeof TableSettingsColumnStory> = {
+    render: NestedTableSettingsColumnWithSearchStory.bind(null, {
+        sortable: true,
+        filterable: true,
+        enableSearch: true,
+        dataColumns: mixedTableColumns,
     }),
 };
 

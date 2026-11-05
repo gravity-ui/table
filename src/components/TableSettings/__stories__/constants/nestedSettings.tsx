@@ -187,3 +187,10 @@ export const tableColumns: ColumnDef<Item>[] = [
         ],
     },
 ];
+
+export const mixedTableColumns: ColumnDef<Item>[] = [
+    {id: 'operator_name', accessorKey: 'operatorName', header: 'Operator'},
+    tableColumns[0],
+    {id: 'id', accessorKey: 'id', header: 'ID'},
+    ...tableColumns.slice(1),
+];

@@ -58,6 +58,15 @@ $block: '.#{variables.$ns}table-settings-column';
         padding: var(--g-spacing-1) var(--g-spacing-2);
     }
 
+    &_dragging > &__divider {
+        visibility: hidden;
+    }
+
+    // not :last-child — dnd-kit renders a11y nodes after the last column
+    &:not(:has(~ #{$block})) > &__divider {
+        display: none;
+    }
+
     &__name {
         &_parent {
             font-weight: 500;
@@ -84,8 +93,4 @@ $block: '.#{variables.$ns}table-settings-column';
     > #{$block}__background {
         background-color: var(--g-color-base-background);
     }
-}
-
-#{$block}_root#{$block}_dragging {
-    padding-block-end: calc(var(--g-spacing-2) + 1px);
 }
