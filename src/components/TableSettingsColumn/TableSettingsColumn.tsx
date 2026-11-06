@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import {SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import {Grip} from '@gravity-ui/icons';
-import {Checkbox, Divider, Icon, Text} from '@gravity-ui/uikit';
+import {Checkbox, Icon, Text} from '@gravity-ui/uikit';
 import type {Updater, VisibilityState} from '@tanstack/react-table';
 
 import type {Column, Header} from '../../types/base';
@@ -144,11 +144,6 @@ export const TableSettingsColumn = <TData extends unknown>({
                     </SortableContext>
                 </div>
             </div>
-            {isRoot && !isDragging ? (
-                <div className={b('divider')}>
-                    <Divider />
-                </div>
-            ) : null}
         </div>
     );
 };
