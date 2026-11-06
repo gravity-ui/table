@@ -64,7 +64,6 @@ export const TableSettings = <TData extends unknown>({
     const [expandNestedColumns, setExpandNestedColumns] = React.useState(false);
     const allColumns = React.useMemo(table.getAllColumns, [table]);
     const filteredColumns = React.useMemo(() => allColumns.filter(isDisplayedColumn), [allColumns]);
-    const isNested = filteredColumns.some((column) => column.columns.length > 0);
 
     const headers = table.getFlatHeaders();
     const headersById = React.useMemo(() => {
@@ -149,7 +148,6 @@ export const TableSettings = <TData extends unknown>({
                     filterable={isFilterableColumn}
                     activeDepth={activeDepth}
                     withOffset
-                    withDivider={isNested}
                     onVisibilityToggle={setVisibilityState}
                 >
                     {children}
