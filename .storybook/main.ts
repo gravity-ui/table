@@ -23,7 +23,13 @@ const config: StorybookConfig = {
         '@storybook/addon-webpack5-compiler-babel',
     ],
     framework: '@storybook/react-webpack5',
-    stories: ['../src/**/*.mdx', '../src/**/*.stories.@(ts|tsx)'],
+    stories: [
+        '../src/**/*.mdx',
+        '../src/**/*.stories.@(ts|tsx)',
+        ...(process.env.STORYBOOK_BROWSER_TESTS === '1'
+            ? ['./browser-tests/**/*.stories.tsx']
+            : []),
+    ],
     typescript: {
         reactDocgen: 'react-docgen-typescript',
     },

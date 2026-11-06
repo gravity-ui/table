@@ -18,8 +18,7 @@ import {b} from '../BaseTable/BaseTable.classname';
 
 export interface BaseHeaderCellProps<TData, TValue> {
     className?:
-        | string
-        | ((header: Header<TData, TValue>, parentHeader?: Header<TData, unknown>) => string);
+        string | ((header: Header<TData, TValue>, parentHeader?: Header<TData, unknown>) => string);
     header: Header<TData, TValue>;
     parentHeader?: Header<TData, unknown>;
     renderHeaderCellContent?: (props: {header: Header<TData, TValue>}) => React.ReactNode;
@@ -114,6 +113,9 @@ export const BaseHeaderCell = React.forwardRef(
                 aria-sort={getAriaSort(header.column.getIsSorted())}
                 aria-colindex={getHeaderCellAriaColIndex(header)}
                 {...attributes}
+                data-column-id={
+                    header.colSpan === 1 && !header.isPlaceholder ? header.column.id : undefined
+                }
                 style={getCellStyles(header, attributes?.style)}
             >
                 {renderContent()}

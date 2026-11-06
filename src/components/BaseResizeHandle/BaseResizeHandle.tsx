@@ -1,4 +1,5 @@
 import type {Header} from '../../types/base';
+import {autoSizeColumn} from '../BaseTable/hooks/useColumnWidths';
 
 import {b} from './BaseResizeHandle.classname';
 
@@ -28,7 +29,9 @@ export const BaseResizeHandle = <TData, TValue>({
                 },
                 className,
             )}
-            onDoubleClick={() => header.column.resetSize()}
+            onDoubleClick={() => {
+                if (!autoSizeColumn(table, header.column.id)) header.column.resetSize();
+            }}
             onMouseDown={header.getResizeHandler()}
             onTouchStart={header.getResizeHandler()}
             style={{

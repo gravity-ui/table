@@ -2,6 +2,10 @@ import type {Meta, StoryObj} from '@storybook/react';
 
 import {AutoSizedTable} from './AutoSizedTable';
 import {MeasureOnceColumnsChangeTable} from './MeasureOnceColumnsChangeTable';
+import {
+    NativeColumnWidths as NativeColumnWidthsExample,
+    VirtualizedNativeColumnWidths,
+} from './NativeColumnWidths';
 import {TableWithDynamicData} from './TableWithDynamicData';
 import {columns} from './constants/columns';
 import {columnsWithComplexComponents} from './constants/columnsWithComplexComponents';
@@ -179,4 +183,10 @@ export const MeasureOnceColumnsChange: Story = {
             },
         },
     },
+};
+
+export const NativeColumnWidths: Story = {render: () => <NativeColumnWidthsExample />};
+
+export const VirtualizedNativeColumnSizing: Story = {
+    render: () => <VirtualizedNativeColumnWidths />,
 };

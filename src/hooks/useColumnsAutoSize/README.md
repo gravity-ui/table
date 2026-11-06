@@ -241,3 +241,29 @@ TanStack `columnSizing` and predefined widths retain priority over auto widths.
 Callbacks are emitted for changes, not simply because the table mounts or a
 callback prop changes. The callback requests an update in controlled mode: only
 new `columnWidths` props change the rendered widths.
+
+## Native CSS column sizing
+
+For react-data-grid style sizing, specify `width` on the column definitions
+(import `ColumnDef` from `@gravity-ui/table`, rather than TanStack):
+
+```tsx
+const columns: ColumnDef<Row>[] = [
+  {accessorKey: 'name', header: 'Name', width: 'max-content', minSize: 80, maxSize: 500},
+  {accessorKey: 'value', header: 'Value', width: 'minmax(max-content, 1fr)', minSize: 80},
+];
+const table = useTable({columns, data, enableColumnResizing: true});
+return <Table table={table} />;
+```
+
+No autosize hook or external DOM ref is required. The table lays out a hidden DOM snapshot of its mounted
+header, body and footer cells on shared CSS grid tracks before paint, reads the
+track widths through empty measuring cells, then caches numeric sizes.
+The live row layout is preserved during measurement. Only mounted content contributes. Changing data or scrolling preserves cached
+widths. The first rows after an empty result, font loading, changes to visible
+track definitions, and resetting a manual width trigger a fresh measurement.
+Resizing the table or another column recalculates flexible tracks; intrinsic
+`max-content` / `min-content` tracks retain their widths when a neighboring
+column is resized;
+manual sizes remain fixed. Double-click a resize handle to measure that column
+with `max-content` again and store the result as a manual size.
