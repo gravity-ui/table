@@ -18,7 +18,8 @@ export const NestedTableSettingsColumnWithSearchStory = ({
     filterable,
     enableSearch,
     enableReset,
-}: TableSettingsOptions) => {
+    dataColumns = tableColumns,
+}: TableSettingsOptions & {dataColumns?: ColumnDef<Item>[]}) => {
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
     const [columnPinning, setColumnPinning] = React.useState<ColumnPinningState>({
         left: ['_select'],
@@ -28,7 +29,7 @@ export const NestedTableSettingsColumnWithSearchStory = ({
     const columns = React.useMemo(
         () => [
             selectionColumn as ColumnDef<Item>,
-            ...tableColumns,
+            ...dataColumns,
             getSettingsColumn<Item>(SETTINGS_COLUMN_ID, {
                 sortable,
                 filterable,
@@ -36,7 +37,7 @@ export const NestedTableSettingsColumnWithSearchStory = ({
                 enableReset,
             }),
         ],
-        [sortable, filterable, enableSearch, enableReset],
+        [sortable, filterable, enableSearch, enableReset, dataColumns],
     );
 
     const table = useTable({
