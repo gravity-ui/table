@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.0](https://github.com/gravity-ui/table/compare/v1.26.0...v2.0.0) (2026-11-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* migrate to UIKit 8 and update dependencies ([#190](https://github.com/gravity-ui/table/issues/190))
+
 ## [1.26.0](https://github.com/gravity-ui/table/compare/v1.25.0...v1.26.0) (2026-11-09)
 
 
