@@ -7,10 +7,6 @@
 
 * migrate to UIKit 8 and update dependencies ([#190](https://github.com/gravity-ui/table/issues/190))
 
-### Features
-
-* migrate to UIKit 8 and update dependencies ([#190](https://github.com/gravity-ui/table/issues/190)) ([f93b6b6](https://github.com/gravity-ui/table/commit/f93b6b6f93824a02d571743ddd91aa0d15c86632))
-
 ## [1.26.0](https://github.com/gravity-ui/table/compare/v1.25.0...v1.26.0) (2026-11-09)
 
 
