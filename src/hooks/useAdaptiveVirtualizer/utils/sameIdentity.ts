@@ -6,7 +6,7 @@ export const sameIdentity = (
 ) =>
     Boolean(
         left &&
-            right &&
-            Object.is(left.virtualKey, right.virtualKey) &&
-            Object.is(left.rowKey, right.rowKey),
+        right &&
+        Object.is(left.virtualKey, right.virtualKey) &&
+        Object.is(left.rowKey, right.rowKey),
     );

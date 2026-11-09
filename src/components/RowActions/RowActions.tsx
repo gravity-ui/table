@@ -1,11 +1,13 @@
 import * as React from 'react';
 
+import type {Placement} from '@floating-ui/dom';
+import {autoUpdate, computePosition, flip, offset, shift} from '@floating-ui/dom';
 import {Ellipsis} from '@gravity-ui/icons';
-import type {PopupPlacement} from '@gravity-ui/uikit';
-import {Button, Icon, Popup, useUniqId} from '@gravity-ui/uikit';
+import {Button, Icon, Menu} from '@gravity-ui/uikit';
 
-import type {TableActionsSettings} from '../../types/RowActions';
-import {RowActionsMenu} from '../RowActionsMenu';
+import {useIsomorphicLayoutEffect} from '../../hooks/useIsomorphicLayoutEffect';
+import type {TableActionConfig, TableActionsSettings} from '../../types/RowActions';
+import {RowActionsMenuContent} from '../RowActionsMenu';
 
 import {b} from './RowActions.classname';
 import i18n from './i18n';
@@ -20,79 +22,97 @@ type RowActionsProps<TValue> = Pick<
     index: number;
 };
 
-const POPUP_PLACEMENT: PopupPlacement = ['bottom-end', 'top-end', 'left', 'right'];
+type RowActionsPopupProps<TValue> = Pick<RowActionsProps<TValue>, 'item' | 'rowActionsSize'> & {
+    actions: TableActionConfig<TValue>[];
+};
 
-export const RowActions = <TValue extends unknown>({
-    index: rowIndex,
+const DEFAULT_PLACEMENT = 'bottom-end';
+const POPUP_PADDING = 4;
+const placementMiddleware = [
+    offset(4),
+    shift({padding: POPUP_PADDING}),
+    flip({padding: POPUP_PADDING, fallbackPlacements: ['top-end', 'left', 'right']}),
+];
+
+export function RowActions<TValue>({
+    index,
     item,
     getRowActions,
     rowActionsSize,
-}: RowActionsProps<TValue>) => {
-    const [isPopupOpen, setIsPopupOpen] = React.useState(false);
-    const anchorRef = React.useRef<HTMLButtonElement>(null);
-    const rowId = useUniqId();
-
-    const buttonExtraProps = React.useMemo(
-        () => ({
-            'aria-label': i18n('label-actions'),
-            'aria-expanded': isPopupOpen,
-            'aria-controls': rowId,
-        }),
-        [isPopupOpen, rowId],
-    );
-    const handleButtonClick = React.useCallback(
-        (event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement, MouseEvent>) => {
-            setIsPopupOpen((value) => !value);
-            event.stopPropagation();
-        },
-        [],
-    );
-
-    if (getRowActions === undefined) {
+}: RowActionsProps<TValue>) {
+    const actions = getRowActions?.(item, index);
+    if (!actions?.length) {
         return null;
     }
 
-    const actions = getRowActions(item, rowIndex);
+    return <RowActionsPopup actions={actions} item={item} rowActionsSize={rowActionsSize} />;
+}
 
-    if (actions.length === 0) {
-        return null;
-    }
+function RowActionsPopup<TValue>({actions, item, rowActionsSize}: RowActionsPopupProps<TValue>) {
+    const triggerRef = React.useRef<HTMLButtonElement>(null);
+    const [menuContent, setMenuContent] = React.useState<HTMLDivElement | null>(null);
+    const [placement, setPlacement] = React.useState<Placement>(DEFAULT_PLACEMENT);
+    const [open, setOpen] = React.useState(false);
+
+    useIsomorphicLayoutEffect(() => {
+        const trigger = triggerRef.current;
+        const menu = menuContent?.closest<HTMLElement>('[role="menu"]');
+        if (!trigger || !menu) {
+            return undefined;
+        }
+
+        // Choose a fallback placement here because UIKit Menu's flip middleware
+        // only uses the first placement. UIKit still handles the final coordinates.
+        let updateId = 0;
+        const stopUpdating = autoUpdate(trigger, menu, async () => {
+            const id = ++updateId;
+            const result = await computePosition(trigger, menu, {
+                placement: DEFAULT_PLACEMENT,
+                middleware: placementMiddleware,
+            });
+
+            if (id === updateId) {
+                setPlacement(result.placement);
+            }
+        });
+
+        return () => {
+            updateId++;
+            stopUpdating();
+        };
+    }, [menuContent]);
 
     return (
         <div className={b()}>
-            <Popup
-                open={isPopupOpen}
-                anchorRef={anchorRef}
-                placement={POPUP_PLACEMENT}
-                onOutsideClick={() => setIsPopupOpen(false)}
-                id={rowId}
-            >
-                {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-                <div
-                    onClick={(event) => {
-                        event.stopPropagation();
-                    }}
-                >
-                    <RowActionsMenu
-                        item={item}
-                        actions={actions}
-                        size={rowActionsSize}
-                        onMenuItemClick={() => setIsPopupOpen(false)}
-                        className={b('popup-menu')}
-                        itemClassName={b('popup-menu-item')}
-                    />
-                </div>
-            </Popup>
-            <Button
-                view="flat-secondary"
-                className={b('actions-button')}
-                onClick={handleButtonClick}
+            <Menu
+                className={b('popup-menu')}
+                open={open}
+                onOpenChange={setOpen}
+                placement={placement}
                 size={rowActionsSize}
-                ref={anchorRef}
-                extraProps={buttonExtraProps}
+                trigger={
+                    <Button
+                        ref={triggerRef}
+                        view="flat-secondary"
+                        size={rowActionsSize}
+                        className={b('actions-button')}
+                        // Preserve the button role inside an ancestor floating container.
+                        role="button"
+                        aria-label={i18n('label-actions')}
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <Icon data={Ellipsis} />
+                    </Button>
+                }
             >
-                <Icon data={Ellipsis} />
-            </Button>
+                <RowActionsMenuContent
+                    contentRef={setMenuContent}
+                    item={item}
+                    actions={actions}
+                    itemClassName={b('popup-menu-item')}
+                    onAction={() => setOpen(false)}
+                />
+            </Menu>
         </div>
     );
-};
+}

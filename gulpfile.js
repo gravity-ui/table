@@ -1,7 +1,7 @@
-/* eslint-env node */
 const path = require('path');
 
 const utils = require('@gravity-ui/gulp-utils');
+const {buildDocs} = require('@gravity-ui/readme-validator');
 const {task, src, dest, series, parallel} = require('gulp');
 const sass = require('gulp-sass')(require('sass'));
 const sourcemaps = require('gulp-sourcemaps');
@@ -92,7 +92,7 @@ task('styles-components', () => {
 });
 
 task('copy-docs', (done) => {
-    utils.buildDocs();
+    buildDocs();
     done();
 });
 

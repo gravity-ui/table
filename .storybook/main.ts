@@ -1,6 +1,9 @@
 import type {StorybookConfig} from '@storybook/react-webpack5';
 
 const config: StorybookConfig = {
+    features: {
+        backgrounds: false,
+    },
     addons: [
         {
             name: '@storybook/addon-styling-webpack',
@@ -13,13 +16,7 @@ const config: StorybookConfig = {
                 ],
             },
         },
-        {
-            name: '@storybook/addon-essentials',
-            options: {
-                backgrounds: false,
-            },
-        },
-        './theme-addon/register.tsx',
+        '@storybook/addon-docs',
         '@storybook/addon-webpack5-compiler-babel',
     ],
     framework: '@storybook/react-webpack5',

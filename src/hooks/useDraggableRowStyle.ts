@@ -5,8 +5,10 @@ import type {useSortable} from '@dnd-kit/sortable';
 import {DRAG_SCROLL_COMPENSATION_TRANSFORM} from '../components/BaseDraggableRow/hooks/useDragScrollCompensation';
 import {SortableListContext} from '../components/SortableListContext';
 
-export interface UseDraggableRowStyleParams
-    extends Pick<ReturnType<typeof useSortable>, 'transform' | 'transition' | 'isDragging'> {
+export interface UseDraggableRowStyleParams extends Pick<
+    ReturnType<typeof useSortable>,
+    'transform' | 'transition' | 'isDragging'
+> {
     isDragActive?: boolean;
     isFirstChild?: boolean;
     draggableChildRowOffset?: number;

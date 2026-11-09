@@ -1,10 +1,9 @@
 import * as React from 'react';
 
-import type {ColumnDef} from '@tanstack/react-table';
+import type {ColumnDef, Table} from '@tanstack/react-table';
 import debounce from 'lodash/debounce.js';
 import {useDeepCompareEffect} from 'react-use';
 
-import type {useTable} from '..';
 import {useConditionallyControlledState} from '../useConditionallyControlledState';
 
 import {cellDefaultWidth, emptyColumnSizing, emptyRows, headerDefaultWidth} from './constants';
@@ -31,7 +30,12 @@ export function useColumnsAutoSize<TData extends unknown>({
     renderElementForMeasure,
     columnWidths: controlledColumnWidths,
     onChangeColumnWidths,
-}: UseColumnsAutoSizeProps<TData>) {
+}: UseColumnsAutoSizeProps<TData>): {
+    columnWidths: Record<string, number>;
+    setTableInstance: React.Dispatch<React.SetStateAction<Table<TData> | null>>;
+    columnsWithAutoSizes: ColumnDef<TData>[];
+    isMeasuring: boolean;
+} {
     const [rawColumnWidths, setColumnWidths] = useConditionallyControlledState(
         controlledColumnWidths,
         onChangeColumnWidths,
@@ -54,9 +58,7 @@ export function useColumnsAutoSize<TData extends unknown>({
         );
     });
     const [isMeasuring, setIsMeasuring] = React.useState(!hasAllWidths);
-    const [tableInstance, setTableInstance] = React.useState<ReturnType<
-        typeof useTable<TData>
-    > | null>(null);
+    const [tableInstance, setTableInstance] = React.useState<Table<TData> | null>(null);
 
     const measurementGenerationRef = React.useRef(0);
 

@@ -8,8 +8,10 @@ import {b} from '../BaseTable/BaseTable.classname';
 
 import {areMemoizedCellPropsEqual} from './utils/areMemoizedCellPropsEqual';
 
-export interface BaseCellProps<TData>
-    extends Omit<React.TdHTMLAttributes<HTMLTableCellElement>, 'className'> {
+export interface BaseCellProps<TData> extends Omit<
+    React.TdHTMLAttributes<HTMLTableCellElement>,
+    'className'
+> {
     cell?: Cell<TData, unknown>;
     className?: string | ((cell?: Cell<TData, unknown>) => string);
     attributes?:

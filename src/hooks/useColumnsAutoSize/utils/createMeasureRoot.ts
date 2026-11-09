@@ -7,54 +7,13 @@ export interface MeasureRoot {
     unmount(): void;
 }
 
-type CreateRoot = (container: Element | DocumentFragment) => {
-    render(children: React.ReactNode): void;
-    unmount(): void;
-};
-
-type LegacyReactDOM = {
-    render(element: React.ReactElement | null, container: Element): void;
-    unmountComponentAtNode(container: Element): void;
-};
-
-let cachedCreateRoot: CreateRoot | null | undefined;
-
-async function resolveCreateRoot(): Promise<CreateRoot | null> {
-    if (cachedCreateRoot !== undefined) {
-        return cachedCreateRoot;
-    }
-
-    try {
-        // `react-dom/client` exists only in React 18+. In React 17 this subpath
-        // is absent, so the dynamic import rejects and we fall back to the
-        // legacy API below.
-        const mod = (await import('react-dom/client')) as {createRoot?: CreateRoot};
-
-        cachedCreateRoot = mod.createRoot ?? null;
-    } catch {
-        cachedCreateRoot = null;
-    }
-
-    return cachedCreateRoot;
-}
-
 export async function createMeasureRoot(container: HTMLElement): Promise<MeasureRoot> {
-    const createRoot = await resolveCreateRoot();
-
-    if (createRoot) {
-        const root = createRoot(container);
-
-        return {
-            // Measurement must observe this commit, not a pending concurrent render.
-            render: (element) => ReactDOM.flushSync(() => root.render(element)),
-            unmount: () => root.unmount(),
-        };
-    }
-
-    const legacy = ReactDOM as unknown as LegacyReactDOM;
+    const {createRoot} = await import('react-dom/client');
+    const root = createRoot(container);
 
     return {
-        render: (element) => legacy.render(element, container),
-        unmount: () => legacy.unmountComponentAtNode(container),
+        // Measurement must observe this commit, not a pending concurrent render.
+        render: (element) => ReactDOM.flushSync(() => root.render(element)),
+        unmount: () => root.unmount(),
     };
 }

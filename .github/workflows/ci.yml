@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .nvmrc
           cache: npm
       - name: Install Packages
         run: npm ci
@@ -26,10 +26,15 @@ jobs:
         run: npm run lint
       - name: Typecheck
         run: npm run typecheck
+      - name: Build Package
+        run: npm run build
 
   tests:
-    name: Tests
+    name: Tests (React ${{ matrix.react }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        react: [18, 19]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,10 +43,16 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .nvmrc
           cache: npm
       - name: Install Packages
         run: npm ci
+      - name: Install React 18
+        if: matrix.react == 18
+        run: npm install --save-dev --ignore-scripts --no-audit --no-fund react@18 react-dom@18 @types/react@18 @types/react-dom@18
+      - name: Typecheck React 18
+        if: matrix.react == 18
+        run: npm run typecheck
       - name: Unit Tests
         run: npm run test
 
@@ -56,7 +67,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .nvmrc
           cache: npm
       - name: Install Packages
         run: npm ci

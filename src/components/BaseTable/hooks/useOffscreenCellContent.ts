@@ -34,8 +34,8 @@ export const useOffscreenCellContent = <TData>({
     rightColumns,
 }: UseOffscreenCellContentProps<TData>): OffscreenCellContentState => {
     const pendingHydrationsRef = React.useRef(new Set<() => void>());
-    const hydrationFrameRef = React.useRef<number>();
-    const hydrationTaskReleaseRef = React.useRef<() => void>();
+    const hydrationFrameRef = React.useRef<number>(undefined);
+    const hydrationTaskReleaseRef = React.useRef<() => void>(undefined);
     const horizontalScrollObservedRef = React.useRef(false);
     const horizontalScrollLeftRef = React.useRef<number | null>(null);
     const [horizontalScrollObserved, setHorizontalScrollObserved] = React.useState(false);

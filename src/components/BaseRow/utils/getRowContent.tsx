@@ -126,11 +126,11 @@ export function getRowContent<TData>({
     const content = visibleCells.map((cell) => {
         const deferContent = Boolean(
             !offscreenCellContentHydrated &&
-                canDeferOffscreenCellContent &&
-                immediateCellContentColumnIds &&
-                !cell.column.getIsPinned() &&
-                !immediateCellContentColumnIds.has(cell.column.id) &&
-                canDeferOffscreenCellContent(cell),
+            canDeferOffscreenCellContent &&
+            immediateCellContentColumnIds &&
+            !cell.column.getIsPinned() &&
+            !immediateCellContentColumnIds.has(cell.column.id) &&
+            canDeferOffscreenCellContent(cell),
         );
 
         if (deferContent) {

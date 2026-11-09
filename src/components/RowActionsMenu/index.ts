@@ -1,1 +1,1 @@
-export {RowActionsMenu} from './RowActionsMenu';
+export {RowActionsMenuContent} from './RowActionsMenu';

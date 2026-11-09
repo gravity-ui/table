@@ -1450,8 +1450,7 @@ function MyTable() {
 
 ```typescript jsx
 import React from 'react';
-import {Table, useTable} from '@gravity-ui/table';
-import {DropdownMenu} from '@gravity-ui/uikit';
+import {getActionsColumn, Table, useTable} from '@gravity-ui/table';
 import type {ColumnDef} from '@gravity-ui/table/tanstack';
 
 type User = {
@@ -1479,41 +1478,29 @@ const getActionsColumns = (
     header: 'Email',
     accessorKey: 'email',
   },
-  {
-    id: 'actions',
-    header: 'Actions',
-    cell: ({row}) => {
-      const user = row.original;
-
-      return (
-        <DropdownMenu
-          items={[
-            {
-              text: 'Edit',
-              action: () => handleEdit(user),
-            },
-            {
-              text: 'Delete',
-              action: () => handleDelete(user),
-              theme: 'danger',
-            },
-          ]}
-        />
-      );
-    },
-    size: 100,
-    enableSorting: false,
-  },
+  getActionsColumn<User>('actions', {
+    getRowActions: () => [
+      {
+        text: 'Edit',
+        handler: handleEdit,
+      },
+      {
+        text: 'Delete',
+        handler: handleDelete,
+        theme: 'danger',
+      },
+    ],
+  }),
 ];
 
 function MyTable() {
-    const handleEdit = (user: User) => {
-        console.log('Edit', user);
-    };
+  const handleEdit = (user: User) => {
+    console.log('Edit', user);
+  };
 
-    const handleDelete = (user: User) => {
-        console.log('Delete', user);
-    };
+  const handleDelete = (user: User) => {
+    console.log('Delete', user);
+  };
 
   const columns = getActionsColumns(handleEdit, handleDelete);
 

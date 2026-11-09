@@ -7,7 +7,7 @@ let scopeCounter = 0;
 export function useScope<T extends HTMLElement = HTMLDivElement>() {
     const scopeRef = React.useRef<T>(null);
 
-    const scopeClassNameRef = React.useRef<string>();
+    const scopeClassNameRef = React.useRef<string>(undefined);
     if (!scopeClassNameRef.current) {
         scopeCounter += 1;
         scopeClassNameRef.current = `${b()}-${scopeCounter}`;

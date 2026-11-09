@@ -25,15 +25,16 @@ const columns: ColumnDef<Item>[] = [
             }
 
             return (
-                <Select
-                    options={[
-                        {value: '1', text: 'action 1', content: 'action 1'},
-                        {value: '2', text: 'action 2', content: 'action 2'},
-                        {value: '3', text: 'action 3', content: 'action 3'},
-                    ]}
-                    size="s"
-                    title="Actions select example"
-                />
+                <span title="Actions select example">
+                    <Select
+                        options={[
+                            {value: '1', content: 'action 1'},
+                            {value: '2', content: 'action 2'},
+                            {value: '3', content: 'action 3'},
+                        ]}
+                        size="s"
+                    />
+                </span>
             );
         },
     }),

@@ -12,8 +12,10 @@ import {ColumnReorderingContext} from '../ColumnReorderingContext';
 import {getCanReorderHeader} from './utils/getCanReorderHeader';
 import {shouldSkipHeaderRender} from './utils/shouldSkipHeaderRender';
 
-export interface BaseHeaderRowProps<TData, TValue = unknown>
-    extends Omit<React.HTMLAttributes<HTMLTableRowElement>, 'className'> {
+export interface BaseHeaderRowProps<TData, TValue = unknown> extends Omit<
+    React.HTMLAttributes<HTMLTableRowElement>,
+    'className'
+> {
     cellClassName?: BaseHeaderCellProps<TData, TValue>['className'];
     className?:
         | string

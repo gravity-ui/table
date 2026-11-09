@@ -1,4 +1,4 @@
-import type {Table} from '@tanstack/table-core';
+import type {Table} from '@tanstack/react-table';
 
 export function getToggleAllEnabledRowsSelectedHandler<T>(table: Table<T>) {
     return (event: React.ChangeEvent<HTMLInputElement>) => {

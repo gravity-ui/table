@@ -1,11 +1,10 @@
 import {Select, TextInput} from '@gravity-ui/uikit';
-import type {SelectOption} from '@gravity-ui/uikit';
 
 import type {ColumnDef} from '../../../../types/base';
 import type {Item} from '../../../BaseTable/__stories__/types';
 import {cnFilteringStory} from '../stories/FilteringStory.classname';
 
-export const statusOptions: SelectOption[] = [
+export const statusOptions = [
     {value: '', content: 'All'},
     {value: 'free', content: 'Free'},
     {value: 'busy', content: 'Busy'},

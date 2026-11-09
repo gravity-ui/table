@@ -18,8 +18,7 @@ import {b} from '../BaseTable/BaseTable.classname';
 
 export interface BaseHeaderCellProps<TData, TValue> {
     className?:
-        | string
-        | ((header: Header<TData, TValue>, parentHeader?: Header<TData, unknown>) => string);
+        string | ((header: Header<TData, TValue>, parentHeader?: Header<TData, unknown>) => string);
     header: Header<TData, TValue>;
     parentHeader?: Header<TData, unknown>;
     renderHeaderCellContent?: (props: {header: Header<TData, TValue>}) => React.ReactNode;

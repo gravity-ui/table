@@ -81,20 +81,15 @@ export function useAdaptiveTableVirtualization<TData, TScrollElement extends Ele
         (virtualItem: VirtualItem | undefined, row: Row<TData>, rowIndex: number) =>
             Boolean(
                 virtualItem &&
-                    controller?.isRowDeferred(
-                        renderPlan ?? null,
-                        rowIndex,
-                        virtualItem.key,
-                        row.id,
-                    ) &&
-                    !getIsCustomRow?.(row) &&
-                    !getIsGroupHeaderRow?.(row) &&
-                    !(
-                        draggingRowIndex >= 0 &&
-                        visibleVirtualRange &&
-                        rowIndex >= visibleVirtualRange.startIndex &&
-                        rowIndex <= visibleVirtualRange.endIndex
-                    ),
+                controller?.isRowDeferred(renderPlan ?? null, rowIndex, virtualItem.key, row.id) &&
+                !getIsCustomRow?.(row) &&
+                !getIsGroupHeaderRow?.(row) &&
+                !(
+                    draggingRowIndex >= 0 &&
+                    visibleVirtualRange &&
+                    rowIndex >= visibleVirtualRange.startIndex &&
+                    rowIndex <= visibleVirtualRange.endIndex
+                ),
             ),
         [
             controller,

@@ -6,8 +6,10 @@ import type {BaseFooterCellProps} from '../BaseFooterCell';
 import {BaseFooterCell} from '../BaseFooterCell';
 import {b} from '../BaseTable/BaseTable.classname';
 
-export interface BaseFooterRowProps<TData, TValue = unknown>
-    extends Omit<React.HTMLAttributes<HTMLTableRowElement>, 'className'> {
+export interface BaseFooterRowProps<TData, TValue = unknown> extends Omit<
+    React.HTMLAttributes<HTMLTableRowElement>,
+    'className'
+> {
     footerGroup: HeaderGroup<TData>;
     attributes?:
         | React.HTMLAttributes<HTMLTableRowElement>

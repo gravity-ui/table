@@ -1,4 +1,4 @@
-import type {Meta, StoryObj} from '@storybook/react';
+import type {Meta, StoryObj} from '@storybook/react-webpack5';
 
 import {RowActionsColumnStory} from './stories/RowActionsColumnStory';
 import {RowActionsWithActionsColumnStory} from './stories/RowActionsWithActionsColumnStory';
@@ -12,6 +12,7 @@ export default meta;
 
 export const ActionsColumn: StoryObj<typeof RowActionsColumnStory> = {
     render: RowActionsColumnStory,
+    tags: ['browser-regression'],
 };
 
 export const CustomActions: StoryObj<typeof RowActionsWithCustomRendering> = {

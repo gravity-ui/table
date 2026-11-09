@@ -367,10 +367,10 @@ export const createAdaptiveVirtualizerController = (
         const timestamp = scheduler.now();
         return Boolean(
             offset !== null &&
-                recentDirectionalSample?.direction === direction &&
-                Object.is(recentDirectionalSample.offset, offset) &&
-                timestamp >= recentDirectionalSample.timestamp &&
-                timestamp - recentDirectionalSample.timestamp <= MAX_SCROLL_SAMPLE_INTERVAL_MS,
+            recentDirectionalSample?.direction === direction &&
+            Object.is(recentDirectionalSample.offset, offset) &&
+            timestamp >= recentDirectionalSample.timestamp &&
+            timestamp - recentDirectionalSample.timestamp <= MAX_SCROLL_SAMPLE_INTERVAL_MS,
         );
     };
 
@@ -567,8 +567,8 @@ export const createAdaptiveVirtualizerController = (
     const getNativeSettled = () =>
         Boolean(
             nativeSettled &&
-                nativeSettled.hardGeneration === hardGeneration &&
-                Object.is(nativeSettled.offset, virtualizer?.scrollOffset ?? null),
+            nativeSettled.hardGeneration === hardGeneration &&
+            Object.is(nativeSettled.offset, virtualizer?.scrollOffset ?? null),
         );
 
     const getRealizationCandidates = () => {
@@ -918,11 +918,11 @@ export const createAdaptiveVirtualizerController = (
         );
         const recoveryActive = Boolean(
             usesDeferredRecovery &&
-                (boundedRecovery ||
-                    deferred.size > 0 ||
-                    missingVisible.length > 0 ||
-                    missingRealRequiredPins.length > 0 ||
-                    state.canPrepareDirectionalCoverage),
+            (boundedRecovery ||
+                deferred.size > 0 ||
+                missingVisible.length > 0 ||
+                missingRealRequiredPins.length > 0 ||
+                state.canPrepareDirectionalCoverage),
         );
         const nextDeferred = new Map(deferred);
         const pendingRealizations = new Set(getPendingRealizationIndexes(snapshot));
@@ -1498,8 +1498,8 @@ export const createAdaptiveVirtualizerController = (
             const snapshot = proposalState ?? captureExtractionState();
             const nativeSettledForSnapshot = Boolean(
                 snapshot.nativeSettled &&
-                    snapshot.nativeSettled.hardGeneration === snapshot.hardGeneration &&
-                    Object.is(snapshot.nativeSettled.offset, virtualizer?.scrollOffset ?? null),
+                snapshot.nativeSettled.hardGeneration === snapshot.hardGeneration &&
+                Object.is(snapshot.nativeSettled.offset, virtualizer?.scrollOffset ?? null),
             );
             return {
                 boundedRecovery: snapshot.boundedRecovery,
@@ -1566,8 +1566,8 @@ export const createAdaptiveVirtualizerController = (
             const identity = deferredForRender.get(index);
             return Boolean(
                 identity &&
-                    Object.is(identity.virtualKey, virtualKey) &&
-                    Object.is(identity.rowKey, rowKey),
+                Object.is(identity.virtualKey, virtualKey) &&
+                Object.is(identity.rowKey, rowKey),
             );
         },
 

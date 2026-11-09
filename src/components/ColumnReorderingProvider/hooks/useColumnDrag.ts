@@ -18,7 +18,7 @@ import {useAutoScroll} from './useAutoScroll';
 
 interface UseColumnDragParams<TData> {
     table: Table<TData>;
-    scopeRef: React.RefObject<HTMLElement>;
+    scopeRef: React.RefObject<HTMLElement | null>;
     autoScroll: boolean;
     onReorder?: (result: ColumnReorderResult) => void;
 }

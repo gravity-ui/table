@@ -10,7 +10,7 @@ import './ColumnDragInsertionIndicator.scss';
 
 export interface ColumnDragInsertionIndicatorProps<TData> {
     table: Table<TData>;
-    scopeRef: React.RefObject<HTMLElement>;
+    scopeRef: React.RefObject<HTMLElement | null>;
     activeColumnId: string | null;
     targetColumnId: string | null;
 }

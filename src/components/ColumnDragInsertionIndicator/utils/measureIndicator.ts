@@ -5,7 +5,7 @@ import {escapeClassName} from '../../ColumnReorderingProvider/utils/escapeClassN
 import type {InsertionLineSide} from '../types';
 
 export function measureIndicator(
-    scopeRef: React.RefObject<HTMLElement>,
+    scopeRef: React.RefObject<HTMLElement | null>,
     targetColumnId: string,
     side: InsertionLineSide,
 ): React.CSSProperties | null {

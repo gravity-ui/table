@@ -55,12 +55,12 @@ export interface TableDndRootProps {
 
 export const TableDndRoot = ({scopes, children}: TableDndRootProps) => {
     const [activeReorderType, setActiveReorderType] = React.useState<ReorderType>();
-    const keyboardTargetRef = React.useRef<UniqueIdentifier>();
-    const activatorEventRef = React.useRef<Event>();
+    const keyboardTargetRef = React.useRef<UniqueIdentifier>(undefined);
+    const activatorEventRef = React.useRef<Event>(undefined);
     const draggableMeasurementRef = React.useRef<{
         element: HTMLElement;
         rect: ReturnType<typeof getClientRect>;
-    }>();
+    }>(undefined);
     const scopeList = React.useMemo(() => Object.values(scopes), [scopes]);
 
     const measureDraggable = React.useCallback((element: HTMLElement) => {

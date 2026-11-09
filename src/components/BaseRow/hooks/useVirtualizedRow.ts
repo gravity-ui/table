@@ -26,9 +26,9 @@ export function useVirtualizedRow<TData, TScrollElement extends Element | Window
     const runtime = rowVirtualizer ? getRowVirtualizerRuntime(rowVirtualizer) : undefined;
     const directDomUpdates = Boolean(runtime?.directDomUpdates);
     const directDomUpdatesMode = runtime?.directDomUpdatesMode ?? 'transform';
-    const measuredVirtualKeyRef = React.useRef<VirtualItem['key']>();
-    const placeholderNodeRef = React.useRef<HTMLTableRowElement>();
-    const placeholderVirtualKeyRef = React.useRef<VirtualItem['key']>();
+    const measuredVirtualKeyRef = React.useRef<VirtualItem['key']>(undefined);
+    const placeholderNodeRef = React.useRef<HTMLTableRowElement>(undefined);
+    const placeholderVirtualKeyRef = React.useRef<VirtualItem['key']>(undefined);
     const virtualIndex = virtualItem?.index;
     const virtualKey = virtualItem?.key;
     const virtualItemPosition =

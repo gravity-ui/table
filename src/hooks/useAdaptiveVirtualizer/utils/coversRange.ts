@@ -8,6 +8,6 @@ export const coversRange = (
 ) =>
     Boolean(
         range &&
-            available &&
-            createRange(range.startIndex, range.endIndex).every((index) => available.has(index)),
+        available &&
+        createRange(range.startIndex, range.endIndex).every((index) => available.has(index)),
     );

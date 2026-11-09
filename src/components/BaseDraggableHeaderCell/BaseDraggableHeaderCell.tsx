@@ -6,8 +6,10 @@ import {BaseHeaderCell} from '../BaseHeaderCell';
 import {b} from '../BaseTable/BaseTable.classname';
 import {ColumnReorderingContext} from '../ColumnReorderingContext';
 
-export interface BaseDraggableHeaderCellProps<TData, TValue>
-    extends BaseHeaderCellProps<TData, TValue> {}
+export interface BaseDraggableHeaderCellProps<TData, TValue> extends BaseHeaderCellProps<
+    TData,
+    TValue
+> {}
 
 export const BaseDraggableHeaderCell = <TData, TValue>({
     attributes: attributesProp,

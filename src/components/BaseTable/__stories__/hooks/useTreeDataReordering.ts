@@ -19,7 +19,6 @@ type UpdateRankPayload = {
 
 export const useTreeDataReordering = ({data, setData}: UseTreeDataReorderingProps) => {
     return React.useCallback<NonNullable<ReorderingProviderProps<TreeItem>['onReorder']>>(
-        // eslint-disable-next-line complexity
         ({
             draggedItemKey,
             baseItemKey,

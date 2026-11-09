@@ -23,8 +23,10 @@ import type {CanDeferOffscreenCellContent} from './types';
 
 import './BaseTable.scss';
 
-export interface BaseTableProps<TData, TScrollElement extends Element | Window = HTMLDivElement>
-    extends QAProps {
+export interface BaseTableProps<
+    TData,
+    TScrollElement extends Element | Window = HTMLDivElement,
+> extends QAProps {
     /** The table instance returned from the `useTable` hook */
     table: Table<TData>;
     /** HTML attributes for the `<table>` element */
