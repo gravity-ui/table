@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.26.0](https://github.com/gravity-ui/table/compare/v1.25.0...v1.26.0) (2026-11-09)
+
+
+### Features
+
+* **TableSettings:** remove dividers between flat columns ([#189](https://github.com/gravity-ui/table/issues/189)) ([95cb818](https://github.com/gravity-ui/table/commit/95cb818df6f89e6f360448aa96902b585a1fa76d))
+
 ## [1.25.0](https://github.com/gravity-ui/table/compare/v1.24.0...v1.25.0) (2026-11-03)
 
 
